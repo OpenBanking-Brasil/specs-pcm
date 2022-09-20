@@ -1,0 +1,785 @@
+openapi: 3.0.3
+info:
+  title: "Plataforma de Coleta de Métricas"
+  description: |
+    # Introdução
+
+    A plataforma de Coleta de Métricas foi idealizada com o objetivo de contabilizar as interações entre as instituições participantes, de modo a promover um ambiente equitativo e não discriminatório. Se trata de uma plataforma localizada no perímetro central, gerida pelo regulador do ecossistema.
+
+    ## Motivação
+
+    Para que o ecossistema do Open Banking Brasil seja saudável para instituições e clientes finais, fez-se necessária a criação de uma plataforma que deverá concentrar dados sobre as chamadas que as instituições fazem umas às outras. Dessa forma, torna-se possível coletar informações com o objetivo de se criar métricas e indicadores a fim de se ter visibilidade sobre todo o ambiente.
+
+    No intuito de manter a integridade e consistência nos dados, o envio destes pelas instituições deverá passar por um processo de conciliação. Quando divergente, as instituições serão notificadas e terão a possibilidade de ajustar as chamadas, o que promove um ambiente saudável de auto-regulação, prevenindo assim uma disputa.
+
+    ## O que a plataforma não é
+
+    A plataforma recebe os dados de maneira póstuma, ou seja, dentro do período de fechamento mas depois de a chamada concreta ter sido feita. Dada essa natureza, a plataforma não pode atuar como um agente que proíbe, bloqueia ou interfere nas interações entre as instituiçoes.
+
+    Por mais que concentre informações importantes das chamadas entre as instituições, a plataforma não é uma ferramenta de BI, e o controle de acesso aos dados é feito em diferentes níveis (participante, regulador e administrador).
+
+    ## Premissas Técnicas
+
+    * Tanto o envio por parte dos participantes quanto o processamento por parte da plataforma serão feitos de maneira assíncrona;
+    * O envio dos registros de chamada (reportes) pode ser individual ou em lote através de chamadas às APIs;
+
+    ## Terminologia
+
+    * **Transmissor e Receptor**: em uma interação, a parte que solicita os dados é chamada de _receptora_, ao passo que a parte que devolve os dados é a _transmissora_. O ponto de vista para o uso dessa terminologia é o tráfego dos dados da transação e não o ponto de partida da chamada. Portanto, supondo que A faça uma consulta em B pelos dados de uma conta, esses dados vão ser transmitidos por quem recebeu a solicitação, e recebidos por quem a fez, nesse caso, "A" é o receptor e "B" é o transmissor.
+
+    * **Reporte**: no contexto da API de Coleta de Métricas, um _reporte_ é o registro da chamada que será enviado tanto pela transmissora quanto pela receptora. Esse registro será armazenado na Plataforma para posterior processo de conciliação de chamadas e extração de dados estatísticos.
+
+    * **Divergência**: Quando Transmissor e Receptor enviam reportes, cada um destes reportes se refere à uma chamada em específico. Nos casos em que uma das partes não envia o reporte sobre essa chamada em específico, é caracterizada uma divergência. As divergências ocorrem no fechamento do período (diário, semanal) e podem ser resolvidas tanto pela interface do Portal do Participante, quanto pela chamada à API Management. Uma divergência é considerada fechada apenas quanto todos os reportes encontram sua respectiva correspondência do outro lado da chamada.
+
+    Para informações detalhadas sobre a PCM, consulte o site da documentação da Plataforma.
+    
+  version: 1.0.0-RC1
+
+security:
+  - OpenBankingAccessToken: []
+
+tags:
+  - name: Report API
+    description: |
+      A API de reporte fornece operações que permitem a inclusão dos registros de chamada na plataforma de Coleta de Métricas. A inclusão de reportes pode ser feita de maneira individual ou em lote, conforme respectivas documentações.
+
+      Os dados que são inseridos na API de Reporte são sempre processados de maneira assíncrona, e sua persistência se utiliza de consistência posterior (eventual consistency), portanto, um registro tem um tempo de processamento em que ele não estará disponível para consulta até que ele seja persistido.
+  - name: Management API
+    description: |
+      A API de gestão permite consultar os dados previamente inseridos, através das visões fornecidas nas operações descritas nessa documentação.
+
+paths:
+  "/report-api/v1/transmitter/report":
+    post:
+      tags:
+        - Report API
+      summary: "Inclusão unitária de reporte pelo transmissor"
+      description: Inclusão de reporte individual na plataforma por um participante no papel de transmissor (lado que recebeu a chamada).
+      operationId: single-report-transmitter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransmitterReportRequest"
+        required: true
+      responses:
+        "200":
+          description: Registro recebido com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportResponse"
+              examples:
+                Com Correlation ID:
+                  value:
+                    reportId: b34733c1-930e-475b-8d61-98b9ca3e09f7
+                    correlationId: E2PLJZwNupARo7I9ph18a0M9y7DcUe7I3DqUd9TtN
+                    status: ACCEPTED
+                Sem Correlation ID:
+                  value:
+                    reportId: b34733c1-930e-475b-8d61-98b9ca3e09f7
+                    status: ACCEPTED
+        "400":
+          $ref: "#/components/responses/Default400MissingFields"
+        "401":
+          $ref: "#/components/responses/Default401Unauthorized"
+
+  "/report-api/v1/receiver/report":
+    post:
+      tags:
+        - Report API
+      summary: "Inclusão unitária de reporte pelo receptor"
+      description: Inclusão de reporte individual na plataforma por um participante no papel de receptor (lado que iniciou a chamada).
+      operationId: single-report-receiver
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReceiverReportRequest"
+        required: true
+      responses:
+        "200":
+          description: Registro recebido com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportResponse"
+              examples:
+                Com Correlation ID:
+                  value:
+                    reportId: b34733c1-930e-475b-8d61-98b9ca3e09f7
+                    correlationId: E2PLJZwNupARo7I9ph18a0M9y7DcUe7I3DqUd9TtN
+                    status: ACCEPTED
+                Sem Correlation ID:
+                  value:
+                    reportId: b34733c1-930e-475b-8d61-98b9ca3e09f7
+                    status: ACCEPTED
+        "400":
+          $ref: "#/components/responses/Default400MissingFields"
+        "401":
+          $ref: "#/components/responses/Default401Unauthorized"
+
+  "/report-api/v1/transmitter/report:batch":
+    post:
+      tags:
+        - Report API
+      summary: Inclusão em massa de reportes pelo lado do transmissor
+      description: |
+        Inclusão de reportes em massa na plataforma. Ao enviar um lote de reportes, a plataforma vai fazer o processo de validação de cada reporte de maneira síncrona e devolver o resultado dessa validação na resposta, sendo que o status HTTP de retorno vai refletir esse resultado (vide documentação de cada status de retorno). No entanto, o processamento de cada reporte ocorrerá de maneira assíncrona.
+        
+        O limite de registros de cada lote é de 5.000 registros.
+      operationId: batch-report-transmitter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/TransmitterReportRequest"
+            examples:
+              "Request Valido":
+                description: O request apresentado tem todos os campos validados.
+                value:
+                  - timestamp: "2021-11-11T18:08:08Z"
+                    fapiInteractionId: "d78fc4e5-37ca-4da3-adf2-9b082bf92280"
+                    receiverOrgId: "01234567890000199"
+                    transmitterOrgId: "01234567890000199"
+                    endpoint: "/open-banking/unarranged-accounts-overdraft/v1/contracts/{contractId}/scheduled-instalments"
+                    statusCode: 200
+                    httpMethod: GET
+                    correlationId: "wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf"
+                    processTimespan: 120
+                  - timestamp: "2021-11-11T19:22:10.3Z"
+                    fapiInteractionId: "0786fce3-a36f-43f8-b66a-d26ab1dfc639"
+                    receiverOrgId: "01234567890000199"
+                    transmitterOrgId: "01234567890000199"
+                    endpoint: "/open-banking/unarranged-accounts-overdraft/v1/contracts/{contractId}/scheduled-instalments"
+                    statusCode: 200
+                    httpMethod: GET
+                    correlationId: "8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j"
+                    processTimespan: 117
+                  - timestamp: "2021-11-11T19:41:41.8Z"
+                    fapiInteractionId: "d1541b17-3175-477d-a52b-2813ae2c4c36"
+                    receiverOrgId: "01234567890000199"
+                    transmitterOrgId: "01234567890000199"
+                    endpoint: "/open-banking/unarranged-accounts-overdraft/v1/contracts/{contractId}/scheduled-instalments"
+                    statusCode: 200
+                    httpMethod: GET
+                    processTimespan: 125
+        required: true
+      responses:
+        "200":
+          description: |
+           O status 200 representa a situação onde todos os registros enviados no lote foram validados e serão direcionados para processamento.
+           
+           A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ReportResponse"
+              examples:
+                Todos Processados:
+                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação. O payload da resposta vem na mesma ordem do array da solicitação. Todos registros que chegarem com o atributo _correlationId_ o receberão de volta. Uma vez que todos os registros foram validados, o status de retorno é o 200.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
+                      status: ACCEPTED
+                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
+                      correlationId: 8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j
+                      status: ACCEPTED
+                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
+                      status: ACCEPTED
+
+        "207":
+          description: |
+            O status 207 (Multi-Status) informa ao solicitante que o formato da solicitação está correto, mas que entradas do array da solicitação contém erro de validação, independente da quantidade. Ou seja, se todos os elementos do array informado estiverem com falha de validação, a operação vai devolver o status 207, e no corpo da resposta todos os elementos do array vão estar com status `DISCARDED` e com sua respectiva mensagem. 
+
+            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ReportResponse"
+              examples:
+                "Primeiro registro com falha":
+                  description: |
+                    No caso apresentado é o resultado onde o exemplo "Request com falha" foi enviado: o registro com o _fapiInteractionId_ `d78fc4e5-37ca-4da3-adf2-9b082bf92280` apresentou uma falha na validação, mas os demais foram enviados para processamento. Como um dos registros não foi validado, o status de retorno passa a ser 207, e os demais registros são processados normalmente.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
+                      correlationId: 8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j
+                      status: ACCEPTED
+                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
+                      status: ACCEPTED
+                "Todos registros com falha":
+                  description: |
+                    Neste caso, parte-se da premissa que todos os registros foram enviados sem _correlationId_ e sem _uri_. Nesse caso, todos vão falhar na etapa de validação, mas mesmo quando todos os registros falham, o status de retorno é o 207.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+
+        "400":
+          description: O formato do corpo da requisição não é um array.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+              examples:
+                "400":
+                  value:
+                    message: "Invalid payload format: MUST be an array"
+
+        "413":
+          description: A quantidade de registros enviado excede o limite da operação, ou o tamanho do payload excede o limite configurado no servidor http.
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                "Limite de registros excedido":
+                  value:
+                    message: Record limit exceeded
+
+        "401":
+          $ref: "#/components/responses/Default401Unauthorized"
+
+  "/report-api/v1/receiver/report:batch":
+    post:
+      tags:
+        - Report API
+      summary: Inclusão em massa de reportes pelo lado do receptor (iniciador da chamada)
+      description: |
+        Inclusão de reportes em massa na plataforma. Ao enviar um lote de reportes, a plataforma vai fazer o processo de validação de cada reporte de maneira síncrona e devolver o resultado dessa validação na resposta, sendo que o status HTTP de retorno vai refletir esse resultado (vide documentação de cada status de retorno). No entanto, o processamento de cada reporte ocorrerá de maneira assíncrona.
+        
+        O limite de registros de cada lote é de 5.000 registros.
+      operationId: batch-report-receiver
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/ReceiverReportRequest"
+            examples:
+              "Request Valido":
+                description: O request apresentado tem todos os campos validados.
+                value:
+                  - timestamp: "2021-11-11T18:08:08Z"
+                    fapiInteractionId: "d78fc4e5-37ca-4da3-adf2-9b082bf92280"
+                    receiverSSAId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
+                    receiverOrgId: "01234567890000199"
+                    transmitterOrgId: "01234567890000199"
+                    endpoint: "/open-banking/products-services/v1/personal-financings"
+                    statusCode: 200
+                    httpMethod: GET
+                    correlationId: "wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf"
+                    processTimespan: 120
+                    endpointUriPrefix: "https://ofin.bank.com/"
+                  - timestamp: "2021-11-11T19:22:10.3Z"
+                    fapiInteractionId: "0786fce3-a36f-43f8-b66a-d26ab1dfc639"
+                    receiverSSAId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
+                    receiverOrgId: "01234567890000199"
+                    transmitterOrgId: "01234567890000199"
+                    endpoint: "/open-banking/consents/v1/consents/{consentId}"
+                    statusCode: 200
+                    httpMethod: GET
+                    correlationId: "8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j"
+                    processTimespan: 117
+                    endpointUriPrefix: "https://ofin.bank.com/"
+                  - timestamp: "2021-11-11T19:41:41.8Z"
+                    fapiInteractionId: "d1541b17-3175-477d-a52b-2813ae2c4c36"
+                    receiverSSAId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
+                    receiverOrgId: "01234567890000199"
+                    transmitterOrgId: "01234567890000199"
+                    endpoint: "/open-banking/unarranged-accounts-overdraft/v2/contracts"
+                    statusCode: 200
+                    httpMethod: GET
+                    processTimespan: 125
+                    endpointUriPrefix: "https://ofin.bank.com/"
+        required: true
+      responses:
+        "200":
+          description: |
+           O status 200 representa a situação onde todos os registros enviados no lote foram validados e serão direcionados para processamento.
+           
+           A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ReportResponse"
+              examples:
+                Todos Processados:
+                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação. O payload da resposta vem na mesma ordem do array da solicitação. Todos registros que chegarem com o atributo _correlationId_ o receberão de volta. Uma vez que todos os registros foram validados, o status de retorno é o 200.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
+                      status: ACCEPTED
+                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
+                      correlationId: 8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j
+                      status: ACCEPTED
+                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
+                      status: ACCEPTED
+
+        "207":
+          description: |
+            O status 207 (Multi-Status) informa ao solicitante que o formato da solicitação está correto, mas que entradas do array da solicitação contém erro de validação, independente da quantidade. Ou seja, se todos os elementos do array informado estiverem com falha de validação, a operação vai devolver o status 207, e no corpo da resposta todos os elementos do array vão estar com status `DISCARDED` e com sua respectiva mensagem. 
+
+            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ReportResponse"
+              examples:
+                "Primeiro registro com falha":
+                  description: |
+                    No caso apresentado é o resultado onde o exemplo "Request com falha" foi enviado: o registro com o _fapiInteractionId_ `d78fc4e5-37ca-4da3-adf2-9b082bf92280` apresentou uma falha na validação, mas os demais foram enviados para processamento. Como um dos registros não foi validado, o status de retorno passa a ser 207, e os demais registros são processados normalmente.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
+                      correlationId: 8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j
+                      status: ACCEPTED
+                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
+                      status: ACCEPTED
+                "Todos registros com falha":
+                  description: |
+                    Neste caso, parte-se da premissa que todos os registros foram enviados sem _correlationId_ e sem _uri_. Nesse caso, todos vão falhar na etapa de validação, mas mesmo quando todos os registros falham, o status de retorno é o 207.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+
+        "400":
+          description: O formato do corpo da requisição não é um array.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+              examples:
+                "400":
+                  value:
+                    message: "Invalid payload format: MUST be an array"
+
+        "413":
+          description: A quantidade de registros enviado excede o limite da operação, ou o tamanho do payload excede o limite configurado no servidor http.
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                "Limite de registros excedido":
+                  value:
+                    message: Record limit exceeded
+
+        "401":
+          $ref: "#/components/responses/Default401Unauthorized"
+
+  "/management-api/v1/report/{id}":
+    get:
+      tags:
+        - Management API
+      summary: Consulta um report em específico usando um identificador
+      description: |
+        Operação que permite a consulta de um reporte em específico através de um identificador. A busca por reportes estará sempre no contexto do usuário representado pelo token de acesso: um token com o escopo de _participante_ só terá acesso à reportes em que instituição que ele pertence é parte, seja como receptora ou como transmissora, ao passo que o escopo _regulador_ tem permissão para buscar reportes de todas as instiuições.
+
+        O processamento do registro ocorre de maneira assíncrona, o que pode gerar um cenário de consistência eventual: caso a consulta seja feita imediatamente após a inclusão, é possível que o registro ainda não esteja disponível para consulta. Vide documentação do response 423 para maiores detalhes. 
+
+        O parametro _byCorrelationId_ identifica se a busca deverá ser feita pelo campo `correlationId`.
+
+        Para a utilização deste método é necessário gerar um Token de Acesso na plataforma central do Diretório do Open Banking Brasil.
+      operationId: report-by-id
+      parameters:
+        - name: id
+          description: Identificador do reporte. Por padrão busca pelo campo `reportId`. Se o parametro _byCorrelationId_ for informado com o valor `true`, a busca será feita pelo campo `correlationId`.
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: byCorrelationId
+          description: Filtro que indica se a busca deverá ser feita pelo campo `correlationId`.
+          in: query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Consulta realizada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportModel"
+        "404":
+          description: O registro com o identificador e filtros informados não foi encontrado.
+        "423":
+          description: |
+            O processamento dos reportes é feito de maneira assíncrona, usando uma fila de processamento entre o serviço que recebe o reporte e o que consulta o dado persistido.
+
+            Caso o registro a ser buscado tenha sido criado pela plataforma mas ainda não tenha sido persistido, a operação vai devolver um status _423 Locked_ indicando que o recurso ainda não está processado.
+
+        "401":
+          $ref: "#/components/responses/Default401Unauthorized"
+
+components:
+  schemas:
+    BaseReport:
+      description: Representa os dados básicos que deverão ser enviados tanto pelo transmissor quanto pelo receptor
+      properties:
+        fapiInteractionId:
+          description: UUID que identifica uma transação específica entre dois participantes. Esse dado pode ser encontrado no header `x-fapi-interaction-id` que é informado pelo receptor e devolvido pelo transmissor. Mais informações em [Cabeçalhos HTTP](https://openbanking-brasil.github.io/areadesenvolvedor/#cabecalhos-http) na documentação do Open Banking Brasil.
+          type: string
+          example: "d78fc4e5-37ca-4da3-adf2-9b082bf92280"
+        endpoint:
+          $ref: "#/components/schemas/Endpoints"
+        statusCode:
+          description: Status de retorno HTTP da solicitação, conforme descrito na documentação de cada endpoint.
+          type: integer
+          format: int32
+          example: 200
+        httpMethod:
+          description: Método HTTP da solicitação.
+          type: string
+          enum: ['GET', 'POST', 'PUT', 'DELETE']
+          example: GET
+        correlationId:
+          description: Identificador de correlação que pode ser enviado pelo participante para fazer referência ao registro criado na plataforma de Coleta de Métricas. Quando um participante envia essa informação, a plataforma indexa esse identificador juntamente com o `reportId` (identificador interno). Dessa forma, não é necessário que o participante armazene o `reportId` da Plataforma de Coleta de Métricas se ele já tiver um ID interno.
+          type: string
+          example: "uGQHwNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf2"
+        additionalInfo:
+          $ref: "#/components/schemas/AdditionalInfo"
+
+
+    ReceiverReportRequest:
+      description: Representa os dados que deverão ser enviados para a inclusão de reportes pelo lado do receptor (iniciador da chamada).
+      required:
+        - timestamp
+        - fapiInteractionId
+        - endpoint
+        - statusCode
+        - httpMethod
+        - processTimespan
+        - receiverSSAId
+        - receiverOrgId
+        - transmitterOrgId
+        - endpointUriPrefix
+      allOf:
+        - $ref: "#/components/schemas/BaseReport"
+        - type: object
+          properties:
+            timestamp:
+              description: Data/Hora UTC no formato ISO8601 do momento em que a chamada foi disparada ao endpoint do outro participante, imediatamente antes do primeiro byte enviado na requisição.
+              type: string
+              format: date-time
+              example: "2021-11-11T18:08:08.1Z"
+            processTimespan:
+              description: Tempo em milissegundos inteiros decorrido desde o registro do timestamp até a chegada do primeiro byte da resposta do transmissor.
+              type: integer
+              format: int16
+              example: 120
+            receiverSSAId:
+              description: Identificador do software statement **de onde** a chamada foi disparada
+              type: string
+              example: "84570da9-567b-4201-9b77-c715bc5bffde"
+            receiverOrgId:
+              description: Identificador da organização **de onde** a chamada foi disparada
+              type: string
+              example: "56411f7e-d58b-44a8-8a2b-ff326d3f2955"
+            transmitterOrgId:
+              description: Identificador da organização **para onde** a chamada foi feita
+              type: string
+              example: "c1ca8e62-9d6f-4ea3-84f2-d66bc0a8f7dc"
+            endpointUriPrefix:
+              description: |
+                Endereço do servidor de destino da chamada incluindo o prefixo quando houver. O formato do campo deverá ser o seguinte: `https://{host}/{prefixo}`, sendo:
+                
+                * `host`: endereço FQDN do servidor de destino
+                * `prefixo`: toda a parte do path que vem antes da string `/open-banking`
+                
+                Exemplos:
+
+                1. Para uma requisição em `https://openbanking.instituicao-1.com.br/opbk/open-banking/products-services/v1/business-accounts`, o dado a ser enviado é `https://openbanking.instituicao-1.com.br/opbk`.
+                1. Para uma requisição em `https://openbanking.instituicao-2.com.br/open-banking/products-services/v1/business-accounts`, o dado a ser enviado é `https://openbanking.instituicao-1.com.br/`.
+
+                
+              type: string
+              example: https://openbanking.instituicao-1.com.br/opbk
+
+    TransmitterReportRequest:
+      description: Representa os dados que deverão ser enviados para a inclusão de reportes pelo lado do transmissor (quem responde com os dados).
+      required:
+        - timestamp
+        - fapiInteractionId
+        - endpoint
+        - statusCode
+        - httpMethod
+        - processTimespan
+        - receiverOrgId
+        - transmitterOrgId
+      allOf:
+        - $ref: "#/components/schemas/BaseReport"
+        - type: object
+          properties:
+            timestamp:
+              description: Data/Hora UTC no formato ISO8601 do momento em que o primeiro byte da requisição foi recebido.
+              type: string
+              format: date-time
+              example: "2021-11-11T18:08:08.1Z"
+            processTimespan:
+              description: Tempo em milissegundos inteiros decorrido do momento em que registrou o timestamp até o envio do último byte da resposta.
+              type: integer
+              format: int16
+              example: 120
+            receiverOrgId:
+              description: Identificador da organização **de onde** a chamada foi disparada.
+              type: string
+              example: "56411f7e-d58b-44a8-8a2b-ff326d3f2955"
+            transmitterOrgId:
+              description: Identificador da organização **para onde** a chamada foi feita.
+              type: string
+              example: "c1ca8e62-9d6f-4ea3-84f2-d66bc0a8f7dc"
+
+    ReportResponse:
+      description: Representa os dados que serão retornados pelas operações de inclusão de reportes quando enviadas pelo lado do receptor
+      required:
+        - reportId
+        - status
+      type: object
+      properties:
+        reportId:
+          description: Identificator unico interno do reporte no formato UUID v4.
+          type: string
+          format: uuid
+          example: "9a97c2df-b261-4fc2-aa66-d1b5168397da"
+        status:
+          $ref: "#/components/schemas/ReportStatus"
+        correlationId:
+          description: Retorna o valor do atributo `correlationId` informado na solicitação de inclusão de reporte sem alteração.
+          type: string
+          example: "uGQHwNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf2"
+        message:
+          description: Caso a solicitação contenha algum problema em seu formato, ou caso haja algum tipo de falha detectável no momento da requisição, esse campo trará detalhes sobre o erro ocorrido.
+          type: string
+          example: "Missing fields: 'fapiInteractionId', 'endpoint'"
+
+    ReportStatus:
+      description: |
+        Determina o status do registro de reporte.
+        * **DISCARDED**: O status `DISCARDED` indica que o reporte que foi enviado pelo participante não será usado para fins de extração de métricas. O motivo do descarte será enviado junto com a resposta, podendo ser por conta de um reporte inválido ou por um erro xno processamento.
+        * **SINGLE**: O status `SINGLE` indica que o reporte em questão não tem uma contraparte. Ele é utilizado em casos onde a conciliação entre dois reportes não é possível.
+        * **ACCEPTED**: O status `ACCEPTED` indica que a validação de formato do reporte não tem erros e este será enviado para processamento.
+        * **UNPAIRED**: O status `UNPAIRED` significa que o reporte atual não possui uma correspondência em outro reporte através do atributo `fapiInteractionId`. Indica um reporte _divergente_.
+        * **PAIRED_INCONSISTENT**: O status `PAIRED_INCONSISTENT` significa que o reporte corrente possui uma contraparte com o mesmo `fapiInteractionId`, mas os demais dados estão inconsistentes. Indica um reporte _divergente_.
+        * **PAIRED**: Indica que o reporte tem uma contraparte com o mesmo `fapiInteractionId` e os demais dados estão conciliados. Representa o estado final desejado em um fluxo correto.
+      type: string
+      enum:
+        - DISCARDED
+        - SINGLE
+        - ACCEPTED
+        - UNPAIRED
+        - PAIRED_INCONSISTENT
+        - PAIRED
+
+    ReportModel:
+      description: Representa um reporte devidamente persistido.
+      allOf:
+        - $ref: "#/components/schemas/ReceiverReportRequest"
+        - $ref: "#/components/schemas/TransmitterReportRequest"
+        - type: object
+          properties:
+            reportId:
+              description: |
+                Identificador único do registro criado na plataforma de Coleta de Métricas.
+              type: string
+              format: uuid
+            pairedReportId:
+              description: |
+                Esse atributo indica o `reportId` do registro que forma uma correlação com o presente registro. Se essa informação existir, o status do registro atual deverá ser _PAIRED_
+              type: string
+              format: uuid
+            createdAt:
+              description: |
+                Carimbo do tempo do momento da criação do registro
+              type: string
+              format: date-time
+            updatedAt:
+              description: |
+                Carimbo do tempo do momento da última atualização do registro
+              type: string
+              format: date-time
+
+    Endpoints:
+      description: | 
+        Identificação do endpoint que foi utilizado na transação reportada. A identificação do endpoint deve estar entre as entradas desse enum para ser considerado válido. Nesse campo não deve ser utilizado o _path_ da requisição original, uma vez que ao comparar com os valores dessa enum, ele não será considerado válido.
+
+        Exemplo:
+
+        1. Caso uma chamada à um endpoint com o **path** `/open-banking/credit-cards-accounts/v1/accounts/123456789/transactions` tenha sido feita, o valor a ser enviado no reporte é `/open-banking/credit-cards-accounts/v1/accounts/{creditCardAccountId}/transactions`, que é o identificador desse endpoint no enum. Nesse caso, o dado real da parte variável do _path_ não deverá ser enviado.
+      type: string
+      example: /open-banking/products-services/v1/personal-accounts
+      enum:
+        - "/register"
+        - "/token"
+        - "/open-banking/products-services/v1/personal-accounts"
+        - "/open-banking/products-services/v1/business-accounts"
+        - "/open-banking/products-services/v1/personal-loans"
+        - "/open-banking/products-services/v1/business-loans"
+        - "/open-banking/products-services/v1/personal-financings"
+        - "/open-banking/products-services/v1/business-financings"
+        - "/open-banking/products-services/v1/personal-invoice-financings"
+        - "/open-banking/products-services/v1/business-invoice-financings"
+        - "/open-banking/products-services/v1/personal-credit-cards"
+        - "/open-banking/products-services/v1/business-credit-cards"
+        - "/open-banking/products-services/v1/personal-unarranged-account-overdraft"
+        - "/open-banking/products-services/v1/business-unarranged-account-overdraft"
+        - "/open-banking/channels/v1/branches"
+        - "/open-banking/channels/v1/electronic-channels"
+        - "/open-banking/channels/v1/phone-channels"
+        - "/open-banking/channels/v1/banking-agents"
+        - "/open-banking/channels/v1/shared-automated-teller-machines"
+        - "/open-banking/consents/v1/consents"
+        - "/open-banking/consents/v1/consents/{consentId}"
+        - "/open-banking/consents/v2/consents"
+        - "/open-banking/consents/v2/consents/{consentId}"
+        - "/open-banking/resources/v2/resources"
+        - "/open-banking/customers/v1/personal/identifications"
+        - "/open-banking/customers/v1/business/identifications"
+        - "/open-banking/customers/v1/personal/qualifications"
+        - "/open-banking/customers/v1/business/qualifications"
+        - "/open-banking/customers/v1/personal/financial-relations"
+        - "/open-banking/customers/v1/business/financial-relations"
+        - "/open-banking/customers/v2/personal/identifications"
+        - "/open-banking/customers/v2/business/identifications"
+        - "/open-banking/customers/v2/personal/qualifications"
+        - "/open-banking/customers/v2/business/qualifications"
+        - "/open-banking/customers/v2/personal/financial-relations"
+        - "/open-banking/customers/v2/business/financial-relations"
+        - "/open-banking/credit-cards-accounts/v1/accounts"
+        - "/open-banking/credit-cards-accounts/v1/accounts/{creditCardAccountId}"
+        - "/open-banking/credit-cards-accounts/v1/accounts/{creditCardAccountId}/limits"
+        - "/open-banking/credit-cards-accounts/v1/accounts/{creditCardAccountId}/transactions"
+        - "/open-banking/credit-cards-accounts/v1/accounts/{creditCardAccountId}/bills"
+        - "/open-banking/credit-cards-accounts/v1/accounts/{creditCardAccountId}/bills/{billId}/transactions"
+        - "/open-banking/credit-cards-accounts/v2/accounts"
+        - "/open-banking/credit-cards-accounts/v2/accounts/{creditCardAccountId}"
+        - "/open-banking/credit-cards-accounts/v2/accounts/{creditCardAccountId}/limits"
+        - "/open-banking/credit-cards-accounts/v2/accounts/{creditCardAccountId}/transactions"
+        - "/open-banking/credit-cards-accounts/v2/accounts/{creditCardAccountId}/transactions-current"
+        - "/open-banking/credit-cards-accounts/v2/accounts/{creditCardAccountId}/bills"
+        - "/open-banking/credit-cards-accounts/v2/accounts/{creditCardAccountId}/bills/{billId}/transactions"
+        - "/open-banking/accounts/v1/accounts"
+        - "/open-banking/accounts/v1/accounts/{accountId}"
+        - "/open-banking/accounts/v1/accounts/{accountId}/balances"
+        - "/open-banking/accounts/v1/accounts/{accountId}/transactions"
+        - "/open-banking/accounts/v1/accounts/{accountId}/overdraft-limits"
+        - "/open-banking/accounts/v2/accounts"
+        - "/open-banking/accounts/v2/accounts/{accountId}"
+        - "/open-banking/accounts/v2/accounts/{accountId}/balances"
+        - "/open-banking/accounts/v2/accounts/{accountId}/transactions"
+        - "/open-banking/accounts/v2/accounts/{accountId}/transactions-current"
+        - "/open-banking/accounts/v2/accounts/{accountId}/overdraft-limits"
+        - "/open-banking/loans/v1/contracts"
+        - "/open-banking/loans/v1/contracts/{contractId}"
+        - "/open-banking/loans/v1/contracts/{contractId}/warranties"
+        - "/open-banking/loans/v1/contracts/{contractId}/payments"
+        - "/open-banking/loans/v1/contracts/{contractId}/scheduled-instalments"
+        - "/open-banking/loans/v2/contracts"
+        - "/open-banking/loans/v2/contracts/{contractId}"
+        - "/open-banking/loans/v2/contracts/{contractId}/warranties"
+        - "/open-banking/loans/v2/contracts/{contractId}/payments"
+        - "/open-banking/loans/v2/contracts/{contractId}/scheduled-instalments"
+        - "/open-banking/financings/v1/contracts"
+        - "/open-banking/financings/v1/contracts/{contractId}"
+        - "/open-banking/financings/v1/contracts/{contractId}/payments"
+        - "/open-banking/financings/v1/contracts/{contractId}/scheduled-instalments"
+        - "/open-banking/financings/v2/contracts"
+        - "/open-banking/financings/v2/contracts/{contractId}"
+        - "/open-banking/financings/v2/contracts/{contractId}/payments"
+        - "/open-banking/financings/v2/contracts/{contractId}/scheduled-instalments"
+        - "/open-banking/unarranged-accounts-overdraft/v1/contracts"
+        - "/open-banking/unarranged-accounts-overdraft/v1/contracts/{contractId}"
+        - "/open-banking/unarranged-accounts-overdraft/v1/contracts/{contractId}/warranties"
+        - "/open-banking/unarranged-accounts-overdraft/v1/contracts/{contractId}/payments"
+        - "/open-banking/unarranged-accounts-overdraft/v1/contracts/{contractId}/scheduled-instalments"
+        - "/open-banking/unarranged-accounts-overdraft/v2/contracts"
+        - "/open-banking/unarranged-accounts-overdraft/v2/contracts/{contractId}"
+        - "/open-banking/unarranged-accounts-overdraft/v2/contracts/{contractId}/warranties"
+        - "/open-banking/unarranged-accounts-overdraft/v2/contracts/{contractId}/payments"
+        - "/open-banking/unarranged-accounts-overdraft/v2/contracts/{contractId}/scheduled-instalments"
+        - "/open-banking/invoice-financings/v1/contracts"
+        - "/open-banking/invoice-financings/v1/contracts/{contractId}"
+        - "/open-banking/invoice-financings/v1/contracts/{contractId}/warranties"
+        - "/open-banking/invoice-financings/v1/contracts/{contractId}/payments"
+        - "/open-banking/invoice-financings/v1/contracts/{contractId}/scheduled-instalments"
+        - "/open-banking/invoice-financings/v2/contracts"
+        - "/open-banking/invoice-financings/v2/contracts/{contractId}"
+        - "/open-banking/invoice-financings/v2/contracts/{contractId}/warranties"
+        - "/open-banking/invoice-financings/v2/contracts/{contractId}/payments"
+        - "/open-banking/invoice-financings/v2/contracts/{contractId}/scheduled-instalments"
+        - "/open-banking/payments/v1/consents"
+        - "/open-banking/payments/v1/consents/{consentId}"
+        - "/open-banking/payments/v1/pix/payments"
+        - "/open-banking/payments/v1/pix/payments/{paymentId}"
+
+    AdditionalInfo:
+      description: Informações adidicionar sobre o reporte - ainda não deve ser enviados pelas casas
+      example: {}
+
+    GenericError:
+      description: Representa uma resposta de erro genérica.
+      properties:
+        message:
+          type: string
+
+  securitySchemes:
+    OpenBankingAccessToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    Default400MissingFields:
+      description: Ocorre quando uma requisição não envia os dados obrigatórios
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ReportResponse"
+          examples:
+            MissingFields:
+              value:
+                reportId: b0841405-1dcf-4a46-bfa0-2c5e664ba753
+                status: DISCARDED
+                message: "Missing fields: 'fapiInteractionId', 'endpoint'"
+    Default401Unauthorized:
+      description: Ocorre quando uma requisição não é autorizada pelo gateway, e acontece quando o token não é enviado ou está inválido.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GenericError"
+          examples:
+            NotAuthorized:
+              value:
+                message: "Unauthorized"

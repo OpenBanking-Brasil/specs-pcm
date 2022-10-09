@@ -33,10 +33,14 @@ info:
 
     Para informações detalhadas sobre a PCM, consulte o site da documentação da Plataforma.
     
-  version: 1.0.0-RC1
+  version: 1.0.0-RC2
 
 security:
   - OpenBankingAccessToken: []
+
+servers:
+  - url: https://api-hml-pcm.adviseu-it.com
+    description: UAT
 
 tags:
   - name: Report API
@@ -83,6 +87,16 @@ paths:
           $ref: "#/components/responses/Default400MissingFields"
         "401":
           $ref: "#/components/responses/Default401Unauthorized"
+        "403":
+          $ref: "#/components/responses/Default403Forbidden"
+        "406":
+          $ref: "#/components/responses/Default406NotAcceptable"
+        "415":
+          $ref: "#/components/responses/Default415UnsupportedMediaType"
+        "429":
+          $ref: "#/components/responses/Default429TooManyRequests"
+        default:
+          $ref: "#/components/responses/Default500InternalServerError"
 
   "/report-api/v1/receiver/report":
     post:
@@ -118,6 +132,16 @@ paths:
           $ref: "#/components/responses/Default400MissingFields"
         "401":
           $ref: "#/components/responses/Default401Unauthorized"
+        "403":
+          $ref: "#/components/responses/Default403Forbidden"
+        "406":
+          $ref: "#/components/responses/Default406NotAcceptable"
+        "415":
+          $ref: "#/components/responses/Default415UnsupportedMediaType"
+        "429":
+          $ref: "#/components/responses/Default429TooManyRequests"
+        default:
+          $ref: "#/components/responses/Default500InternalServerError"
 
   "/report-api/v1/transmitter/report:batch":
     post:
@@ -134,6 +158,7 @@ paths:
           application/json:
             schema:
               type: array
+              maxItems: 5000
               items:
                 $ref: "#/components/schemas/TransmitterReportRequest"
             examples:
@@ -142,8 +167,8 @@ paths:
                 value:
                   - timestamp: "2021-11-11T18:08:08Z"
                     fapiInteractionId: "d78fc4e5-37ca-4da3-adf2-9b082bf92280"
-                    receiverOrgId: "01234567890000199"
-                    transmitterOrgId: "01234567890000199"
+                    receiverOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
+                    transmitterOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
                     endpoint: "/open-banking/unarranged-accounts-overdraft/v1/contracts/{contractId}/scheduled-instalments"
                     statusCode: 200
                     httpMethod: GET
@@ -151,8 +176,8 @@ paths:
                     processTimespan: 120
                   - timestamp: "2021-11-11T19:22:10.3Z"
                     fapiInteractionId: "0786fce3-a36f-43f8-b66a-d26ab1dfc639"
-                    receiverOrgId: "01234567890000199"
-                    transmitterOrgId: "01234567890000199"
+                    receiverOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
+                    transmitterOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
                     endpoint: "/open-banking/unarranged-accounts-overdraft/v1/contracts/{contractId}/scheduled-instalments"
                     statusCode: 200
                     httpMethod: GET
@@ -160,8 +185,8 @@ paths:
                     processTimespan: 117
                   - timestamp: "2021-11-11T19:41:41.8Z"
                     fapiInteractionId: "d1541b17-3175-477d-a52b-2813ae2c4c36"
-                    receiverOrgId: "01234567890000199"
-                    transmitterOrgId: "01234567890000199"
+                    receiverOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
+                    transmitterOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
                     endpoint: "/open-banking/unarranged-accounts-overdraft/v1/contracts/{contractId}/scheduled-instalments"
                     statusCode: 200
                     httpMethod: GET
@@ -177,6 +202,7 @@ paths:
             application/json:
               schema:
                 type: array
+                maxItems: 5000
                 items:
                   $ref: "#/components/schemas/ReportResponse"
               examples:
@@ -201,6 +227,7 @@ paths:
             application/json:
               schema:
                 type: array
+                maxItems: 5000
                 items:
                   $ref: "#/components/schemas/ReportResponse"
               examples:
@@ -247,7 +274,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: "#/components/schemas/GenericError"
               examples:
                 "Limite de registros excedido":
                   value:
@@ -255,6 +282,16 @@ paths:
 
         "401":
           $ref: "#/components/responses/Default401Unauthorized"
+        "403":
+          $ref: "#/components/responses/Default403Forbidden"
+        "406":
+          $ref: "#/components/responses/Default406NotAcceptable"
+        "415":
+          $ref: "#/components/responses/Default415UnsupportedMediaType"
+        "429":
+          $ref: "#/components/responses/Default429TooManyRequests"
+        default:
+          $ref: "#/components/responses/Default500InternalServerError"
 
   "/report-api/v1/receiver/report:batch":
     post:
@@ -271,6 +308,7 @@ paths:
           application/json:
             schema:
               type: array
+              maxItems: 5000
               items:
                 $ref: "#/components/schemas/ReceiverReportRequest"
             examples:
@@ -280,8 +318,8 @@ paths:
                   - timestamp: "2021-11-11T18:08:08Z"
                     fapiInteractionId: "d78fc4e5-37ca-4da3-adf2-9b082bf92280"
                     receiverSSAId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
-                    receiverOrgId: "01234567890000199"
-                    transmitterOrgId: "01234567890000199"
+                    receiverOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
+                    transmitterOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
                     endpoint: "/open-banking/products-services/v1/personal-financings"
                     statusCode: 200
                     httpMethod: GET
@@ -291,8 +329,8 @@ paths:
                   - timestamp: "2021-11-11T19:22:10.3Z"
                     fapiInteractionId: "0786fce3-a36f-43f8-b66a-d26ab1dfc639"
                     receiverSSAId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
-                    receiverOrgId: "01234567890000199"
-                    transmitterOrgId: "01234567890000199"
+                    receiverOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
+                    transmitterOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
                     endpoint: "/open-banking/consents/v1/consents/{consentId}"
                     statusCode: 200
                     httpMethod: GET
@@ -302,8 +340,8 @@ paths:
                   - timestamp: "2021-11-11T19:41:41.8Z"
                     fapiInteractionId: "d1541b17-3175-477d-a52b-2813ae2c4c36"
                     receiverSSAId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
-                    receiverOrgId: "01234567890000199"
-                    transmitterOrgId: "01234567890000199"
+                    receiverOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
+                    transmitterOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
                     endpoint: "/open-banking/unarranged-accounts-overdraft/v2/contracts"
                     statusCode: 200
                     httpMethod: GET
@@ -320,6 +358,7 @@ paths:
             application/json:
               schema:
                 type: array
+                maxItems: 5000
                 items:
                   $ref: "#/components/schemas/ReportResponse"
               examples:
@@ -344,6 +383,7 @@ paths:
             application/json:
               schema:
                 type: array
+                maxItems: 5000
                 items:
                   $ref: "#/components/schemas/ReportResponse"
               examples:
@@ -390,7 +430,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: "#/components/schemas/GenericError"
               examples:
                 "Limite de registros excedido":
                   value:
@@ -398,6 +438,84 @@ paths:
 
         "401":
           $ref: "#/components/responses/Default401Unauthorized"
+        "403":
+          $ref: "#/components/responses/Default403Forbidden"
+        "406":
+          $ref: "#/components/responses/Default406NotAcceptable"
+        "415":
+          $ref: "#/components/responses/Default415UnsupportedMediaType"
+        "429":
+          $ref: "#/components/responses/Default429TooManyRequests"
+        default:
+          $ref: "#/components/responses/Default500InternalServerError"
+
+  "/report-api/v1/report/{id}":
+    patch:
+      tags:
+        - Report API
+      summary: "Alteração dos atributos de métricas de um report"
+      description: |
+        Permite a alteração de um reporte.
+        Apenas os dados de métricas podem ser alterados, os quais são representados pelos seguintes campos: `timestamp`, `correlationId`, `statusCode`, `httpMethod`, `processTimespan` e `endpoint`.
+        É permitido enviar um reporte completo com todos os campos, mas apenas os dados sobre métricas serão alterados, os demais serão ignorados.
+      operationId: patch-single-report-transmitter
+      parameters:
+        - name: id
+          description: Identificador do reporte como consta no campo `reportId`.
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            maxLength: 36
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: "#/components/schemas/ReceiverReportRequest"
+                - $ref: "#/components/schemas/TransmitterReportRequest"
+        required: true
+      responses:
+        "200":
+          description: Registro recebido com sucesso. O mesmo reportId informado é devolvido na resposta, juntamente com o status.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportResponse"
+              examples:
+                Com Correlation ID:
+                  value:
+                    reportId: b34733c1-930e-475b-8d61-98b9ca3e09f7
+                    correlationId: E2PLJZwNupARo7I9ph18a0M9y7DcUe7I3DqUd9TtN
+                    status: ACCEPTED
+                Sem Correlation ID:
+                  value:
+                    reportId: b34733c1-930e-475b-8d61-98b9ca3e09f7
+                    status: ACCEPTED
+        "400":
+          description: Reporte informado tem formato inválido.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+              examples:
+                Reporte Inválido:
+                  value:
+                    message: Invalid report format
+        "401":
+          $ref: "#/components/responses/Default401Unauthorized"
+        "403":
+          $ref: "#/components/responses/Default403Forbidden"
+        "406":
+          $ref: "#/components/responses/Default406NotAcceptable"
+        "415":
+          $ref: "#/components/responses/Default415UnsupportedMediaType"
+        "429":
+          $ref: "#/components/responses/Default429TooManyRequests"
+        default:
+          $ref: "#/components/responses/Default500InternalServerError"
 
   "/management-api/v1/report/{id}":
     get:
@@ -420,6 +538,8 @@ paths:
           required: true
           schema:
             type: string
+            pattern: ^[- /:_.',0-9a-zA-Z]{0,100}$
+            maxLength: 100
         - name: byCorrelationId
           description: Filtro que indica se a busca deverá ser feita pelo campo `correlationId`.
           in: query
@@ -435,23 +555,120 @@ paths:
                 $ref: "#/components/schemas/ReportModel"
         "404":
           description: O registro com o identificador e filtros informados não foi encontrado.
-        "423":
-          description: |
-            O processamento dos reportes é feito de maneira assíncrona, usando uma fila de processamento entre o serviço que recebe o reporte e o que consulta o dado persistido.
-
-            Caso o registro a ser buscado tenha sido criado pela plataforma mas ainda não tenha sido persistido, a operação vai devolver um status _423 Locked_ indicando que o recurso ainda não está processado.
-
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
         "401":
           $ref: "#/components/responses/Default401Unauthorized"
+        "403":
+          $ref: "#/components/responses/Default403Forbidden"
+        "406":
+          $ref: "#/components/responses/Default406NotAcceptable"
+        "429":
+          $ref: "#/components/responses/Default429TooManyRequests"
+        default:
+          $ref: "#/components/responses/Default500InternalServerError"
+
+  "/management-api/v1/report/{id}/events":
+    get:
+      tags:
+        - Management API
+      summary: Consulta o histórico de eventos de um dado reporte
+      description: |
+        Consulta o histórico de eventos de um dado reporte. Os eventos são registrados nos momentos em que ocorrem durante o fluxo assíncrono de processamento.
+      operationId: report-events-by-id
+      parameters:
+        - name: id
+          description: Identificador do reporte representado pelo campo `reportId`
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            maxLength: 36
+      responses:
+        "200":
+          description: Consulta realizada com sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                maxItems: 10
+                items:
+                  $ref: "#/components/schemas/ReportEvent"
+        "404":
+          description: O registro com o identificador e filtros informados não foi encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+        "401":
+          $ref: "#/components/responses/Default401Unauthorized"
+        "403":
+          $ref: "#/components/responses/Default403Forbidden"
+        "406":
+          $ref: "#/components/responses/Default406NotAcceptable"
+        "429":
+          $ref: "#/components/responses/Default429TooManyRequests"
+        default:
+          $ref: "#/components/responses/Default500InternalServerError"
+
+  "/management-api/v1/report/{id}/metadata":
+    get:
+      tags:
+        - Management API
+      summary: Consulta os metadados de um reporte
+      description: |
+        Consulta os metadados um dado reporte. Os metadados são informações referentes à requisição em si.
+      operationId: report-metadata-by-id
+      parameters:
+        - name: id
+          description: Identificador do reporte representado pelo campo `reportId`
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            maxLength: 36
+      responses:
+        "200":
+          description: Consulta realizada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportMetadata"
+        "404":
+          description: O registro com o identificador e filtros informados não foi encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+        "401":
+          $ref: "#/components/responses/Default401Unauthorized"
+        "403":
+          $ref: "#/components/responses/Default403Forbidden"
+        "406":
+          $ref: "#/components/responses/Default406NotAcceptable"
+        "429":
+          $ref: "#/components/responses/Default429TooManyRequests"
+        default:
+          $ref: "#/components/responses/Default500InternalServerError"
 
 components:
   schemas:
     BaseReport:
       description: Representa os dados básicos que deverão ser enviados tanto pelo transmissor quanto pelo receptor
+      type: object
       properties:
         fapiInteractionId:
           description: UUID que identifica uma transação específica entre dois participantes. Esse dado pode ser encontrado no header `x-fapi-interaction-id` que é informado pelo receptor e devolvido pelo transmissor. Mais informações em [Cabeçalhos HTTP](https://openbanking-brasil.github.io/areadesenvolvedor/#cabecalhos-http) na documentação do Open Banking Brasil.
           type: string
+          format: uuid
+          maxLength: 36
+          pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
           example: "d78fc4e5-37ca-4da3-adf2-9b082bf92280"
         endpoint:
           $ref: "#/components/schemas/Endpoints"
@@ -460,6 +677,8 @@ components:
           type: integer
           format: int32
           example: 200
+          minimum: 200
+          maximum: 599
         httpMethod:
           description: Método HTTP da solicitação.
           type: string
@@ -468,6 +687,8 @@ components:
         correlationId:
           description: Identificador de correlação que pode ser enviado pelo participante para fazer referência ao registro criado na plataforma de Coleta de Métricas. Quando um participante envia essa informação, a plataforma indexa esse identificador juntamente com o `reportId` (identificador interno). Dessa forma, não é necessário que o participante armazene o `reportId` da Plataforma de Coleta de Métricas se ele já tiver um ID interno.
           type: string
+          pattern: ^[- /:_.',0-9a-zA-Z]{0,100}$
+          maxLength: 100
           example: "uGQHwNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf2"
         additionalInfo:
           $ref: "#/components/schemas/AdditionalInfo"
@@ -475,6 +696,7 @@ components:
 
     ReceiverReportRequest:
       description: Representa os dados que deverão ser enviados para a inclusão de reportes pelo lado do receptor (iniciador da chamada).
+      type: object
       required:
         - timestamp
         - fapiInteractionId
@@ -494,6 +716,7 @@ components:
               description: Data/Hora UTC no formato ISO8601 do momento em que a chamada foi disparada ao endpoint do outro participante, imediatamente antes do primeiro byte enviado na requisição.
               type: string
               format: date-time
+              maxLength: 28
               example: "2021-11-11T18:08:08.1Z"
             processTimespan:
               description: Tempo em milissegundos inteiros decorrido desde o registro do timestamp até a chegada do primeiro byte da resposta do transmissor.
@@ -503,14 +726,23 @@ components:
             receiverSSAId:
               description: Identificador do software statement **de onde** a chamada foi disparada
               type: string
+              format: uuid
+              maxLength: 36
+              pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
               example: "84570da9-567b-4201-9b77-c715bc5bffde"
             receiverOrgId:
               description: Identificador da organização **de onde** a chamada foi disparada
               type: string
+              format: uuid
+              maxLength: 36
+              pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
               example: "56411f7e-d58b-44a8-8a2b-ff326d3f2955"
             transmitterOrgId:
               description: Identificador da organização **para onde** a chamada foi feita
               type: string
+              format: uuid
+              maxLength: 36
+              pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
               example: "c1ca8e62-9d6f-4ea3-84f2-d66bc0a8f7dc"
             endpointUriPrefix:
               description: |
@@ -523,13 +755,14 @@ components:
 
                 1. Para uma requisição em `https://openbanking.instituicao-1.com.br/opbk/open-banking/products-services/v1/business-accounts`, o dado a ser enviado é `https://openbanking.instituicao-1.com.br/opbk`.
                 1. Para uma requisição em `https://openbanking.instituicao-2.com.br/open-banking/products-services/v1/business-accounts`, o dado a ser enviado é `https://openbanking.instituicao-1.com.br/`.
-
-                
               type: string
+              pattern: ^[- /:_.',0-9a-zA-Z]{0,200}$
+              maxLength: 200
               example: https://openbanking.instituicao-1.com.br/opbk
 
     TransmitterReportRequest:
       description: Representa os dados que deverão ser enviados para a inclusão de reportes pelo lado do transmissor (quem responde com os dados).
+      type: object
       required:
         - timestamp
         - fapiInteractionId
@@ -547,6 +780,7 @@ components:
               description: Data/Hora UTC no formato ISO8601 do momento em que o primeiro byte da requisição foi recebido.
               type: string
               format: date-time
+              maxLength: 28
               example: "2021-11-11T18:08:08.1Z"
             processTimespan:
               description: Tempo em milissegundos inteiros decorrido do momento em que registrou o timestamp até o envio do último byte da resposta.
@@ -556,14 +790,21 @@ components:
             receiverOrgId:
               description: Identificador da organização **de onde** a chamada foi disparada.
               type: string
+              format: uuid
+              maxLength: 36
+              pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
               example: "56411f7e-d58b-44a8-8a2b-ff326d3f2955"
             transmitterOrgId:
               description: Identificador da organização **para onde** a chamada foi feita.
               type: string
+              format: uuid
+              maxLength: 36
+              pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
               example: "c1ca8e62-9d6f-4ea3-84f2-d66bc0a8f7dc"
 
     ReportResponse:
       description: Representa os dados que serão retornados pelas operações de inclusão de reportes quando enviadas pelo lado do receptor
+      additionalProperties: false
       required:
         - reportId
         - status
@@ -573,16 +814,22 @@ components:
           description: Identificator unico interno do reporte no formato UUID v4.
           type: string
           format: uuid
+          maxLength: 36
+          pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
           example: "9a97c2df-b261-4fc2-aa66-d1b5168397da"
         status:
           $ref: "#/components/schemas/ReportStatus"
         correlationId:
           description: Retorna o valor do atributo `correlationId` informado na solicitação de inclusão de reporte sem alteração.
           type: string
+          pattern: ^[- /:_.',0-9a-zA-Z]{0,100}$
+          maxLength: 100
           example: "uGQHwNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf2"
         message:
           description: Caso a solicitação contenha algum problema em seu formato, ou caso haja algum tipo de falha detectável no momento da requisição, esse campo trará detalhes sobre o erro ocorrido.
           type: string
+          pattern: ^[- /:_.',0-9a-zA-Z]{0,200}$
+          maxLength: 200
           example: "Missing fields: 'fapiInteractionId', 'endpoint'"
 
     ReportStatus:
@@ -615,21 +862,84 @@ components:
                 Identificador único do registro criado na plataforma de Coleta de Métricas.
               type: string
               format: uuid
+              maxLength: 36
+              pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
             pairedReportId:
               description: |
                 Esse atributo indica o `reportId` do registro que forma uma correlação com o presente registro. Se essa informação existir, o status do registro atual deverá ser _PAIRED_
               type: string
               format: uuid
+              maxLength: 36
+              pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
             createdAt:
               description: |
                 Carimbo do tempo do momento da criação do registro
               type: string
               format: date-time
+              maxLength: 28
             updatedAt:
               description: |
                 Carimbo do tempo do momento da última atualização do registro
               type: string
               format: date-time
+              maxLength: 28
+
+    ReportEvent:
+      description: Representa um evento ocorrido com o Reporte
+      type: object
+      additionalProperties: false
+      properties:
+        event:
+          type: string
+          enum:
+            - ARRIVED
+            - UNPAIRED
+            - PAIRED_INCONSISTENT
+            - PAIRED
+            - DISCARDED
+        timestamp:
+          type: string
+          format: date-time
+          maxLength: 28
+        description:
+          type: string
+          pattern: ^[- /:_.',0-9a-zA-Z]{0,200}$
+          maxLength: 200
+      required:
+        - event
+        - timestamp
+
+    ReportMetadata:
+      description: Metadados referentes ao reporte
+      type: object
+      additionalProperties: false
+      properties:
+        sourceEndpoint:
+          description: Path do endpoint que foi utilizado para a inclusão do reporte
+          type: string
+          enum:
+            - "/report-api/v1/receiver/report"
+            - "/report-api/v1/receiver/report:batch"
+            - "/report-api/v1/transmitter/report"
+            - "/report-api/v1/transmitter/report:batch"
+        requestId:
+          description: Identificador único do request que foi feito para a inclusão do reporte
+          type: string
+          pattern: ^[- /:_.',0-9a-zA-Z]{0,200}$
+          maxLength: 42
+        requesterOrgId:
+          description: OrganisationId da instituição que está fazendo a inclusão do reporte
+          type: string
+          format: uuid
+          maxLength: 36
+          pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        batchSize:
+          description: Quantidade de registros que foram submetidos na requisição. Presente apenas em reportes que foram incluídos em batch.
+          type: number
+      required:
+        - sourceEndpoint
+        - requestId
+        - requesterOrgId
 
     Endpoints:
       description: | 
@@ -745,14 +1055,28 @@ components:
         - "/open-banking/payments/v1/pix/payments/{paymentId}"
 
     AdditionalInfo:
-      description: Informações adidicionar sobre o reporte - ainda não deve ser enviados pelas casas
-      example: {}
+      description: Informações adicionais sobre o reporte
+      type: object
+      additionalProperties: false
+      properties:
+        consentId:
+          description: Identificador de consentimento presente na transação
+          type: string
+          format: uuid
+          maxLength: 36
+          pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+      example:
+        consentId: a1b09129-e089-4095-9a9c-274ab1ae1ff9
 
     GenericError:
       description: Representa uma resposta de erro genérica.
+      type: object
+      additionalProperties: false
       properties:
         message:
           type: string
+          pattern: ^[- /:_.',0-9a-zA-Z]{0,200}$
+          maxLength: 200
 
   securitySchemes:
     OpenBankingAccessToken:
@@ -783,3 +1107,53 @@ components:
             NotAuthorized:
               value:
                 message: "Unauthorized"
+    Default403Forbidden:
+      description: Ocorre quando um cliente já previamente identificado (autenticado) não é autorizado a acessar um determinado recurso.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GenericError"
+          examples:
+            Forbidden:
+              value:
+                message: "Forbidden"
+    Default406NotAcceptable:
+      description: Ocorre quando um cliente espera uma resposta diferente de application/json usando o header `Accept`
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GenericError"
+          examples:
+            NotAcceptable:
+              value:
+                message: "Content type not accepted"
+    Default415UnsupportedMediaType:
+      description: Ocorre quando uma requisição envia um Content Type diferente de application/json
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GenericError"
+          examples:
+            NotAcceptable:
+              value:
+                message: "Unsupported Media Type"
+    Default429TooManyRequests:
+      description: Ocorre quando uma requisição envia um Content Type diferente de application/json
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GenericError"
+          examples:
+            NotAcceptable:
+              value:
+                message: "Unsupported Media Type"
+    Default500InternalServerError:
+      description: É devolvido quando ocorre um erro não identificado no servidor
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GenericError"
+          examples:
+            InternalServerError:
+              value:
+                message: "Internal Server Error"

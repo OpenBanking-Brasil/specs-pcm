@@ -1062,11 +1062,10 @@ components:
         consentId:
           description: Identificador de consentimento presente na transação
           type: string
-          format: uuid
-          maxLength: 36
-          pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          pattern: ^[- /:_.',0-9a-zA-Z]{0,200}$
+          maxLength: 200
       example:
-        consentId: a1b09129-e089-4095-9a9c-274ab1ae1ff9
+        consentId: "instituicao:a1b09129-e089-4095-9a9c-274ab1ae1ff9"
 
     GenericError:
       description: Representa uma resposta de erro genérica.

@@ -39,7 +39,7 @@ security:
   - OpenBankingAccessToken: []
 
 servers:
-  - url: https://api-hml-pcm.adviseu-it.com
+  - url: https://api.sandbox.pcm.openfinancebrasil.org.br
     description: UAT
 
 tags:

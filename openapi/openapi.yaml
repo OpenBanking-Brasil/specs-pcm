@@ -25,7 +25,7 @@ info:
 
     ## Terminologia
 
-    * **Server e Client**: em uma interação, a parte que solicita os dados é chamada de _client_, ao passo que a parte que devolve os dados é a _transmissora_. O ponto de vista para o uso dessa terminologia é o tráfego dos dados da transação e não o ponto de partida da chamada. Portanto, supondo que A faça uma consulta em B pelos dados de uma conta, esses dados vão ser transmitidos por quem recebeu a solicitação, e recebidos por quem a fez, nesse caso, "A" é o Client e "B" é o Server.
+    * **Server e Client**: em uma interação, a parte que solicita os dados é chamada de _client_, ao passo que a parte que devolve os dados é o _server_. O ponto de vista para o uso dessa terminologia é o tráfego dos dados da transação e não o ponto de partida da chamada. Portanto, supondo que A faça uma consulta em B pelos dados de uma conta, esses dados vão ser transmitidos por quem recebeu a solicitação, e recebidos por quem a fez, nesse caso, "A" é o Client e "B" é o Server.
 
     * **Reporte**: no contexto da API de Coleta de Métricas, um _reporte_ é o registro da chamada que será enviado tanto pelo server quanto pelo client. Esse registro será armazenado na Plataforma para posterior processo de conciliação de chamadas e extração de dados estatísticos.
 
@@ -33,7 +33,7 @@ info:
 
     Para informações detalhadas sobre a PCM, consulte o site da documentação da Plataforma.
     
-  version: 1.0.0-RC2
+  version: 1.0.0-RC3
 
 security:
   - OpenBankingAccessToken: []

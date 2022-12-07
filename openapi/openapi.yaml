@@ -769,7 +769,7 @@ components:
         httpMethod:
           description: Método HTTP da solicitação.
           type: string
-          enum: ['GET', 'POST', 'PUT', 'DELETE']
+          enum: ['GET', 'POST', 'PUT', 'PATCH','DELETE']
           example: GET
         correlationId:
           description: Identificador de correlação que pode ser enviado pelo participante para fazer referência ao registro criado na plataforma de Coleta de Métricas. Quando um participante envia essa informação, a plataforma indexa esse identificador juntamente com o `reportId` (identificador interno). Dessa forma, não é necessário que o participante armazene o `reportId` da Plataforma de Coleta de Métricas se ele já tiver um ID interno.
@@ -951,7 +951,7 @@ components:
         httpMethod:
           description: Método HTTP da solicitação.
           type: string
-          enum: ['GET', 'POST', 'PUT', 'DELETE']
+          enum: ['GET', 'POST', 'PUT', 'PATCH','DELETE']
           example: GET
         correlationId:
           description: ID de correlação que identifica uma sequência de chamdas inter-relacionadas. Diferente do fapiInteractionId que serve para identificar cada par request-response (interação), o identificador de correlação serve para ligar diferentes reportes quando estes representam uma jornada ou uma sequência de chamadas.

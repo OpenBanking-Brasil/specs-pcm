@@ -1130,6 +1130,7 @@ components:
         - "/open-banking/consents/v1/consents/{consentId}"
         - "/open-banking/consents/v2/consents"
         - "/open-banking/consents/v2/consents/{consentId}"
+        - "/open-banking/resources/v1/resources"
         - "/open-banking/resources/v2/resources"
         - "/open-banking/customers/v1/personal/identifications"
         - "/open-banking/customers/v1/business/identifications"

@@ -553,7 +553,7 @@ components:
         - role
       properties:
         fapiInteractionId:
-          description: UUID que identifica uma transação específica entre dois participantes. Esse dado pode ser encontrado no header x-fapi-interactionid que é informado pelo Client e devolvido pelo Server. Mais informações em [Cabeçalhos HTTP](https://openbanking-brasil.github.io/areadesenvolvedor/#cabecalhos-http) na documentação do Open Finance Brasil.
+          description: UUID que identifica uma transação específica entre dois participantes. Esse dado pode ser encontrado no header x-fapi-interaction-id que é informado pelo Client e devolvido pelo Server. Mais informações em [Cabeçalhos HTTP](https://openbanking-brasil.github.io/areadesenvolvedor/#cabecalhos-http) na documentação do Open Finance Brasil.
           type: string
           format: uuid
           maxLength: 36
@@ -650,7 +650,7 @@ components:
         - role
       properties:
         fapiInteractionId:
-          description: UUID que identifica uma transação específica entre dois participantes. Esse dado pode ser encontrado no header x-fapi-interactionid que é informado pelo Client e devolvido pelo Server. Mais informações em [Cabeçalhos HTTP](https://openbanking-brasil.github.io/areadesenvolvedor/#cabecalhos-http) na documentação do Open Finance Brasil.
+          description: UUID que identifica uma transação específica entre dois participantes. Esse dado pode ser encontrado no header x-fapi-interaction-id que é informado pelo Client e devolvido pelo Server. Mais informações em [Cabeçalhos HTTP](https://openbanking-brasil.github.io/areadesenvolvedor/#cabecalhos-http) na documentação do Open Finance Brasil.
           type: string
           format: uuid
           maxLength: 36
@@ -757,7 +757,7 @@ components:
       type: object
       properties:
         reportId:
-          description: Identificator unico interno do reporte no formato UUID v4.
+          description: Identificator único interno do reporte no formato UUID v4.
           type: string
           format: uuid
           maxLength: 36

@@ -80,7 +80,7 @@ paths:
               "Request Valido":
                 description: O request apresentado tem todos os campos validados.
                 value:
-                  - timestamp: "2021-11-11T18:08:08Z"
+                  - timestamp: "2021-11-11T18:08:08.894Z"
                     fapiInteractionId: "d78fc4e5-37ca-4da3-adf2-9b082bf92280"
                     clientSSId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
                     clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
@@ -95,7 +95,7 @@ paths:
                     additionalInfo: 
                       personType: "PF"
                       consentId: "uri:bank:d1541b17-3175-477d-a52b-2813ae2c4c36"
-                  - timestamp: "2021-11-11T19:22:10.3Z"
+                  - timestamp: "2021-11-11T19:22:10.334Z"
                     fapiInteractionId: "0786fce3-a36f-43f8-b66a-d26ab1dfc639"
                     clientSSId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
                     clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
@@ -110,7 +110,7 @@ paths:
                     additionalInfo: 
                       personType: "PF"
                       consentId: "uri:bank:d1541b17-3175-477d-a52b-2813ae2c4c36"
-                  - timestamp: "2021-11-11T19:41:41.8Z"
+                  - timestamp: "2021-11-11T19:41:41.811Z"
                     fapiInteractionId: "d1541b17-3175-477d-a52b-2813ae2c4c36"
                     clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
                     serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
@@ -335,14 +335,14 @@ paths:
               "Request Valido":
                 description: O request apresentado tem todos os campos validados.
                 value:
-                  - timestamp: "2021-11-11T18:08:08Z"
+                  - timestamp: "2021-11-11T18:08:08.468Z"
                     uri: "/open-banking/products-services/v1/business-financings"
                     statusCode: 200
                     httpMethod: GET
                     processTimespan: 120
                     additionalInfo:
                       clientIp: 192.168.10.10
-                  - timestamp: "2021-11-11T19:22:10.3Z"
+                  - timestamp: "2021-11-11T19:22:10.396Z"
                     uri: "/open-banking/products-services/v1/business-financings"
                     statusCode: 200
                     httpMethod: GET
@@ -586,7 +586,7 @@ components:
           type: string
           format: date-time
           maxLength: 28
-          example: "2021-11-11T18:08:08.1Z"
+          example: "2021-11-11T18:08:08.278Z"
         processTimespan:
           description: Tempo em milissegundos inteiros decorrido desde o registro do timestamp até a chegada do primeiro byte da resposta do server.
           type: integer
@@ -681,7 +681,7 @@ components:
           type: string
           format: date-time
           maxLength: 28
-          example: "2021-11-11T18:08:08.1Z"
+          example: "2021-11-11T18:08:08.152Z"
         processTimespan:
           description: Tempo em milissegundos inteiros decorrido desde o registro do timestamp até a chegada do primeiro byte da resposta do server.
           type: integer
@@ -738,7 +738,7 @@ components:
           type: string
           format: date-time
           maxLength: 28
-          example: "2021-11-11T18:08:08.1Z"
+          example: "2021-11-11T18:08:08.421Z"
         processTimespan:
           description: Tempo em milissegundos inteiros decorrido desde o registro do timestamp até a chegada do primeiro byte da resposta do server.
           type: integer

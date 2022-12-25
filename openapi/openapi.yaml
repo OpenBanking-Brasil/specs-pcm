@@ -799,7 +799,7 @@ components:
     ReportModel:
       description: Representa um reporte devidamente persistido.
       allOf:
-        - $ref: "#/components/schemas/ServerReportRequest"
+        - $ref: "#/components/schemas/ClientReportRequest"
         - type: object
           properties:
             reportId:

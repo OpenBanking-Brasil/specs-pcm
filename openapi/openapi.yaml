@@ -862,6 +862,10 @@ components:
         Exemplo:
 
         1. Caso uma chamada à um endpoint com o **path** `/open-banking/credit-cards-accounts/v1/accounts/123456789/transactions` tenha sido feita, o valor a ser enviado no reporte é `/open-banking/credit-cards-accounts/v1/accounts/{creditCardAccountId}/transactions`, que é o identificador desse endpoint no enum. Nesse caso, o dado real da parte variável do _path_ não deverá ser enviado.
+
+        Existem dois casos especiais que são os endpoints `/token` e `/register`. Esses endpoints não possuem padrão pré definido, uma vez que cada participante decide suas próprias URLs e informam dentro dos seus respectivos catálogos. Portanto, para o preenchimento do reporte no papel de client, é necessário que cada participante identifique o endpoint através das URL's de `.well-known` e inclua esse valor no campo endpoint. Sob a perspectiva do server, o report deverá ser feito como /token e /register de acordo com o endereço que foi chamado.
+
+        Esse procedimento é obrigatório para participantes que estejam enviando reportes no papel de client. Em versões futuras, esse processo também deverá ser feito para os participantes que reportarem no papel de server. A lista de endpoints válidos será atualizada quinzenalmente dentro da PCM.
       type: string
       example: /open-banking/products-services/v1/business-financings
       enum:

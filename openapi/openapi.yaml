@@ -731,7 +731,7 @@ components:
         httpMethod:
           description: Método HTTP da solicitação.
           type: string
-          enum: ['GET', 'POST', 'PUT', 'DELETE']
+          enum: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
           example: GET
         timestamp:
           description: Data/Hora UTC no formato ISO8601 com milissegundos (YYYY-MM-DDTHH:mm:ss.sssZ) do momento em que a chamada foi disparada, imediatamente antes do primeiro byte enviado na requisição.

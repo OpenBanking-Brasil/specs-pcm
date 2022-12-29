@@ -270,6 +270,8 @@ paths:
       summary: Modifica um reporte baseado em seu reportId
       description: |
         Operação que permite a alteração de parâmetros de um reporte com base em seu _reportId_. A submissão do report a ser alterado é feita de forma assíncrona.
+
+        *Importante:* Apenas os campos `statusCode`, `httpMethod` e `endpoint` podem ser modificados nessa operação. Os demais campos sempre serão ignorados.
       operationId: put-report-by-id
       parameters:
         - name: reportId

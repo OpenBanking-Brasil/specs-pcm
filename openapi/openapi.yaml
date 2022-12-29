@@ -284,7 +284,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/OpendataReportRequest"
+                oneOf:
+                  - $ref: "#/components/schemas/ClientReportRequest"
+                  - $ref: "#/components/schemas/ServerReportRequest"
 
       responses:
         "200":

@@ -291,18 +291,17 @@ paths:
                   - $ref: "#/components/schemas/ServerReportRequest"
 
       responses:
-        "200":
+        "202":
           description: Modificação submetida com sucesso
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReportResponse"
-        "404":
-          description: O registro com o `reportId` informados não existe
+
+        "400":
+          description: O reporte enviado está inconsistente
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenericError"
+              example:
+                message: "Invalid field value: httpMethod"
         "401":
           $ref: "#/components/responses/Default401Unauthorized"
         "403":
@@ -515,18 +514,17 @@ paths:
               $ref: "#/components/schemas/OpendataReportRequest"
 
       responses:
-        "200":
+        "202":
           description: Modificação submetida com sucesso
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReportResponse"
-        "404":
-          description: O registro com o `reportId` informados não existe
+
+        "400":
+          description: O reporte enviado está inconsistente
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenericError"
+              example:
+                message: "Invalid field value: httpMethod"
         "401":
           $ref: "#/components/responses/Default401Unauthorized"
         "403":
@@ -981,6 +979,11 @@ components:
           type: string
           pattern: ^[- /:_.',0-9a-zA-Z]{0,200}$
           maxLength: 200
+
+    EmptyObject:
+      description: Representa um schema sem propriedades
+      type: object
+      additionalProperties: false
 
   securitySchemes:
     PCMAccessToken:

@@ -33,7 +33,7 @@ info:
 
     Para informações detalhadas sobre a PCM, consulte o [site da documentação da Plataforma](https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/17378055/Plataforma+de+Coleta+de+M+tricas).
     
-  version: 1.0.0
+  version: 1.0.1
 
 security:
   - PCMAccessToken: []
@@ -293,6 +293,12 @@ paths:
       responses:
         "202":
           description: Modificação submetida com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmptyObject"
+              example:
+                {}
 
         "400":
           description: O reporte enviado está inconsistente
@@ -516,6 +522,11 @@ paths:
       responses:
         "202":
           description: Modificação submetida com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmptyObject"
+              example:
 
         "400":
           description: O reporte enviado está inconsistente
@@ -703,6 +714,8 @@ components:
           maxLength: 36
           pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
           example: "c1ca8e62-9d6f-4ea3-84f2-d66bc0a8f7dc"
+        additionalInfo:
+          $ref: "#/components/schemas/AdditionalInfo"
         role:
           description: ENUM indicando se o reporte que está sendo enviado apresenta a visão do server ou do client. Obrigatório valor "SERVER"
           type: string
@@ -711,8 +724,9 @@ components:
             - SERVER
 
     OpendataReportRequest:
-      description: aaaa
+      description: Modelo que representa os dados a serem enviados para as APIs da Fase 1 (dados abertos)
       additionalProperties: false
+      type: object
       required:
         - uri
         - statusCode
@@ -938,24 +952,10 @@ components:
         - "/open-banking/payments/v1/pix/payments/{paymentId}"
 
     AdditionalInfo:
-      description: Informações adicionais sobre o reporte
+      description: Informações adicionais sobre o reporte deste endpoint/método. Possui característica variável. As regras de preenchimento estão na documentação funcional em https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/37879861/Reporte#Campos-especiais
       type: object
-      additionalProperties: false
       properties:
-        consentId:
-          description: Identificador de consentimento presente na transação
-          type: string
-          pattern: ^urn:[- /:_.',0-9a-zA-Z]{0,200}$
-          maxLength: 200
-        personType:
-          description: Identifica se a transação aconteceu em nome de uma pessoa física ou jurídica. Esse campo é obrigatório quando se está enviado um reporte no papel de Client.
-          type: string
-          enum:
-            - PF
-            - PJ
-      example:
-        consentId: "urn:instituicao:a1b09129-e089-4095-9a9c-274ab1ae1ff9"
-        personType: "PF"
+        {}
 
     OpendataAdditionalInfo:
       description: Informações adicionais sobre o reporte de dados abertos
@@ -981,9 +981,11 @@ components:
           maxLength: 200
 
     EmptyObject:
-      description: Representa um schema sem propriedades
+      description: Representa um objeto sem propriedades previamente definidas
       type: object
       additionalProperties: false
+      example: 
+        {}
 
   securitySchemes:
     PCMAccessToken:
@@ -992,18 +994,6 @@ components:
       bearerFormat: JWT
 
   responses:
-    Default400MissingFields:
-      description: Ocorre quando uma requisição não envia os dados obrigatórios
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ReportResponse"
-          examples:
-            MissingFields:
-              value:
-                reportId: b0841405-1dcf-4a46-bfa0-2c5e664ba753
-                status: DISCARDED
-                message: "Missing fields: 'fapiInteractionId', 'endpoint'"
     Default401Unauthorized:
       description: Ocorre quando uma requisição não é autorizada pelo gateway, e acontece quando o token não é enviado ou está inválido.
       content:

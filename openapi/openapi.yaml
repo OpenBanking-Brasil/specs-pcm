@@ -573,7 +573,7 @@ components:
           pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
           example: "d78fc4e5-37ca-4da3-adf2-9b082bf92280"
         endpoint:
-          $ref: "#/components/schemas/Endpoints"
+          $ref: "#/components/schemas/PrivateReportEndpoints"
         statusCode:
           description: Status de retorno HTTP da solicitação, conforme descrito na documentação de cada endpoint.
           type: integer
@@ -670,7 +670,7 @@ components:
           pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
           example: "d78fc4e5-37ca-4da3-adf2-9b082bf92280"
         endpoint:
-          $ref: "#/components/schemas/Endpoints"
+          $ref: "#/components/schemas/PrivateReportEndpoints"
         statusCode:
           description: Status de retorno HTTP da solicitação, conforme descrito na documentação de cada endpoint.
           type: integer
@@ -736,7 +736,7 @@ components:
         - additionalInfo
       properties:
         uri:
-          $ref: "#/components/schemas/Endpoints"
+          $ref: "#/components/schemas/OpendataReportEndpoints"
         statusCode:
           description: Status de retorno HTTP da solicitação, conforme descrito na documentação de cada endpoint.
           type: integer
@@ -747,7 +747,7 @@ components:
         httpMethod:
           description: Método HTTP da solicitação.
           type: string
-          enum: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
+          enum: ['GET']
           example: GET
         timestamp:
           description: Data/Hora UTC no formato ISO8601 com milissegundos (YYYY-MM-DDTHH:mm:ss.sssZ) do momento em que a chamada foi disparada, imediatamente antes do primeiro byte enviado na requisição.
@@ -871,7 +871,7 @@ components:
               format: date-time
               maxLength: 28
 
-    Endpoints:
+    PrivateReportEndpoints:
       description: | 
         Identificação do endpoint que foi utilizado na transação reportada. A identificação do endpoint deve estar entre as entradas desse enum para ser considerado válido. Nesse campo não deve ser utilizado o _path_ da requisição original, uma vez que ao comparar com os valores dessa enum, ele não será considerado válido.
 
@@ -950,6 +950,40 @@ components:
         - "/open-banking/payments/v1/consents/{consentId}"
         - "/open-banking/payments/v1/pix/payments"
         - "/open-banking/payments/v1/pix/payments/{paymentId}"
+
+    OpendataReportEndpoints:
+      description: | 
+        Identificação do endpoint que foi utilizado na chamada da api da fase 1 (dados abertos). A identificação do endpoint deve estar entre as entradas desse enum para ser considerado válido.
+      type: string
+      example: "/products-services/v1/personal-unarranged-account-overdraft"
+      enum:
+        - "/products-services/v1/personal-accounts"
+        - "/products-services/v1/business-accounts"
+        - "/products-services/v1/personal-loans"
+        - "/products-services/v1/business-loans"
+        - "/products-services/v1/personal-financings"
+        - "/products-services/v1/business-financings"
+        - "/products-services/v1/personal-invoice-financings"
+        - "/products-services/v1/business-invoice-financings"
+        - "/products-services/v1/personal-credit-cards"
+        - "/products-services/v1/business-credit-cards"
+        - "/products-services/v1/personal-unarranged-account-overdraft"
+        - "/products-services/v1/business-unarranged-account-overdraft"
+        - "/channels/v1/branches"
+        - "/channels/v1/electronic-channels"
+        - "/channels/v1/phone-channels"
+        - "/channels/v1/banking-agents"
+        - "/channels/v1/shared-automated-teller-machines"
+        - "/capitalization-bonds/v1/bonds"
+        - "/investments/v1/funds"
+        - "/exchange/v1/online-rates"
+        - "/exchange/v1/vet-values"
+        - "/acquiring-services/v1/personals"
+        - "/acquiring-services/v1/businesses"
+        - "/pension/v1/risk-coverages"
+        - "/insurance/v1/automotives"
+        - "/insurance/v1/homes"
+        - "/insurance/v1/personals"
 
     AdditionalInfo:
       description: Informações adicionais sobre o reporte deste endpoint/método. Possui característica variável. As regras de preenchimento estão na documentação funcional em https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/37879861/Reporte#Campos-especiais

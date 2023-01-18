@@ -649,7 +649,7 @@ components:
             - SERVER
 
     ServerReportRequest:
-      description: Representa os dados que deverão ser enviados para a inclusão de reportes pelo lado do Client (iniciador da chamada).
+      description: Representa os dados que deverão ser enviados para a inclusão de reportes pelo lado do Server (receptor da chamada).
       type: object
       required:
         - fapiInteractionId

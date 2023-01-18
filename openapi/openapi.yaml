@@ -735,7 +735,7 @@ components:
         - processTimespan
         - additionalInfo
       properties:
-        uri:
+        endpoint:
           $ref: "#/components/schemas/OpendataReportEndpoints"
         statusCode:
           description: Status de retorno HTTP da solicitação, conforme descrito na documentação de cada endpoint.
@@ -955,35 +955,35 @@ components:
       description: | 
         Identificação do endpoint que foi utilizado na chamada da api da fase 1 (dados abertos). A identificação do endpoint deve estar entre as entradas desse enum para ser considerado válido.
       type: string
-      example: "/products-services/v1/personal-unarranged-account-overdraft"
+      example: "/open-banking/channels/v1/electronic-channels"
       enum:
-        - "/products-services/v1/personal-accounts"
-        - "/products-services/v1/business-accounts"
-        - "/products-services/v1/personal-loans"
-        - "/products-services/v1/business-loans"
-        - "/products-services/v1/personal-financings"
-        - "/products-services/v1/business-financings"
-        - "/products-services/v1/personal-invoice-financings"
-        - "/products-services/v1/business-invoice-financings"
-        - "/products-services/v1/personal-credit-cards"
-        - "/products-services/v1/business-credit-cards"
-        - "/products-services/v1/personal-unarranged-account-overdraft"
-        - "/products-services/v1/business-unarranged-account-overdraft"
-        - "/channels/v1/branches"
-        - "/channels/v1/electronic-channels"
-        - "/channels/v1/phone-channels"
-        - "/channels/v1/banking-agents"
-        - "/channels/v1/shared-automated-teller-machines"
-        - "/capitalization-bonds/v1/bonds"
-        - "/investments/v1/funds"
-        - "/exchange/v1/online-rates"
-        - "/exchange/v1/vet-values"
-        - "/acquiring-services/v1/personals"
-        - "/acquiring-services/v1/businesses"
-        - "/pension/v1/risk-coverages"
-        - "/insurance/v1/automotives"
-        - "/insurance/v1/homes"
-        - "/insurance/v1/personals"
+        - "/open-banking/products-services/v1/personal-accounts"
+        - "/open-banking/products-services/v1/business-accounts"
+        - "/open-banking/products-services/v1/personal-loans"
+        - "/open-banking/products-services/v1/business-loans"
+        - "/open-banking/products-services/v1/personal-financings"
+        - "/open-banking/products-services/v1/business-financings"
+        - "/open-banking/products-services/v1/personal-invoice-financings"
+        - "/open-banking/products-services/v1/business-invoice-financings"
+        - "/open-banking/products-services/v1/personal-credit-cards"
+        - "/open-banking/products-services/v1/business-credit-cards"
+        - "/open-banking/products-services/v1/personal-unarranged-account-overdraft"
+        - "/open-banking/products-services/v1/business-unarranged-account-overdraft"
+        - "/open-banking/channels/v1/branches"
+        - "/open-banking/channels/v1/electronic-channels"
+        - "/open-banking/channels/v1/phone-channels"
+        - "/open-banking/channels/v1/banking-agents"
+        - "/open-banking/channels/v1/shared-automated-teller-machines"
+        - "/open-banking/capitalization-bonds/v1/bonds"
+        - "/open-banking/investments/v1/funds"
+        - "/open-banking/exchange/v1/online-rates"
+        - "/open-banking/exchange/v1/vet-values"
+        - "/open-banking/acquiring-services/v1/personals"
+        - "/open-banking/acquiring-services/v1/businesses"
+        - "/open-banking/pension/v1/risk-coverages"
+        - "/open-banking/insurance/v1/automotives"
+        - "/open-banking/insurance/v1/homes"
+        - "/open-banking/insurance/v1/personals"
 
     AdditionalInfo:
       description: Informações adicionais sobre o reporte deste endpoint/método. Possui característica variável. As regras de preenchimento estão na documentação funcional em https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/37879861/Reporte#Campos-especiais

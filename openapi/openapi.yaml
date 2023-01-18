@@ -33,7 +33,7 @@ info:
 
     Para informações detalhadas sobre a PCM, consulte o [site da documentação da Plataforma](https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/17378055/Plataforma+de+Coleta+de+M+tricas).
     
-  version: 1.0.1
+  version: 1.0.2
 
 security:
   - PCMAccessToken: []

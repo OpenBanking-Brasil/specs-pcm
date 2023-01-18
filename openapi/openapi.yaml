@@ -750,13 +750,13 @@ components:
           enum: ['GET']
           example: GET
         timestamp:
-          description: Data/Hora UTC no formato ISO8601 com milissegundos (YYYY-MM-DDTHH:mm:ss.sssZ) do momento em que a chamada foi disparada, imediatamente antes do primeiro byte enviado na requisição.
+          description: Data/Hora UTC no formato ISO8601 com milissegundos (YYYY-MM-DDTHH:mm:ss.sssZ) do momento em que a chamada foi recebida.
           type: string
           format: date-time
           maxLength: 28
           example: "2021-11-11T18:08:08.421Z"
         processTimespan:
-          description: Tempo em milissegundos inteiros decorrido desde o registro do timestamp até a chegada do primeiro byte da resposta do server.
+          description: Tempo em milissegundos inteiros decorrido desde o recebimento do request até o momento imediato ao envido do primeiro byte da resposta.
           type: integer
           format: int16
           example: 120

@@ -756,7 +756,7 @@ components:
           maxLength: 28
           example: "2021-11-11T18:08:08.421Z"
         processTimespan:
-          description: Tempo em milissegundos inteiros decorrido desde o recebimento do request até o momento imediato ao envido do primeiro byte da resposta.
+          description: Tempo em milissegundos inteiros decorrido desde o recebimento do request até o momento imediatamente anterior ao envio do primeiro byte da resposta.
           type: integer
           format: int16
           example: 120

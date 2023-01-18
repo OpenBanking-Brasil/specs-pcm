@@ -584,7 +584,7 @@ components:
         httpMethod:
           description: Método HTTP da solicitação.
           type: string
-          enum: ['GET', 'POST', 'PUT', 'DELETE']
+          enum: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
           example: GET
         correlationId:
           description: ID de correlação que identifica uma sequência de chamadas inter-relacionadas. Diferente do fapiInteractionId que serve para identificar cada par request-response (interação), o identificador de correlação serve para ligar diferentes reportes quando estes representam uma jornada ou uma sequência de chamadas.
@@ -681,7 +681,7 @@ components:
         httpMethod:
           description: Método HTTP da solicitação.
           type: string
-          enum: ['GET', 'POST', 'PUT', 'DELETE']
+          enum: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
           example: GET
         correlationId:
           description: ID de correlação que identifica uma sequência de chamadas inter-relacionadas. Diferente do fapiInteractionId que serve para identificar cada par request-response (interação), o identificador de correlação serve para ligar diferentes reportes quando estes representam uma jornada ou uma sequência de chamadas.

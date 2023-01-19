@@ -50,7 +50,7 @@ tags:
       A Private API fornece operações que permitem a inclusão, consulta e alteração dos reportes que representam transações entre participantes do ecossistema do Open Finance.
   - name: Opendata API
     description: |
-      A Opendata API fornece operações que permitem a inclusão, consulta e alteração dos reportes cujas chamadas foram feitas nas API de dados abertos do Open Finance (Fase 1), e que portanto não sofrem processo de conciliação.
+      A Opendata API fornece operações que permitem a inclusão, consulta e alteração dos reportes cujas chamadas foram feitas nas API de dados abertos do Open Finance, e que portanto não sofrem processo de conciliação.
 
 paths:
   "/report-api/v1/private/report":
@@ -325,7 +325,7 @@ paths:
         - Opendata API
       summary: Inclusão de reportes
       description: |
-        Inclusão de reportes de dados abertos (fase 1) na plataforma. Ao enviar um lote de reportes, a plataforma vai fazer o processo de validação de cada reporte de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso **todos** dos reportes enviados forem aceitos. Caso pelo menos 1 reporte esteja inconsistente, o status de retorno será 207 - vide documentação de cada status de retorno para maiores informações. 
+        Inclusão de reportes de dados abertos na plataforma. Ao enviar um lote de reportes, a plataforma vai fazer o processo de validação de cada reporte de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso **todos** dos reportes enviados forem aceitos. Caso pelo menos 1 reporte esteja inconsistente, o status de retorno será 207 - vide documentação de cada status de retorno para maiores informações. 
         
         Os dados que são inseridos na API de Reporte são sempre processados de maneira assíncrona, e sua persistência se utiliza de consistência posterior (eventual consistency), portanto, um registro tem um tempo de processamento em que ele não estará disponível para consulta até que ele seja persistido.
         
@@ -458,9 +458,9 @@ paths:
     get:
       tags:
         - Opendata API
-      summary: Consulta um reporte de dados abertos (fase 1) em específico usando um identificador
+      summary: Consulta um reporte de dados abertos em específico usando um identificador
       description: |
-        Operação que permite a consulta de um reporte de dados abertos (fase 1) em específico através de um identificador. A busca por reportes estará sempre no contexto do usuário representado pelo token de acesso, ou seja, o _participante_ só terá acesso à reportes em que instituição que ele pertence enviou.
+        Operação que permite a consulta de um reporte de dados abertos em específico através de um identificador. A busca por reportes estará sempre no contexto do usuário representado pelo token de acesso, ou seja, o _participante_ só terá acesso à reportes em que instituição que ele pertence enviou.
 
         O processamento do registro ocorre de maneira assíncrona, o que pode gerar um cenário de consistência eventual: caso a consulta seja feita imediatamente após a inclusão, é possível que o registro ainda não esteja disponível para consulta. 
       operationId: opendata-report-by-id
@@ -500,7 +500,7 @@ paths:
     put:
       tags:
         - Opendata API
-      summary: Modifica um reporte de dados abertos (fase 1) baseado em seu reportId
+      summary: Modifica um reporte de dados abertos baseado em seu reportId
       description: |
         Operação que permite a alteração de parâmetros de um reporte com base em seu _reportId_. A submissão do report a ser alterado é feita de forma assíncrona.
       operationId: put-opendata-report-by-id
@@ -724,11 +724,11 @@ components:
             - SERVER
 
     OpendataReportRequest:
-      description: Modelo que representa os dados a serem enviados para as APIs da Fase 1 (dados abertos)
+      description: Modelo que representa os dados a serem enviados para as APIs de dados abertos
       additionalProperties: false
       type: object
       required:
-        - uri
+        - endpoint
         - statusCode
         - httpMethod
         - timestamp
@@ -953,7 +953,7 @@ components:
 
     OpendataReportEndpoints:
       description: | 
-        Identificação do endpoint que foi utilizado na chamada da api da fase 1 (dados abertos). A identificação do endpoint deve estar entre as entradas desse enum para ser considerado válido.
+        Identificação do endpoint que foi utilizado na chamada da api de dados abertos. A identificação do endpoint deve estar entre as entradas desse enum para ser considerado válido.
       type: string
       example: "/open-banking/channels/v1/electronic-channels"
       enum:

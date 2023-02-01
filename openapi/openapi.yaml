@@ -800,7 +800,7 @@ components:
 
         1. Caso uma chamada à um endpoint com o **path** `/open-banking/credit-cards-accounts/v1/accounts/123456789/transactions` tenha sido feita, o valor a ser enviado no reporte é `/open-banking/credit-cards-accounts/v1/accounts/{creditCardAccountId}/transactions`, que é o identificador desse endpoint no enum. Nesse caso, o dado real da parte variável do _path_ não deverá ser enviado.
       type: string
-      example: /open-banking/products-services/v1/business-financings
+      example: /open-banking/consents/v2/consents
       enum:
         - "/token"
         - "/register"

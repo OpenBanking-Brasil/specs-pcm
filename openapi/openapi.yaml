@@ -379,15 +379,13 @@ paths:
                 type: array
                 maxItems: 5000
                 items:
-                  $ref: "#/components/schemas/ReportResponse"
+                  $ref: "#/components/schemas/OpendataReportResponse"
               examples:
                 Todos Processados:
                   description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação. O payload da resposta vem na mesma ordem do array da solicitação. Todos registros que chegarem com o atributo _correlationId_ o receberão de volta. Uma vez que todos os registros foram validados, o status de retorno é o 200.
                   value:
                     - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
-                      status: ACCEPTED
                     - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
-                      status: ACCEPTED
 
         "207":
           description: |
@@ -400,31 +398,25 @@ paths:
                 type: array
                 maxItems: 5000
                 items:
-                  $ref: "#/components/schemas/ReportResponse"
+                  $ref: "#/components/schemas/OpendataReportResponse"
               examples:
                 "Primeiro registro com falha":
                   description: |
                     No caso apresentado é o resultado onde o exemplo "Request com falha" foi enviado: o registro com o _fapiInteractionId_ `d78fc4e5-37ca-4da3-adf2-9b082bf92280` apresentou uma falha na validação, mas os demais foram enviados para processamento. Como um dos registros não foi validado, o status de retorno passa a ser 207, e os demais registros são processados normalmente.
                   value:
                     - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
-                      status: DISCARDED
-                      message: "Missing fields: 'uri'"
+                      message: "Missing fields: 'processTimespan'"
                     - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
-                      status: ACCEPTED
                     - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
-                      status: ACCEPTED
                 "Todos registros com falha":
                   description: |
                     Neste caso, parte-se da premissa que todos os registros foram enviados com algum campo faltante. Nesse caso, todos vão falhar na etapa de validação, mas mesmo quando todos os registros falham, o status de retorno é o 207.
                   value:
                     - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
-                      status: DISCARDED
-                      message: "Missing fields: 'uri'"
+                      message: "Missing fields: 'statusCode'"
                     - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
-                      status: DISCARDED
                       message: "Missing fields: 'additionalInfo'"
                     - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
-                      status: DISCARDED
                       message: "Missing fields: 'httpMethod'"
 
         "400":
@@ -706,6 +698,27 @@ components:
           pattern: ^[- /:_.',0-9a-zA-Z]{0,100}$
           maxLength: 100
           example: "uGQHwNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf2"
+        message:
+          description: Caso a solicitação contenha algum problema em seu formato, ou caso haja algum tipo de falha detectável no momento da requisição, esse campo trará detalhes sobre o erro ocorrido. Informações adicionais sobre os tipos de erros podem ser encontradas em https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/46170119/Troubleshooting+-+PCM
+          type: string
+          pattern: ^[- /:_.',0-9a-zA-Z]{0,200}$
+          maxLength: 200
+          example: "Missing fields: 'fapiInteractionId', 'endpoint'"
+
+    OpendataReportResponse:
+      description: Representa os dados que serão retornados pelas operações de inclusão de reportes Opendata
+      additionalProperties: false
+      required:
+        - reportId
+      type: object
+      properties:
+        reportId:
+          description: Identificator único interno do reporte no formato UUID v4.
+          type: string
+          format: uuid
+          maxLength: 36
+          pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          example: "9a97c2df-b261-4fc2-aa66-d1b5168397da"
         message:
           description: Caso a solicitação contenha algum problema em seu formato, ou caso haja algum tipo de falha detectável no momento da requisição, esse campo trará detalhes sobre o erro ocorrido. Informações adicionais sobre os tipos de erros podem ser encontradas em https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/46170119/Troubleshooting+-+PCM
           type: string

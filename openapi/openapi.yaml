@@ -10,7 +10,7 @@ info:
 
     Para que o ecossistema do Open Finance Brasil seja saudável para instituições e clientes finais, fez-se necessária a criação de uma plataforma que deverá concentrar dados sobre as chamadas que as instituições fazem umas às outras. Dessa forma, torna-se possível coletar informações com o objetivo de se criar métricas e indicadores a fim de se ter visibilidade sobre todo o ambiente.
 
-    No intuito de manter a integridade e consistência nos dados, o envio destes pelas instituições deverá passar por um processo de conciliação. Quando divergente, as instituições serão notificadas e terão a possibilidade de ajustar as chamadas, o que promove um ambiente saudável de auto-regulação, prevenindo assim uma disputa.
+    No intuito de manter a integridade e consistência nos dados, o envio destes pelas instituições deverá passar por um processo de conciliação. Quando divergente, as instituições serão notificadas e terão a possibilidade de ajustar os reportes, o que promove um ambiente saudável de auto-regulação, prevenindo assim uma disputa.
 
     ## O que a plataforma não é
 
@@ -21,7 +21,6 @@ info:
     ## Premissas Técnicas
 
     * Tanto o envio por parte dos participantes quanto o processamento por parte da plataforma serão feitos de maneira assíncrona;
-    * O envio dos registros de chamada (reportes) pode ser individual ou em lote através de chamadas às APIs;
 
     ## Terminologia
 
@@ -29,11 +28,11 @@ info:
 
     * **Reporte**: no contexto da API de Coleta de Métricas, um _reporte_ é o registro da chamada que será enviado tanto pelo server quanto pelo client. Esse registro será armazenado na Plataforma para posterior processo de conciliação de chamadas e extração de dados estatísticos.
 
-    * **Divergência**: Quando Server e Client enviam reportes, cada um destes reportes se refere à uma chamada em específico. Nos casos em que uma das partes não envia o reporte sobre essa chamada em específico, é caracterizada uma divergência. As divergências ocorrem no fechamento do período (diário, semanal) e podem ser resolvidas pela chamada às operações de modificação de reportes em suas respectivas APIs. Uma divergência é considerada fechada apenas quando todos os reportes encontram sua respectiva correspondência do outro lado da chamada.
+    * **Divergência**: Quando Server e Client enviam reportes, cada um destes reportes se refere à uma chamada em específico. Nos casos em que uma das partes não envia o reporte sobre essa chamada em específico, é caracterizada uma divergência. As divergências podem ser resolvidas pela chamada às operações de modificação de reportes em suas respectivas APIs. Uma divergência é considerada fechada apenas quando todos os reportes encontram sua respectiva correspondência do outro lado da chamada.
 
     Para informações detalhadas sobre a PCM, consulte o [site da documentação da Plataforma](https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/17378055/Plataforma+de+Coleta+de+M+tricas).
     
-  version: 1.0.0
+  version: 1.0.2
 
 security:
   - PCMAccessToken: []
@@ -50,7 +49,7 @@ tags:
       A Private API fornece operações que permitem a inclusão, consulta e alteração dos reportes que representam transações entre participantes do ecossistema do Open Finance.
   - name: Opendata API
     description: |
-      A Opendata API fornece operações que permitem a inclusão, consulta e alteração dos reportes cujas chamadas foram feitas nas API de dados abertos do Open Finance (Fase 1), e que portanto não sofrem processo de conciliação.
+      A Opendata API fornece operações que permitem a inclusão, consulta e alteração dos reportes cujas chamadas foram feitas nas API de dados abertos do Open Finance, e que portanto não sofrem processo de conciliação.
 
 paths:
   "/report-api/v1/private/report":
@@ -63,7 +62,7 @@ paths:
         
         Os dados que são inseridos na API de Reporte são sempre processados de maneira assíncrona, e sua persistência se utiliza de consistência posterior (eventual consistency), portanto, um registro tem um tempo de processamento em que ele não estará disponível para consulta até que ele seja persistido.
         
-        O limite de registros de cada lote é de 5.000 registros.
+        O limite de reportes de cada envio de lote é de 5.000 entradas no array.
       operationId: add-reports
       requestBody:
         content:
@@ -135,7 +134,7 @@ paths:
                   $ref: "#/components/schemas/ReportResponse"
               examples:
                 Todos Processados:
-                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação. O payload da resposta vem na mesma ordem do array da solicitação. Todos registros que chegarem com o atributo _correlationId_ o receberão de volta. Uma vez que todos os registros foram validados, o status de retorno é o 200.
+                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação. O payload da resposta vem na mesma ordem do array da solicitação. Uma vez que todos os registros foram validados, o status de retorno é o 200.
                   value:
                     - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
                       correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
@@ -148,7 +147,7 @@ paths:
 
         "207":
           description: |
-            O status 207 (Multi-Status) informa ao solicitante que o formato da solicitação está correto, mas que entradas do array da solicitação contém erro de validação, independente da quantidade. Ou seja, se todos os elementos do array informado estiverem com falha de validação, a operação vai devolver o status 207, e no corpo da resposta todos os elementos do array vão estar com status `DISCARDED` e com sua respectiva mensagem. 
+            O status 207 (Multi-Status) informa ao solicitante que o formato da requisição está correto, mas que entradas do array contém erro de validação em pelo menos 1 item. Ou seja, se todos os elementos do array informado estiverem com falha de validação, a operação vai devolver o status 207, e no corpo da resposta todos os elementos do array vão estar com status `DISCARDED` e com sua respectiva mensagem. 
 
             A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
           content:
@@ -185,6 +184,15 @@ paths:
                     - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
                       status: DISCARDED
                       message: "Missing fields: 'fapiInteractionId'"
+                "Campo obrigatório não enviado":
+                  description: |
+                    Registro com campo obrigatório não enviado.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a,
+                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf,
+                      status: DISCARDED,
+                      message: "Missing fields: 'statusCode'"
+
 
         "400":
           description: O formato do corpo da requisição não é um array.
@@ -198,7 +206,7 @@ paths:
                     message: "Invalid payload format: MUST be an array"
 
         "413":
-          description: A quantidade de registros enviado excede o limite da operação, ou o tamanho do payload excede o limite configurado no servidor http.
+          description: A quantidade de registros enviado excede o limite da operação (5.000 elementos no array), ou o tamanho do payload excede 10Mb.
           content:
             application/json:
               schema:
@@ -248,7 +256,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ReportModel"
         "404":
-          description: O registro com o identificador e filtros informados não foi encontrado.
+          description: O registro com o identificador informado não foi encontrado.
           content:
             application/json:
               schema:
@@ -269,7 +277,7 @@ paths:
         - Private API
       summary: Modifica um reporte baseado em seu reportId
       description: |
-        Operação que permite a alteração de parâmetros de um reporte com base em seu _reportId_. A submissão do report a ser alterado é feita de forma assíncrona.
+        Operação que permite a alteração de parâmetros de um reporte com base em seu reportId. A alteração do report é feita de forma assíncrona. Logo, se for feito um GET logo apos o PUT o reporte ainda será entregue sem alterações. Não resubmeta o PUT. Importante: Apenas os campos statusCode, httpMethod, processTimespan e endpoint podem ser modificados nessa operação. Apenas reportes no estado PAIRED_INCONSISTENT podem ser modificados. Necessidades adicionais de modificação por API podem ser sugeridas ao email: gt-arquitetura@openfinancebrasil.org.br
       operationId: put-report-by-id
       parameters:
         - name: reportId
@@ -284,25 +292,34 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/OpendataReportRequest"
+                oneOf:
+                  - $ref: "#/components/schemas/ClientReportRequest"
+                  - $ref: "#/components/schemas/ServerReportRequest"
 
       responses:
-        "200":
+        "202":
           description: Modificação submetida com sucesso
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ReportResponse"
-        "404":
-          description: O registro com o `reportId` informados não existe
+                $ref: "#/components/schemas/EmptyObject"
+              example:
+                {}
+
+        "400":
+          description: O reporte enviado está inconsistente
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenericError"
+              example:
+                message: "Invalid field value: httpMethod"
         "401":
           $ref: "#/components/responses/Default401Unauthorized"
         "403":
           $ref: "#/components/responses/Default403Forbidden"
+        "404":
+          $ref: "#/components/responses/Default404NotFound"
         "406":
           $ref: "#/components/responses/Default406NotAcceptable"
         "429":
@@ -316,7 +333,7 @@ paths:
         - Opendata API
       summary: Inclusão de reportes
       description: |
-        Inclusão de reportes de dados abertos (fase 1) na plataforma. Ao enviar um lote de reportes, a plataforma vai fazer o processo de validação de cada reporte de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso **todos** dos reportes enviados forem aceitos. Caso pelo menos 1 reporte esteja inconsistente, o status de retorno será 207 - vide documentação de cada status de retorno para maiores informações. 
+        Inclusão de reportes de dados abertos na plataforma. Ao enviar um lote de reportes, a plataforma vai fazer o processo de validação sintática de cada reporte de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso **todos** dos reportes enviados forem aceitos. Caso pelo menos 1 reporte esteja inconsistente, o status de retorno será 207 - vide documentação de cada status de retorno para maiores informações. 
         
         Os dados que são inseridos na API de Reporte são sempre processados de maneira assíncrona, e sua persistência se utiliza de consistência posterior (eventual consistency), portanto, um registro tem um tempo de processamento em que ele não estará disponível para consulta até que ele seja persistido.
         
@@ -336,14 +353,14 @@ paths:
                 description: O request apresentado tem todos os campos validados.
                 value:
                   - timestamp: "2021-11-11T18:08:08.468Z"
-                    uri: "/open-banking/products-services/v1/business-financings"
+                    endpoint: "/open-banking/products-services/v1/business-financings"
                     statusCode: 200
                     httpMethod: GET
                     processTimespan: 120
                     additionalInfo:
                       clientIp: 192.168.10.10
                   - timestamp: "2021-11-11T19:22:10.396Z"
-                    uri: "/open-banking/products-services/v1/business-financings"
+                    endpoint: "/open-banking/products-services/v1/business-financings"
                     statusCode: 200
                     httpMethod: GET
                     processTimespan: 117
@@ -374,7 +391,7 @@ paths:
 
         "207":
           description: |
-            O status 207 (Multi-Status) informa ao solicitante que o formato da solicitação está correto, mas que entradas do array da solicitação contém erro de validação, independente da quantidade. Ou seja, se todos os elementos do array informado estiverem com falha de validação, a operação vai devolver o status 207, e no corpo da resposta todos os elementos do array vão estar com status `DISCARDED` e com sua respectiva mensagem. 
+            O status 207 (Multi-Status) informa ao solicitante que o formato da solicitação está correto, mas que entradas do array da solicitação contém erro de validação em pelo menos uma entrada. Ou seja, se todos os elementos do array informado estiverem com falha de validação, a operação vai devolver o status 207, e no corpo da resposta todos os elementos do array vão estar com status `DISCARDED` e com sua respectiva mensagem. 
 
             A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
           content:
@@ -445,99 +462,10 @@ paths:
         default:
           $ref: "#/components/responses/Default500InternalServerError"
 
-  "/report-api/v1/opendata/report/{reportId}":
-    get:
-      tags:
-        - Opendata API
-      summary: Consulta um reporte de dados abertos (fase 1) em específico usando um identificador
-      description: |
-        Operação que permite a consulta de um reporte de dados abertos (fase 1) em específico através de um identificador. A busca por reportes estará sempre no contexto do usuário representado pelo token de acesso, ou seja, o _participante_ só terá acesso à reportes em que instituição que ele pertence enviou.
-
-        O processamento do registro ocorre de maneira assíncrona, o que pode gerar um cenário de consistência eventual: caso a consulta seja feita imediatamente após a inclusão, é possível que o registro ainda não esteja disponível para consulta. 
-      operationId: opendata-report-by-id
-      parameters:
-        - name: reportId
-          description: Identificador do reporte que está sendo consultado
-          in: path
-          required: true
-          schema:
-            type: string
-            pattern: ^[- /:_.',0-9a-zA-Z]{0,100}$
-            maxLength: 100
-      responses:
-        "200":
-          description: Consulta realizada com sucesso
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/OpendataReportModel"
-        "404":
-          description: O registro com o identificador e filtros informados não foi encontrado.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GenericError"
-        "401":
-          $ref: "#/components/responses/Default401Unauthorized"
-        "403":
-          $ref: "#/components/responses/Default403Forbidden"
-        "406":
-          $ref: "#/components/responses/Default406NotAcceptable"
-        "429":
-          $ref: "#/components/responses/Default429TooManyRequests"
-        default:
-          $ref: "#/components/responses/Default500InternalServerError"
-
-    put:
-      tags:
-        - Opendata API
-      summary: Modifica um reporte de dados abertos (fase 1) baseado em seu reportId
-      description: |
-        Operação que permite a alteração de parâmetros de um reporte com base em seu _reportId_. A submissão do report a ser alterado é feita de forma assíncrona.
-      operationId: put-opendata-report-by-id
-      parameters:
-        - name: reportId
-          description: Identificador do reporte (campo `reportId`) que está sendo modificado
-          in: path
-          required: true
-          schema:
-            type: string
-            pattern: ^[- /:_.',0-9a-zA-Z]{0,100}$
-            maxLength: 100
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/OpendataReportRequest"
-
-      responses:
-        "200":
-          description: Modificação submetida com sucesso
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ReportResponse"
-        "404":
-          description: O registro com o `reportId` informados não existe
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GenericError"
-        "401":
-          $ref: "#/components/responses/Default401Unauthorized"
-        "403":
-          $ref: "#/components/responses/Default403Forbidden"
-        "406":
-          $ref: "#/components/responses/Default406NotAcceptable"
-        "429":
-          $ref: "#/components/responses/Default429TooManyRequests"
-        default:
-          $ref: "#/components/responses/Default500InternalServerError"
-
 components:
   schemas:
     ClientReportRequest:
-      description: Representa os dados que deverão ser enviados para a inclusão de reportes pelo lado do Client (iniciador da chamada).
+      description: Representa os dados que deverão ser enviados para a inclusão de reportes pelo lado do Client (iniciador da chamada). Informações adicionais sobre cada campo podem ser encontradas na documentação funcional em https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/37879861/Reporte#Modelos-para-reportes-Private
       type: object
       required:
         - endpoint
@@ -553,16 +481,16 @@ components:
         - role
       properties:
         fapiInteractionId:
-          description: UUID que identifica uma transação específica entre dois participantes. Esse dado pode ser encontrado no header x-fapi-interaction-id que é informado pelo Client e devolvido pelo Server. Mais informações em [Cabeçalhos HTTP](https://openbanking-brasil.github.io/areadesenvolvedor/#cabecalhos-http) na documentação do Open Finance Brasil.
+          description: UUID que identifica uma transação específica entre dois participantes. Esse dado pode ser encontrado no header x-fapi-interaction-id que é informado pelo Client e devolvido pelo Server. Mais informações em [Cabeçalhos HTTP](https://openbanking-brasil.github.io/areadesenvolvedor/#cabecalhos-http) na documentação do Open Finance Brasil. O envio dessa informação é obrigatório exceto nos casos ontem ela não esteja disponível, como por exemplo em respostas com status 5xx, ou em chamdas que terminaram por timeout onde o reporte tem que ser enviado mas sem esse atributo. Em todos os demais cenários, o envio é obrigatório.
           type: string
           format: uuid
           maxLength: 36
           pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
           example: "d78fc4e5-37ca-4da3-adf2-9b082bf92280"
         endpoint:
-          $ref: "#/components/schemas/Endpoints"
+          $ref: "#/components/schemas/PrivateReportEndpoints"
         statusCode:
-          description: Status de retorno HTTP da solicitação, conforme descrito na documentação de cada endpoint.
+          description: Status de retorno HTTP da solicitação. No caso de ocorrer um timeout client side preencher com um código 403 (conforme documentação ).
           type: integer
           format: int32
           example: 200
@@ -571,10 +499,10 @@ components:
         httpMethod:
           description: Método HTTP da solicitação.
           type: string
-          enum: ['GET', 'POST', 'PUT', 'DELETE']
+          enum: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
           example: GET
         correlationId:
-          description: ID de correlação que identifica uma sequência de chamadas inter-relacionadas. Diferente do fapiInteractionId que serve para identificar cada par request-response (interação), o identificador de correlação serve para ligar diferentes reportes quando estes representam uma jornada ou uma sequência de chamadas.
+          description: ID de correlação que identifica uma sequência de chamadas inter-relacionadas no ecossistema. Diferente do fapiInteractionId que serve para identificar cada par request-response (interação), o identificador de correlação serve para ligar diferentes reportes quando estes representam uma jornada ou uma sequência de chamadas. Este valor é de livre provimento pelo reportador.
           type: string
           pattern: ^[- /:_.',0-9a-zA-Z]{0,100}$
           maxLength: 100
@@ -593,7 +521,7 @@ components:
           format: int16
           example: 120
         clientSSId:
-          description: Identificador do software statement de onde a chamada foi disparada.
+          description: Identificador do software statement de onde a chamada foi disparada. A PCM garante que foi esta orgId que obteve o token de acesso utilizado neste reporte.
           type: string
           format: uuid
           maxLength: 36
@@ -624,6 +552,10 @@ components:
 
             1. Para uma requisição em `https://openbanking.instituicao-1.com.br/opbk/open-banking/products-services/v1/business-accounts`, o dado a ser enviado é `https://openbanking.instituicao-1.com.br/opbk`.
             1. Para uma requisição em `https://openbanking.instituicao-2.com.br/open-banking/products-services/v1/business-accounts`, o dado a ser enviado é `https://openbanking.instituicao-1.com.br/`.
+
+            Nos reportes relativos aos endpoints /token e /register este campo deverá conter a URL inteira do request. 
+            
+            Exemplos: `https://oauth2.cartaodummy.opf.instituicao/as/token.oauth2` `https://instituicao.com.br/orgs/instituicao/reg`
           type: string
           pattern: ^[- /:_.',0-9a-zA-Z]{0,200}$
           maxLength: 200
@@ -636,7 +568,7 @@ components:
             - SERVER
 
     ServerReportRequest:
-      description: Representa os dados que deverão ser enviados para a inclusão de reportes pelo lado do Client (iniciador da chamada).
+      description: Representa os dados que deverão ser enviados para a inclusão de reportes pelo lado do Server (receptor da chamada). Informações adicionais sobre cada campo podem ser encontradas na documentação funcional em https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/37879861/Reporte#Modelos-para-reportes-Private
       type: object
       required:
         - fapiInteractionId
@@ -657,9 +589,9 @@ components:
           pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
           example: "d78fc4e5-37ca-4da3-adf2-9b082bf92280"
         endpoint:
-          $ref: "#/components/schemas/Endpoints"
+          $ref: "#/components/schemas/PrivateReportEndpoints"
         statusCode:
-          description: Status de retorno HTTP da solicitação, conforme descrito na documentação de cada endpoint.
+          description: Status de retorno HTTP da solicitação. No caso de ocorrer um timeout client side preencher com um código 408 [conforme documentação](https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/37879861/Reporte)
           type: integer
           format: int32
           example: 200
@@ -668,22 +600,22 @@ components:
         httpMethod:
           description: Método HTTP da solicitação.
           type: string
-          enum: ['GET', 'POST', 'PUT', 'DELETE']
+          enum: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
           example: GET
         correlationId:
-          description: ID de correlação que identifica uma sequência de chamadas inter-relacionadas. Diferente do fapiInteractionId que serve para identificar cada par request-response (interação), o identificador de correlação serve para ligar diferentes reportes quando estes representam uma jornada ou uma sequência de chamadas.
+          description: Não utilizado pelo server.
           type: string
           pattern: ^[- /:_.',0-9a-zA-Z]{0,100}$
           maxLength: 100
           example: "uGQHwNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf2"
         timestamp:
-          description: Data/Hora UTC no formato ISO8601 com milissegundos (YYYY-MM-DDTHH:mm:ss.sssZ) do momento em que a chamada foi disparada, imediatamente antes do primeiro byte enviado na requisição.
+          description: Data/Hora UTC no formato ISO8601 com milissegundos (YYYY-MM-DDTHH:mm:ss.sssZ) do momento em que a chamada foi recebida, imediatamente antes do primeiro byte enviado na requisição.
           type: string
           format: date-time
           maxLength: 28
           example: "2021-11-11T18:08:08.152Z"
         processTimespan:
-          description: Tempo em milissegundos inteiros decorrido desde o registro do timestamp até a chegada do primeiro byte da resposta do server.
+          description: Tempo em milissegundos inteiros decorrido desde o registro do timestamp até a finalização do envio dos dados.
           type: integer
           format: int16
           example: 120
@@ -695,12 +627,14 @@ components:
           pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
           example: "56411f7e-d58b-44a8-8a2b-ff326d3f2955"
         serverOrgId:
-          description: Identificador da organização **para onde** a chamada foi feita
+          description: Identificador da organização **para onde** a chamada foi feita. A PCM garante que foi esta orgId que obteve o token de acesso utilizado neste reporte.
           type: string
           format: uuid
           maxLength: 36
           pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
           example: "c1ca8e62-9d6f-4ea3-84f2-d66bc0a8f7dc"
+        additionalInfo:
+          description: Não utilizado pelo server.
         role:
           description: ENUM indicando se o reporte que está sendo enviado apresenta a visão do server ou do client. Obrigatório valor "SERVER"
           type: string
@@ -709,20 +643,21 @@ components:
             - SERVER
 
     OpendataReportRequest:
-      description: aaaa
+      description: Modelo que representa os dados a serem enviados às APIs de dados abertos. Informações adicionais sobre cada campo podem ser encontradas na documentação funcional em https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/37879861/Reporte#Reportes-OpenData.
       additionalProperties: false
+      type: object
       required:
-        - uri
+        - endpoint
         - statusCode
         - httpMethod
         - timestamp
         - processTimespan
         - additionalInfo
       properties:
-        uri:
-          $ref: "#/components/schemas/Endpoints"
+        endpoint:
+          $ref: "#/components/schemas/OpendataReportEndpoints"
         statusCode:
-          description: Status de retorno HTTP da solicitação, conforme descrito na documentação de cada endpoint.
+          description: Status de retorno HTTP da solicitação.
           type: integer
           format: int32
           example: 200
@@ -731,16 +666,16 @@ components:
         httpMethod:
           description: Método HTTP da solicitação.
           type: string
-          enum: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
+          enum: ['GET']
           example: GET
         timestamp:
-          description: Data/Hora UTC no formato ISO8601 com milissegundos (YYYY-MM-DDTHH:mm:ss.sssZ) do momento em que a chamada foi disparada, imediatamente antes do primeiro byte enviado na requisição.
+          description: Data/Hora UTC no formato ISO8601 com milissegundos (YYYY-MM-DDTHH:mm:ss.sssZ) do momento em que a chamada foi recebida.
           type: string
           format: date-time
           maxLength: 28
           example: "2021-11-11T18:08:08.421Z"
         processTimespan:
-          description: Tempo em milissegundos inteiros decorrido desde o registro do timestamp até a chegada do primeiro byte da resposta do server.
+          description: Tempo em milissegundos inteiros decorrido desde o recebimento do request até o momento imediatamente anterior ao envio do primeiro byte da resposta.
           type: integer
           format: int16
           example: 120
@@ -749,7 +684,7 @@ components:
 
 
     ReportResponse:
-      description: Representa os dados que serão retornados pelas operações de inclusão de reportes quando enviadas pelo lado do Client
+      description: Representa os dados que serão retornados pelas operações de inclusão de reportes.
       additionalProperties: false
       required:
         - reportId
@@ -772,7 +707,7 @@ components:
           maxLength: 100
           example: "uGQHwNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf2"
         message:
-          description: Caso a solicitação contenha algum problema em seu formato, ou caso haja algum tipo de falha detectável no momento da requisição, esse campo trará detalhes sobre o erro ocorrido.
+          description: Caso a solicitação contenha algum problema em seu formato, ou caso haja algum tipo de falha detectável no momento da requisição, esse campo trará detalhes sobre o erro ocorrido. Informações adicionais sobre os tipos de erros podem ser encontradas em https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/46170119/Troubleshooting+-+PCM
           type: string
           pattern: ^[- /:_.',0-9a-zA-Z]{0,200}$
           maxLength: 200
@@ -780,8 +715,8 @@ components:
 
     ReportStatus:
       description: |
-        Determina o status do registro de reporte.
-        * **DISCARDED**: O status `DISCARDED` indica que o reporte que foi enviado pelo participante não será usado para fins de extração de métricas. O motivo do descarte será enviado junto com a resposta, podendo ser por conta de um reporte inválido ou por um erro xno processamento.
+        Informa o status do registro de reporte.
+        * **DISCARDED**: O status `DISCARDED` indica que o reporte que foi enviado pelo participante foi rejeitado pela PCM. O motivo do descarte será enviado junto com a resposta, podendo ser por conta de um reporte inválido ou por um erro no processamento. Não é possível modificar um reporte `DISCARDED`, portanto o reportador deverá corrigir o registro que apresentou erro e reenviar via POST.
         * **SINGLE**: O status `SINGLE` indica que o reporte em questão não tem uma contraparte. Ele é utilizado em casos onde a conciliação entre dois reportes não é possível.
         * **ACCEPTED**: O status `ACCEPTED` indica que a validação de formato do reporte não tem erros e este será enviado para processamento.
         * **UNPAIRED**: O status `UNPAIRED` significa que o reporte atual não possui uma correspondência em outro reporte através do atributo `fapiInteractionId`. Indica um reporte _divergente_.
@@ -816,6 +751,8 @@ components:
               format: uuid
               maxLength: 36
               pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            status:
+              $ref: "#/components/schemas/ReportStatus"
             createdAt:
               description: |
                 Carimbo do tempo do momento da criação do registro
@@ -855,22 +792,79 @@ components:
               format: date-time
               maxLength: 28
 
-    Endpoints:
+    PrivateReportEndpoints:
       description: | 
         Identificação do endpoint que foi utilizado na transação reportada. A identificação do endpoint deve estar entre as entradas desse enum para ser considerado válido. Nesse campo não deve ser utilizado o _path_ da requisição original, uma vez que ao comparar com os valores dessa enum, ele não será considerado válido.
 
         Exemplo:
 
         1. Caso uma chamada à um endpoint com o **path** `/open-banking/credit-cards-accounts/v1/accounts/123456789/transactions` tenha sido feita, o valor a ser enviado no reporte é `/open-banking/credit-cards-accounts/v1/accounts/{creditCardAccountId}/transactions`, que é o identificador desse endpoint no enum. Nesse caso, o dado real da parte variável do _path_ não deverá ser enviado.
-
-        Existem dois casos especiais que são os endpoints `/token` e `/register`. Esses endpoints não possuem padrão pré definido, uma vez que cada participante decide suas próprias URLs e informam dentro dos seus respectivos catálogos. Portanto, para o preenchimento do reporte no papel de client, é necessário que cada participante identifique o endpoint através das URL's de `.well-known` e inclua esse valor no campo endpoint. Sob a perspectiva do server, se a chamada foi feita contra o endpoint `/token`, o campo `endpoint` do reporte deverá ser preenchido com a string "/token", sendo a mesma regra válida para chamadas ao endpoint `/register`. 
-
-        Esse procedimento é obrigatório para participantes que estejam enviando reportes no papel de client. Em versões futuras, esse processo também deverá ser feito para os participantes que reportarem no papel de server. A lista de endpoints válidos será atualizada quinzenalmente dentro da PCM.
       type: string
-      example: /open-banking/products-services/v1/business-financings
+      example: /open-banking/consents/v2/consents
       enum:
-        - "/register"
         - "/token"
+        - "/register"
+        - "/register/{clientId}"
+        - "/introspection"
+        - "/pushed-authorization-request"
+        - "/revocation"
+        - "/open-banking/accounts/v2/accounts"
+        - "/open-banking/accounts/v2/accounts/{accountId}"
+        - "/open-banking/accounts/v2/accounts/{accountId}/balances"
+        - "/open-banking/accounts/v2/accounts/{accountId}/overdraft-limits"
+        - "/open-banking/accounts/v2/accounts/{accountId}/transactions"
+        - "/open-banking/accounts/v2/accounts/{accountId}/transactions-current"
+        - "/open-banking/consents/v2/consents"
+        - "/open-banking/consents/v2/consents/{consentId}"
+        - "/open-banking/credit-cards-accounts/v2/accounts"
+        - "/open-banking/credit-cards-accounts/v2/accounts/{creditCardAccountId}"
+        - "/open-banking/credit-cards-accounts/v2/accounts/{creditCardAccountId}/bills"
+        - "/open-banking/credit-cards-accounts/v2/accounts/{creditCardAccountId}/bills/{billId}/transactions"
+        - "/open-banking/credit-cards-accounts/v2/accounts/{creditCardAccountId}/limits"
+        - "/open-banking/credit-cards-accounts/v2/accounts/{creditCardAccountId}/transactions"
+        - "/open-banking/credit-cards-accounts/v2/accounts/{creditCardAccountId}/transactions-current"
+        - "/open-banking/customers/v2/business/financial-relations"
+        - "/open-banking/customers/v2/business/identifications"
+        - "/open-banking/customers/v2/business/qualifications"
+        - "/open-banking/customers/v2/personal/financial-relations"
+        - "/open-banking/customers/v2/personal/identifications"
+        - "/open-banking/customers/v2/personal/qualifications"
+        - "/open-banking/financings/v2/contracts"
+        - "/open-banking/financings/v2/contracts/{contractId}"
+        - "/open-banking/financings/v2/contracts/{contractId}/payments"
+        - "/open-banking/financings/v2/contracts/{contractId}/scheduled-instalments"
+        - "/open-banking/financings/v2/contracts/{contractId}/warranties"
+        - "/open-banking/invoice-financings/v2/contracts"
+        - "/open-banking/invoice-financings/v2/contracts/{contractId}"
+        - "/open-banking/invoice-financings/v2/contracts/{contractId}/payments"
+        - "/open-banking/invoice-financings/v2/contracts/{contractId}/scheduled-instalments"
+        - "/open-banking/invoice-financings/v2/contracts/{contractId}/warranties"
+        - "/open-banking/loans/v2/contracts"
+        - "/open-banking/loans/v2/contracts/{contractId}"
+        - "/open-banking/loans/v2/contracts/{contractId}/payments"
+        - "/open-banking/loans/v2/contracts/{contractId}/scheduled-instalments"
+        - "/open-banking/loans/v2/contracts/{contractId}/warranties"
+        - "/open-banking/payments/v1/consents"
+        - "/open-banking/payments/v1/consents/{consentId}"
+        - "/open-banking/payments/v1/pix/payments"
+        - "/open-banking/payments/v1/pix/payments/{paymentId}"
+        - "/open-banking/payments/v2/consents"
+        - "/open-banking/payments/v2/consents/{consentId}"
+        - "/open-banking/payments/v2/pix/payments"
+        - "/open-banking/payments/v2/pix/payments/{paymentId}"
+        - "/open-banking/resources/v2/resources"
+        - "/open-banking/unarranged-accounts-overdraft/v2/contracts"
+        - "/open-banking/unarranged-accounts-overdraft/v2/contracts/{contractId}"
+        - "/open-banking/unarranged-accounts-overdraft/v2/contracts/{contractId}/payments"
+        - "/open-banking/unarranged-accounts-overdraft/v2/contracts/{contractId}/scheduled-instalments"
+        - "/open-banking/unarranged-accounts-overdraft/v2/contracts/{contractId}/warranties"
+
+    OpendataReportEndpoints:
+      description: | 
+        Identificação do endpoint que foi utilizado na chamada da api de dados abertos. A identificação do endpoint deve estar entre as entradas desse enum para ser considerado válido.
+      type: string
+      example: "/open-banking/channels/v1/electronic-channels"
+      enum:
         - "/open-banking/products-services/v1/personal-accounts"
         - "/open-banking/products-services/v1/business-accounts"
         - "/open-banking/products-services/v1/personal-loans"
@@ -888,112 +882,28 @@ components:
         - "/open-banking/channels/v1/phone-channels"
         - "/open-banking/channels/v1/banking-agents"
         - "/open-banking/channels/v1/shared-automated-teller-machines"
-        - "/open-banking/consents/v2/consents"
-        - "/open-banking/consents/v2/consents/{consentId}"
-        - "/open-banking/resources/v2/resources"
-        - "/open-banking/customers/v2/personal/identifications"
-        - "/open-banking/customers/v2/business/identifications"
-        - "/open-banking/customers/v2/personal/qualifications"
-        - "/open-banking/customers/v2/business/qualifications"
-        - "/open-banking/customers/v2/personal/financial-relations"
-        - "/open-banking/customers/v2/business/financial-relations"
-        - "/open-banking/credit-cards-accounts/v2/accounts"
-        - "/open-banking/credit-cards-accounts/v2/accounts/{creditCardAccountId}"
-        - "/open-banking/credit-cards-accounts/v2/accounts/{creditCardAccountId}/limits"
-        - "/open-banking/credit-cards-accounts/v2/accounts/{creditCardAccountId}/transactions"
-        - "/open-banking/credit-cards-accounts/v2/accounts/{creditCardAccountId}/transactions-current"
-        - "/open-banking/credit-cards-accounts/v2/accounts/{creditCardAccountId}/bills"
-        - "/open-banking/credit-cards-accounts/v2/accounts/{creditCardAccountId}/bills/{billId}/transactions"
-        - "/open-banking/accounts/v2/accounts"
-        - "/open-banking/accounts/v2/accounts/{accountId}"
-        - "/open-banking/accounts/v2/accounts/{accountId}/balances"
-        - "/open-banking/accounts/v2/accounts/{accountId}/transactions"
-        - "/open-banking/accounts/v2/accounts/{accountId}/transactions-current"
-        - "/open-banking/accounts/v2/accounts/{accountId}/overdraft-limits"
-        - "/open-banking/loans/v2/contracts"
-        - "/open-banking/loans/v2/contracts/{contractId}"
-        - "/open-banking/loans/v2/contracts/{contractId}/warranties"
-        - "/open-banking/loans/v2/contracts/{contractId}/payments"
-        - "/open-banking/loans/v2/contracts/{contractId}/scheduled-instalments"
-        - "/open-banking/financings/v2/contracts"
-        - "/open-banking/financings/v2/contracts/{contractId}"
-        - "/open-banking/financings/v2/contracts/{contractId}/warranties"
-        - "/open-banking/financings/v2/contracts/{contractId}/payments"
-        - "/open-banking/financings/v2/contracts/{contractId}/scheduled-instalments"
-        - "/open-banking/unarranged-accounts-overdraft/v2/contracts"
-        - "/open-banking/unarranged-accounts-overdraft/v2/contracts/{contractId}"
-        - "/open-banking/unarranged-accounts-overdraft/v2/contracts/{contractId}/warranties"
-        - "/open-banking/unarranged-accounts-overdraft/v2/contracts/{contractId}/payments"
-        - "/open-banking/unarranged-accounts-overdraft/v2/contracts/{contractId}/scheduled-instalments"
-        - "/open-banking/invoice-financings/v2/contracts"
-        - "/open-banking/invoice-financings/v2/contracts/{contractId}"
-        - "/open-banking/invoice-financings/v2/contracts/{contractId}/warranties"
-        - "/open-banking/invoice-financings/v2/contracts/{contractId}/payments"
-        - "/open-banking/invoice-financings/v2/contracts/{contractId}/scheduled-instalments"
-        - "/open-banking/payments/v1/consents"
-        - "/open-banking/payments/v1/consents/{consentId}"
-        - "/open-banking/payments/v1/pix/payments"
-        - "/open-banking/payments/v1/pix/payments/{paymentId}"
+        - "/open-banking/capitalization-bonds/v1/bonds"
+        - "/open-banking/investments/v1/funds"
+        - "/open-banking/exchange/v1/online-rates"
+        - "/open-banking/exchange/v1/vet-values"
+        - "/open-banking/acquiring-services/v1/personals"
+        - "/open-banking/acquiring-services/v1/businesses"
+        - "/open-banking/pension/v1/risk-coverages"
+        - "/open-banking/insurance/v1/automotives"
+        - "/open-banking/insurance/v1/homes"
+        - "/open-banking/insurance/v1/personals"
 
     AdditionalInfo:
-      description: Informações adicionais sobre o reporte
+      description: Informações adicionais sobre o reporte deste endpoint/método. Possui característica variável. As regras de preenchimento estão na documentação funcional em https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/37879861/Reporte#additionalInfo. Atenção especial na tabela Excel com a listagem de endpoints em https://openfinancebrasil.atlassian.net/wiki/download/attachments/37879861/Tabela%20additionalInfo%20%E2%80%93%20campos%20contexto%20e%20obrigatoriedade%20(cliente%20server).xlsx?api=v2.
       type: object
-      additionalProperties: false
       properties:
-        consentId:
-          description: Identificador de consentimento presente na transação
-          type: string
-          pattern: ^urn:[- /:_.',0-9a-zA-Z]{0,200}$
-          maxLength: 200
-        personType:
-          description: Identifica se a transação aconteceu em nome de uma pessoa física ou jurídica. Esse campo é obrigatório quando se está enviado um reporte no papel de Client.
-          type: string
-          enum:
-            - PF
-            - PJ
-        localInstrument:
-          description: Deve ser preenchido com a mesma string informada no payload ".data.localInstrument"
-          type: string
-        status:
-          description: Deve ser preenchido com a mesma string obtida no ".data.status"
-          type: string
-        rejectReason:
-          description: Deve ser preenchido com a mesma string obtida no ".data.rejectionReason.code"
-          type: string
-        errorCodes:  
-          description: Caso o HTTP Code seja 4XX ou 5XX, esse campo deve ser preenchido com a lista das strings obtidas em ".errors[].code" . Não havendo string, deve ser enviada uma lista vazia.
-          type: array
-          items:
-            type: string
-        webhookEnable:
-          description: Deve ser preenchido com o valor booleano TRUE caso haja pelo menos um item indicado na lista do campo ".webhook_uris" no payload, caso contrário deverá ser preenchido com o valor booleano FALSE
-          type: boolean
-        webhookInteractionId:
-          description: Caso o GET esteja sendo feito após o estímulo do webhook, o x-webhook-interaction-id deverá ser indicado
-          type: string
-        rejectionReasonCode:
-          description: Deve ser preenchido com a mesma string obtida no ".data.rejectionReason.code"
-          type: string
-        rejectionReasonDetail: 
-          description: Deve ser preenchido com a mesma string obtida no ".data.rejectionReason.detail"
-          type: string
-          
-      example:
-        consentId: "urn:instituicao:a1b09129-e089-4095-9a9c-274ab1ae1ff9"
-        personType: "PF"
+        {}
 
     OpendataAdditionalInfo:
-      description: Informações adicionais sobre o reporte de dados abertos4
+      description: Informações adicionais sobre o reporte deste endpoint/método. Possui característica variável. As regras de preenchimento estão na documentação funcional em https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/37879861/Reporte#additionalInfo. Atenção especial na tabela Excel com a listagem de endpoints em https://openfinancebrasil.atlassian.net/wiki/download/attachments/37879861/Tabela%20additionalInfo%20%E2%80%93%20campos%20contexto%20e%20obrigatoriedade%20(cliente%20server).xlsx?api=v2.
       type: object
-      additionalProperties: false
       properties:
-        clientIp:
-          description: Endereço IP do usuário final que efetuou a chamada
-          type: string
-          pattern: ^[.:0-9]*$
-          maxLength: 200
-      example:
-        clientIp: "189.62.147.78"
+        {}
 
     GenericError:
       description: Representa uma resposta de erro genérica.
@@ -1005,6 +915,13 @@ components:
           pattern: ^[- /:_.',0-9a-zA-Z]{0,200}$
           maxLength: 200
 
+    EmptyObject:
+      description: Representa um objeto sem propriedades previamente definidas
+      type: object
+      additionalProperties: false
+      example: 
+        {}
+
   securitySchemes:
     PCMAccessToken:
       type: http
@@ -1012,18 +929,6 @@ components:
       bearerFormat: JWT
 
   responses:
-    Default400MissingFields:
-      description: Ocorre quando uma requisição não envia os dados obrigatórios
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ReportResponse"
-          examples:
-            MissingFields:
-              value:
-                reportId: b0841405-1dcf-4a46-bfa0-2c5e664ba753
-                status: DISCARDED
-                message: "Missing fields: 'fapiInteractionId', 'endpoint'"
     Default401Unauthorized:
       description: Ocorre quando uma requisição não é autorizada pelo gateway, e acontece quando o token não é enviado ou está inválido.
       content:
@@ -1044,6 +949,16 @@ components:
             Forbidden:
               value:
                 message: "Forbidden"
+    Default404NotFound:
+      description: Ocorre quando o reporte referenciado nao existe na base de dados.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GenericError"
+          examples:
+            Forbidden:
+              value:
+                message: "Not Found"
     Default406NotAcceptable:
       description: Ocorre quando um cliente espera uma resposta diferente de application/json usando o header `Accept`
       content:
@@ -1065,7 +980,7 @@ components:
               value:
                 message: "Unsupported Media Type"
     Default429TooManyRequests:
-      description: Ocorre quando uma requisição envia um Content Type diferente de application/json
+      description: Ocorre quando o servidor atinge o limite de requisições (atualmente, 300 req/s).
       content:
         application/json:
           schema:

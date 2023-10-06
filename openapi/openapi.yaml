@@ -858,6 +858,10 @@ components:
         - "/open-banking/unarranged-accounts-overdraft/v2/contracts/{contractId}/payments"
         - "/open-banking/unarranged-accounts-overdraft/v2/contracts/{contractId}/scheduled-instalments"
         - "/open-banking/unarranged-accounts-overdraft/v2/contracts/{contractId}/warranties"
+        - "/open-banking/payments/v3/consents"
+        - "/open-banking/payments/v3/consents/{consentId}"
+        - "/open-banking/payments/v3/pix/payments"
+        - "/open-banking/payments/v3/pix/payments/{paymentId}"
 
     OpendataReportEndpoints:
       description: | 

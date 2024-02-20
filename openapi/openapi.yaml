@@ -31,7 +31,7 @@ info:
     * **Divergência**: Quando Server e Client enviam reportes, cada um destes reportes se refere à uma chamada em específico. Nos casos em que uma das partes não envia o reporte sobre essa chamada em específico, é caracterizada uma divergência. As divergências podem ser resolvidas pela chamada às operações de modificação de reportes em suas respectivas APIs. Uma divergência é considerada fechada apenas quando todos os reportes encontram sua respectiva correspondência do outro lado da chamada.
 
     Para informações detalhadas sobre a PCM, consulte o [site da documentação da Plataforma](https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/17378055/Plataforma+de+Coleta+de+M+tricas).
-    
+
   version: 1.0.2
 
 security:
@@ -59,9 +59,9 @@ paths:
       summary: Inclusão de reportes
       description: |
         Inclusão de reportes na plataforma. Ao enviar um lote de reportes, a plataforma vai fazer o processo de validação de cada reporte de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso **todos** dos reportes enviados forem aceitos. Caso pelo menos 1 reporte esteja inconsistente, o status de retorno será 207 - vide documentação de cada status de retorno para maiores informações. 
-        
+
         Os dados que são inseridos na API de Reporte são sempre processados de maneira assíncrona, e sua persistência se utiliza de consistência posterior (eventual consistency), portanto, um registro tem um tempo de processamento em que ele não estará disponível para consulta até que ele seja persistido.
-        
+
         O limite de reportes de cada envio de lote é de 5.000 entradas no array.
       operationId: add-reports
       requestBody:
@@ -74,7 +74,7 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/ClientReportRequest"
                   - $ref: "#/components/schemas/ServerReportRequest"
-                
+
             examples:
               "Request Valido":
                 description: O request apresentado tem todos os campos validados.
@@ -91,7 +91,7 @@ paths:
                     processTimespan: 120
                     endpointUriPrefix: "https://ofin.bank.com/"
                     role: CLIENT
-                    additionalInfo: 
+                    additionalInfo:
                       personType: "PF"
                       consentId: "uri:bank:d1541b17-3175-477d-a52b-2813ae2c4c36"
                   - timestamp: "2021-11-11T19:22:10.334Z"
@@ -106,7 +106,7 @@ paths:
                     processTimespan: 117
                     endpointUriPrefix: "https://ofin.bank.com/"
                     role: CLIENT
-                    additionalInfo: 
+                    additionalInfo:
                       personType: "PF"
                       consentId: "uri:bank:d1541b17-3175-477d-a52b-2813ae2c4c36"
                   - timestamp: "2021-11-11T19:41:41.811Z"
@@ -122,9 +122,9 @@ paths:
       responses:
         "200":
           description: |
-           O status 200 representa a situação onde todos os registros enviados no lote foram validados e serão direcionados para processamento. Se pelo menos 1 registro contiver problemas de validação, o retorno será 207 (vide descrição do status).
-           
-           A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
+            O status 200 representa a situação onde todos os registros enviados no lote foram validados e serão direcionados para processamento. Se pelo menos 1 registro contiver problemas de validação, o retorno será 207 (vide descrição do status).
+
+            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
           content:
             application/json:
               schema:
@@ -193,7 +193,6 @@ paths:
                       status: DISCARDED,
                       message: "Missing fields: 'statusCode'"
 
-
         "400":
           description: O formato do corpo da requisição não é um array.
           content:
@@ -237,7 +236,7 @@ paths:
       description: |
         Operação que permite a consulta de um reporte em específico através de um identificador. A busca por reportes estará sempre no contexto do usuário representado pelo token de acesso, ou seja, o _participante_ só terá acesso à reportes em que instituição que ele pertence é parte, seja como client ou como server.
 
-        O processamento do registro ocorre de maneira assíncrona, o que pode gerar um cenário de consistência eventual: caso a consulta seja feita imediatamente após a inclusão, é possível que o registro ainda não esteja disponível para consulta. 
+        O processamento do registro ocorre de maneira assíncrona, o que pode gerar um cenário de consistência eventual: caso a consulta seja feita imediatamente após a inclusão, é possível que o registro ainda não esteja disponível para consulta.
       operationId: report-by-id
       parameters:
         - name: reportId
@@ -292,9 +291,9 @@ paths:
         content:
           application/json:
             schema:
-                oneOf:
-                  - $ref: "#/components/schemas/ClientReportRequest"
-                  - $ref: "#/components/schemas/ServerReportRequest"
+              oneOf:
+                - $ref: "#/components/schemas/ClientReportRequest"
+                - $ref: "#/components/schemas/ServerReportRequest"
 
       responses:
         "202":
@@ -303,8 +302,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/EmptyObject"
-              example:
-                {}
+              example: {}
 
         "400":
           description: O reporte enviado está inconsistente
@@ -334,9 +332,9 @@ paths:
       summary: Inclusão de reportes
       description: |
         Inclusão de reportes de dados abertos na plataforma. Ao enviar um lote de reportes, a plataforma vai fazer o processo de validação sintática de cada reporte de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso **todos** dos reportes enviados forem aceitos. Caso pelo menos 1 reporte esteja inconsistente, o status de retorno será 207 - vide documentação de cada status de retorno para maiores informações. 
-        
+
         Os dados que são inseridos na API de Reporte são sempre processados de maneira assíncrona, e sua persistência se utiliza de consistência posterior (eventual consistency), portanto, um registro tem um tempo de processamento em que ele não estará disponível para consulta até que ele seja persistido.
-        
+
         O limite de registros de cada lote é de 5.000 registros.
       operationId: add-opendata-reports
       requestBody:
@@ -347,7 +345,7 @@ paths:
               maxItems: 5000
               items:
                 $ref: "#/components/schemas/OpendataReportRequest"
-                
+
             examples:
               "Request Valido":
                 description: O request apresentado tem todos os campos validados.
@@ -370,9 +368,9 @@ paths:
       responses:
         "200":
           description: |
-           O status 200 representa a situação onde todos os registros enviados no lote foram validados e serão direcionados para processamento. Se pelo menos 1 registro contiver problemas de validação, o retorno será 207 (vide descrição do status).
-           
-           A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
+            O status 200 representa a situação onde todos os registros enviados no lote foram validados e serão direcionados para processamento. Se pelo menos 1 registro contiver problemas de validação, o retorno será 207 (vide descrição do status).
+
+            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
           content:
             application/json:
               schema:
@@ -499,7 +497,7 @@ components:
         httpMethod:
           description: Método HTTP da solicitação.
           type: string
-          enum: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
+          enum: ["GET", "POST", "PUT", "DELETE", "PATCH"]
           example: GET
         correlationId:
           description: ID de correlação que identifica uma sequência de chamadas inter-relacionadas no ecossistema. Diferente do fapiInteractionId que serve para identificar cada par request-response (interação), o identificador de correlação serve para ligar diferentes reportes quando estes representam uma jornada ou uma sequência de chamadas. Este valor é de livre provimento pelo reportador.
@@ -544,17 +542,17 @@ components:
         endpointUriPrefix:
           description: |
             Endereço do servidor de destino da chamada incluindo o prefixo quando houver. O formato do campo deverá ser o seguinte: `https://{host}/{prefixo}`, sendo:
-            
+
             * `host`: endereço FQDN do servidor de destino
             * `prefixo`: toda a parte do path que vem antes da string `/open-banking`
-            
+
             Exemplos:
 
             1. Para uma requisição em `https://openbanking.instituicao-1.com.br/opbk/open-banking/products-services/v1/business-accounts`, o dado a ser enviado é `https://openbanking.instituicao-1.com.br/opbk`.
             1. Para uma requisição em `https://openbanking.instituicao-2.com.br/open-banking/products-services/v1/business-accounts`, o dado a ser enviado é `https://openbanking.instituicao-1.com.br/`.
 
             Nos reportes relativos aos endpoints /token e /register este campo deverá conter a URL inteira do request. 
-            
+
             Exemplos: `https://oauth2.cartaodummy.opf.instituicao/as/token.oauth2` `https://instituicao.com.br/orgs/instituicao/reg`
           type: string
           pattern: ^[- /:_.',0-9a-zA-Z]{0,200}$
@@ -600,7 +598,7 @@ components:
         httpMethod:
           description: Método HTTP da solicitação.
           type: string
-          enum: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
+          enum: ["GET", "POST", "PUT", "DELETE", "PATCH"]
           example: GET
         correlationId:
           description: Não utilizado pelo server.
@@ -666,7 +664,7 @@ components:
         httpMethod:
           description: Método HTTP da solicitação.
           type: string
-          enum: ['GET']
+          enum: ["GET"]
           example: GET
         timestamp:
           description: Data/Hora UTC no formato ISO8601 com milissegundos (YYYY-MM-DDTHH:mm:ss.sssZ) do momento em que a chamada foi recebida.
@@ -681,7 +679,6 @@ components:
           example: 120
         additionalInfo:
           $ref: "#/components/schemas/OpendataAdditionalInfo"
-
 
     ReportResponse:
       description: Representa os dados que serão retornados pelas operações de inclusão de reportes.
@@ -793,7 +790,7 @@ components:
               maxLength: 28
 
     PrivateReportEndpoints:
-      description: | 
+      description: |
         Identificação do endpoint que foi utilizado na transação reportada. A identificação do endpoint deve estar entre as entradas desse enum para ser considerado válido. Nesse campo não deve ser utilizado o _path_ da requisição original, uma vez que ao comparar com os valores dessa enum, ele não será considerado válido.
 
         Exemplo:
@@ -864,7 +861,7 @@ components:
         - "/open-banking/payments/v3/pix/payments/{paymentId}"
 
     OpendataReportEndpoints:
-      description: | 
+      description: |
         Identificação do endpoint que foi utilizado na chamada da api de dados abertos. A identificação do endpoint deve estar entre as entradas desse enum para ser considerado válido.
       type: string
       example: "/open-banking/channels/v1/electronic-channels"
@@ -901,13 +898,76 @@ components:
       description: Informações adicionais sobre o reporte deste endpoint/método. Possui característica variável. As regras de preenchimento estão na documentação funcional em https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/37879861/Reporte#additionalInfo. Atenção especial na tabela Excel com a listagem de endpoints em https://openfinancebrasil.atlassian.net/wiki/download/attachments/37879861/Tabela%20additionalInfo%20%E2%80%93%20campos%20contexto%20e%20obrigatoriedade%20(cliente%20server).xlsx?api=v2.
       type: object
       properties:
-        {}
+        consentId:
+          description: Deve ser preenchido com a mesma string obtida no campo `.data.consentId` retornado após a chamada inicial na API "POST /consent". *Ao reportar o uso de um endpoint /token, o identificador único de consentimento só será reportado nos casos em que "grant_type" é do tipo "authorization_code" ou do tipo "refresh_token", uma vez que esta informação de consentId é inexistente quando "grant_type" é do tipo
+          type: string
+        personType:
+          description: Deve ser preenchida baseado no tipo de pessoa responsável pelo consentimento. Deverá ser obserdado se `.data.businessEntity` estiver preenchido no payload, se estiver então preencher com "PJ", se não estiver então preencher com "PF"
+          type: string
+        localInstrument:
+          description: Deve ser preenchido com a mesma string informada no payload ".data.localInstrument"
+          type: string
+        status:
+          description: Deve ser preenchido com a mesma string obtida no ".data.status"
+          type: string
+        clientIp:
+          description: Deve ser preenchido com o Endereço IPv4 ou IPv6 do client que fez a requisição
+          type: string
+        rejectReason:
+          description: Deve ser preenchido com a mesma string obtida no ".data.rejectionReason.code"
+          type: string
+        errorCodes:
+          description: Caso o HTTP Code seja 4XX ou 5XX, esse campo deve ser preenchido com a lista das strings obtidas em ".errors[].code" . Não havendo string, deve ser enviada uma lista vazia.
+          type: string
+        webhookEnable:
+          description: Deve ser preenchido com o valor booleano TRUE caso haja pelo menos um item indicado na lista do campo ".webhook_uris" no payload, caso contrário deverá ser preenchido com o valor booleano FALSE
+          type: string
+        webhookInteractionId:
+          description: Caso o GET esteja sendo feito após o estímulo do webhook, o x-webhook-interaction-id deverá ser indicado
+          type: string
+        enrollmentId:
+          description: Deve ser preenchido com a mesma string obtida no campo `.data.enrollmentId` retornado após a chamada inicial na API "POST /enrollments". *Ao reportar o uso de um endpoint /token, o identificador único de consentimento só será reportado nos casos em que "grant_type" é do tipo "authorization_code" ou do tipo "refresh_token", uma vez que esta informação de enrollmentId é inexistente quando "grant_type" é do tipo "client_credentials".
+          type: string
+        authenticatorAttachment:
+          description: Deve ser preenchido com a mesma string definida em ".data.authenticatorAttachment".  Não havendo string, deve ser explicitamente enviada esse additionalInfo como sendo uma string vazia.
+          type: string
+        platform:
+          description: Deve ser preenchido com a mesma string definida em ".data.platform"
+          type: string
+        rp:
+          description: Deve ser preenchido com a mesma string definida em ".data.rp"
+          type: string
+        rejectionReasonCode:
+          description: Deve ser preenchido com a mesma string obtida no ".data.rejectionReason.code"
+          type: string
+        rejectionReasonDetail:
+          description: Deve ser preenchido com a mesma string obtida no ".data.rejectionReason.detail"
+          type: string
+        authorisationFlow:
+          description: Deve ser preenchido com a mesma string obtida no ".data.authorisationFlow"
+          type: string
+        dropReason:
+          description: |
+            1. Adicionar o campo dropReason nas informações do campo additionalInfo que deverá ser enviado no reporte do provedor do serviço consumido (papel SERVER) nos reportes dos endpoints
+            2. O campo deve ser preenchido como “NO_CREDENTIAL" caso o CPF/CNPJ não seja cliente ou “NONE” caso contrário​.
+            3. ​Neste contexto define-se como cliente o CPF/CNPJ que possui credencial autenticadora para prosseguir no fluxo monitorado​.
+            4. O reporte deverá ser feito por todos os transmissores de dados e detentoras de conta​.
+            5. O provedor do serviço deverá verificar se o CPF/CNPJ informado na criação do consentimento é seu cliente antes de enviar o reporte para a PCM​.
+            6. Será o primeiro campo additionalInfo que será enviado pelos servidores.
+            7. Considerar conta com bloqueio judicial
+
+          type: string
+          enum:
+            - POST /open-banking/consents/v2/consents​
+            - POST /open-banking/payments/v3/consents​
+            - POST /open-banking/payments/v4/consents​
+            - POST /open-banking/enrollments/v1/enrollments​
+            - POST /open-banking/automatic-payments/v1​/recurring-consents​
 
     OpendataAdditionalInfo:
       description: Informações adicionais sobre o reporte deste endpoint/método. Possui característica variável. As regras de preenchimento estão na documentação funcional em https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/37879861/Reporte#additionalInfo. Atenção especial na tabela Excel com a listagem de endpoints em https://openfinancebrasil.atlassian.net/wiki/download/attachments/37879861/Tabela%20additionalInfo%20%E2%80%93%20campos%20contexto%20e%20obrigatoriedade%20(cliente%20server).xlsx?api=v2.
       type: object
-      properties:
-        {}
+      properties: {}
 
     GenericError:
       description: Representa uma resposta de erro genérica.
@@ -923,8 +983,7 @@ components:
       description: Representa um objeto sem propriedades previamente definidas
       type: object
       additionalProperties: false
-      example: 
-        {}
+      example: {}
 
   securitySchemes:
     PCMAccessToken:

@@ -948,13 +948,11 @@ components:
           type: string
         dropReason:
           description: |
-            1. Adicionar o campo dropReason nas informações do campo additionalInfo que deverá ser enviado no reporte do provedor do serviço consumido (papel SERVER) nos reportes dos endpoints
-            2. O campo deve ser preenchido como “NO_CREDENTIAL" caso o CPF/CNPJ não seja cliente ou “NONE” caso contrário​.
-            3. ​Neste contexto define-se como cliente o CPF/CNPJ que possui credencial autenticadora para prosseguir no fluxo monitorado​.
-            4. O reporte deverá ser feito por todos os transmissores de dados e detentoras de conta​.
-            5. O provedor do serviço deverá verificar se o CPF/CNPJ informado na criação do consentimento é seu cliente antes de enviar o reporte para a PCM​.
-            6. Será o primeiro campo additionalInfo que será enviado pelos servidores.
-            7. Considerar conta com bloqueio judicial
+            1. O campo dropReason deve ser adicionado nas informações do campo additionalInfo que deverá ser enviado no reporte do provedor do serviço consumido (papel SERVER)
+            2. O campo deve ser preenchido como “NO_CREDENTIAL" caso o CPF/CNPJ não seja cliente ou “NONE” caso contrário.
+            3. Neste contexto define-se como cliente o CPF/CNPJ que possui credencial autenticadora para prosseguir no fluxo monitorado.
+            4. O reporte deverá ser feito por todos os transmissores de dados e detentoras de conta.
+            5. O provedor do serviço deverá verificar se o CPF/CNPJ informado na criação do consentimento é seu cliente antes de enviar o reporte para a PCM.
 
           type: string
           enum:

@@ -253,47 +253,11 @@ paths:
               "Request Valido":
                 description: O request apresentado tem todos os campos validados.
                 value:
-                  - timestamp: "2021-11-11T18:08:08.894Z"
-                    fapiInteractionId: "d78fc4e5-37ca-4da3-adf2-9b082bf92280"
-                    clientSSId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
-                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
-                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
-                    endpoint: "/open-banking/products-services/v1/business-financings"
-                    statusCode: 200
-                    httpMethod: GET
-                    correlationId: "wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf"
-                    processTimespan: 120
-                    endpointUriPrefix: "https://ofin.bank.com/"
-                    role: CLIENT
-                    consentId: "consentId"
+                  - consentId: "consentId"
                     uriAuthorizationEndpoint: "uriAuthorizationEndpoint"
                     plataform: [browser, app]
                     osVersion: "osVersion"
-                  - timestamp: "2021-11-11T19:22:10.334Z"
-                    fapiInteractionId: "0786fce3-a36f-43f8-b66a-d26ab1dfc639"
-                    clientSSId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
-                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
-                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
-                    endpoint: "/open-banking/products-services/v1/business-financings"
-                    statusCode: 200
-                    httpMethod: GET
-                    correlationId: "8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j"
-                    processTimespan: 117
-                    endpointUriPrefix: "https://ofin.bank.com/"
-                    role: CLIENT
-                    consentId: "consentId"
-                    uriAuthorizationEndpoint: "uriAuthorizationEndpoint"
-                    plataform: [browser, app]
-                    osVersion: "osVersion"
-                  - timestamp: "2021-11-11T19:41:41.811Z"
-                    fapiInteractionId: "d1541b17-3175-477d-a52b-2813ae2c4c36"
-                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
-                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
-                    endpoint: "/open-banking/products-services/v1/business-financings"
-                    statusCode: 200
-                    httpMethod: GET
-                    processTimespan: 125
-                    role: SERVER
+
         required: true
       responses:
         "200":
@@ -427,36 +391,9 @@ paths:
               "Request Valido":
                 description: O request apresentado tem todos os campos validados.
                 value:
-                  - timestamp: "2021-11-11T18:08:08.894Z"
-                    fapiInteractionId: "d78fc4e5-37ca-4da3-adf2-9b082bf92280"
-                    clientSSId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
-                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
-                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
-                    endpoint: "/open-banking/products-services/v1/business-financings"
-                    statusCode: 200
-                    httpMethod: GET
-                    correlationId: "wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf"
-                    processTimespan: 120
-                    endpointUriPrefix: "https://ofin.bank.com/"
-                    role: CLIENT
-                    consentId: "consentId"
+                  - consentId: "consentId"
                     uriAuthorizationEndpoint: "uriAuthorizationEndpoint"
                     plataform: [browser, app]
-                    osVersion: "osVersion"
-                  - timestamp: "2021-11-11T19:22:10.334Z"
-                    fapiInteractionId: "0786fce3-a36f-43f8-b66a-d26ab1dfc639"
-                    clientSSId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
-                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
-                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
-                    endpoint: "/open-banking/products-services/v1/business-financings"
-                    statusCode: 200
-                    httpMethod: GET
-                    correlationId: "8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j"
-                    processTimespan: 117
-                    endpointUriPrefix: "https://ofin.bank.com/"
-                    role: CLIENT
-                    consentId: "consentId"
-                    platform: "platform"
                     osVersion: "osVersion"
                     type:
                       [
@@ -464,15 +401,7 @@ paths:
                         AWAITING_USER_AUTH,
                         AWAITING_REDIRECT_TO_APP,
                       ]
-                  - timestamp: "2021-11-11T19:41:41.811Z"
-                    fapiInteractionId: "d1541b17-3175-477d-a52b-2813ae2c4c36"
-                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
-                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
-                    endpoint: "/open-banking/products-services/v1/business-financings"
-                    statusCode: 200
-                    httpMethod: GET
-                    processTimespan: 125
-                    role: SERVER
+
         required: true
       responses:
         "200":
@@ -606,45 +535,10 @@ paths:
               "Request Valido":
                 description: O request apresentado tem todos os campos validados.
                 value:
-                  - timestamp: "2021-11-11T18:08:08.894Z"
-                    fapiInteractionId: "d78fc4e5-37ca-4da3-adf2-9b082bf92280"
-                    clientSSId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
-                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
-                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
-                    endpoint: "/open-banking/products-services/v1/business-financings"
-                    statusCode: 200
-                    httpMethod: GET
-                    correlationId: "wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf"
-                    processTimespan: 120
-                    endpointUriPrefix: "https://ofin.bank.com/"
-                    role: CLIENT
-                    consentId: "consentId"
+                  - consentId: "consentId"
                     plataform: [browser, app]
                     os_version: "os_version"
-                  - timestamp: "2021-11-11T19:22:10.334Z"
-                    fapiInteractionId: "0786fce3-a36f-43f8-b66a-d26ab1dfc639"
-                    clientSSId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
-                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
-                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
-                    endpoint: "/open-banking/products-services/v1/business-financings"
-                    statusCode: 200
-                    httpMethod: GET
-                    correlationId: "8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j"
-                    processTimespan: 117
-                    endpointUriPrefix: "https://ofin.bank.com/"
-                    role: CLIENT
-                    consentId: "consentId"
-                    plataform: [browser, app]
-                    os_version: "os_version"
-                  - timestamp: "2021-11-11T19:41:41.811Z"
-                    fapiInteractionId: "d1541b17-3175-477d-a52b-2813ae2c4c36"
-                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
-                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
-                    endpoint: "/open-banking/products-services/v1/business-financings"
-                    statusCode: 200
-                    httpMethod: GET
-                    processTimespan: 125
-                    role: SERVER
+
         required: true
       responses:
         "200":
@@ -778,48 +672,12 @@ paths:
               "Request Valido":
                 description: O request apresentado tem todos os campos validados.
                 value:
-                  - timestamp: "2021-11-11T18:08:08.894Z"
-                    fapiInteractionId: "d78fc4e5-37ca-4da3-adf2-9b082bf92280"
-                    clientSSId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
-                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
-                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
-                    endpoint: "/open-banking/products-services/v1/business-financings"
-                    statusCode: 200
-                    httpMethod: GET
-                    correlationId: "wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf"
-                    processTimespan: 120
-                    endpointUriPrefix: "https://ofin.bank.com/"
-                    role: CLIENT
-                    consentId: "consentId"
+                  - consentId: "consentId"
                     uri_callback: "uri_callback"
                     plataform: [browser, app]
                     os_version: "os_version"
                     type: [AUTHORISED, REJECTED]
-                  - timestamp: "2021-11-11T19:22:10.334Z"
-                    fapiInteractionId: "0786fce3-a36f-43f8-b66a-d26ab1dfc639"
-                    clientSSId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
-                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
-                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
-                    endpoint: "/open-banking/products-services/v1/business-financings"
-                    statusCode: 200
-                    httpMethod: GET
-                    correlationId: "8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j"
-                    processTimespan: 117
-                    endpointUriPrefix: "https://ofin.bank.com/"
-                    role: CLIENT
-                    uri_callback: "uri_callback"
-                    plataform: [browser, app]
-                    os_version: "os_version"
-                    type: [AUTHORISED, REJECTED]
-                  - timestamp: "2021-11-11T19:41:41.811Z"
-                    fapiInteractionId: "d1541b17-3175-477d-a52b-2813ae2c4c36"
-                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
-                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
-                    endpoint: "/open-banking/products-services/v1/business-financings"
-                    statusCode: 200
-                    httpMethod: GET
-                    processTimespan: 125
-                    role: SERVER
+
         required: true
       responses:
         "200":
@@ -953,47 +811,11 @@ paths:
               "Request Valido":
                 description: O request apresentado tem todos os campos validados.
                 value:
-                  - timestamp: "2021-11-11T18:08:08.894Z"
-                    fapiInteractionId: "d78fc4e5-37ca-4da3-adf2-9b082bf92280"
-                    clientSSId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
-                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
-                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
-                    endpoint: "/open-banking/products-services/v1/business-financings"
-                    statusCode: 200
-                    httpMethod: GET
-                    correlationId: "wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf"
-                    processTimespan: 120
-                    endpointUriPrefix: "https://ofin.bank.com/"
-                    role: CLIENT
-                    consentId: "consentId"
+                  - consentId: "consentId"
                     platform: [browser, app]
                     os_version: "os_version"
                     error: "error"
-                  - timestamp: "2021-11-11T19:22:10.334Z"
-                    fapiInteractionId: "0786fce3-a36f-43f8-b66a-d26ab1dfc639"
-                    clientSSId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
-                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
-                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
-                    endpoint: "/open-banking/products-services/v1/business-financings"
-                    statusCode: 200
-                    httpMethod: GET
-                    correlationId: "8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j"
-                    processTimespan: 117
-                    endpointUriPrefix: "https://ofin.bank.com/"
-                    role: CLIENT
-                    consentId: "consentId"
-                    platform: [browser, app]
-                    os_version: "os_version"
-                    error: "error"
-                  - timestamp: "2021-11-11T19:41:41.811Z"
-                    fapiInteractionId: "d1541b17-3175-477d-a52b-2813ae2c4c36"
-                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
-                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
-                    endpoint: "/open-banking/products-services/v1/business-financings"
-                    statusCode: 200
-                    httpMethod: GET
-                    processTimespan: 125
-                    role: SERVER
+
         required: true
       responses:
         "200":
@@ -1127,45 +949,9 @@ paths:
               "Request Valido":
                 description: O request apresentado tem todos os campos validados.
                 value:
-                  - timestamp: "2021-11-11T18:08:08.894Z"
-                    fapiInteractionId: "d78fc4e5-37ca-4da3-adf2-9b082bf92280"
-                    clientSSId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
-                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
-                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
-                    endpoint: "/open-banking/products-services/v1/business-financings"
-                    statusCode: 200
-                    httpMethod: GET
-                    correlationId: "wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf"
-                    processTimespan: 120
-                    endpointUriPrefix: "https://ofin.bank.com/"
-                    role: CLIENT
-                    consentId: "consentId"
+                  - consentId: "consentId"
                     platform: [browser, app]
                     os_version: "os_version"
-                  - timestamp: "2021-11-11T19:22:10.334Z"
-                    fapiInteractionId: "0786fce3-a36f-43f8-b66a-d26ab1dfc639"
-                    clientSSId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
-                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
-                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
-                    endpoint: "/open-banking/products-services/v1/business-financings"
-                    statusCode: 200
-                    httpMethod: GET
-                    correlationId: "8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j"
-                    processTimespan: 117
-                    endpointUriPrefix: "https://ofin.bank.com/"
-                    role: CLIENT
-                    consentId: "consentId"
-                    platform: "platform"
-                    os_version: "os_version"
-                  - timestamp: "2021-11-11T19:41:41.811Z"
-                    fapiInteractionId: "d1541b17-3175-477d-a52b-2813ae2c4c36"
-                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
-                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
-                    endpoint: "/open-banking/products-services/v1/business-financings"
-                    statusCode: 200
-                    httpMethod: GET
-                    processTimespan: 125
-                    role: SERVER
         required: true
       responses:
         "200":

@@ -31,7 +31,7 @@ info:
     * **Divergência**: Quando Server e Client enviam reportes, cada um destes reportes se refere à uma chamada em específico. Nos casos em que uma das partes não envia o reporte sobre essa chamada em específico, é caracterizada uma divergência. As divergências podem ser resolvidas pela chamada às operações de modificação de reportes em suas respectivas APIs. Uma divergência é considerada fechada apenas quando todos os reportes encontram sua respectiva correspondência do outro lado da chamada.
 
     Para informações detalhadas sobre a PCM, consulte o [site da documentação da Plataforma](https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/17378055/Plataforma+de+Coleta+de+M+tricas).
-    
+
   version: 1.0.2
 
 security:
@@ -59,9 +59,9 @@ paths:
       summary: Inclusão de reportes
       description: |
         Inclusão de reportes na plataforma. Ao enviar um lote de reportes, a plataforma vai fazer o processo de validação de cada reporte de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso **todos** dos reportes enviados forem aceitos. Caso pelo menos 1 reporte esteja inconsistente, o status de retorno será 207 - vide documentação de cada status de retorno para maiores informações. 
-        
+
         Os dados que são inseridos na API de Reporte são sempre processados de maneira assíncrona, e sua persistência se utiliza de consistência posterior (eventual consistency), portanto, um registro tem um tempo de processamento em que ele não estará disponível para consulta até que ele seja persistido.
-        
+
         O limite de reportes de cada envio de lote é de 5.000 entradas no array.
       operationId: add-reports
       requestBody:
@@ -74,7 +74,7 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/ClientReportRequest"
                   - $ref: "#/components/schemas/ServerReportRequest"
-                
+
             examples:
               "Request Valido":
                 description: O request apresentado tem todos os campos validados.
@@ -91,7 +91,7 @@ paths:
                     processTimespan: 120
                     endpointUriPrefix: "https://ofin.bank.com/"
                     role: CLIENT
-                    additionalInfo: 
+                    additionalInfo:
                       personType: "PF"
                       consentId: "uri:bank:d1541b17-3175-477d-a52b-2813ae2c4c36"
                   - timestamp: "2021-11-11T19:22:10.334Z"
@@ -106,7 +106,7 @@ paths:
                     processTimespan: 117
                     endpointUriPrefix: "https://ofin.bank.com/"
                     role: CLIENT
-                    additionalInfo: 
+                    additionalInfo:
                       personType: "PF"
                       consentId: "uri:bank:d1541b17-3175-477d-a52b-2813ae2c4c36"
                   - timestamp: "2021-11-11T19:41:41.811Z"
@@ -122,9 +122,9 @@ paths:
       responses:
         "200":
           description: |
-           O status 200 representa a situação onde todos os registros enviados no lote foram validados e serão direcionados para processamento. Se pelo menos 1 registro contiver problemas de validação, o retorno será 207 (vide descrição do status).
-           
-           A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
+            O status 200 representa a situação onde todos os registros enviados no lote foram validados e serão direcionados para processamento. Se pelo menos 1 registro contiver problemas de validação, o retorno será 207 (vide descrição do status).
+
+            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
           content:
             application/json:
               schema:
@@ -193,6 +193,1051 @@ paths:
                       status: DISCARDED,
                       message: "Missing fields: 'statusCode'"
 
+        "400":
+          description: O formato do corpo da requisição não é um array.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+              examples:
+                "400":
+                  value:
+                    message: "Invalid payload format: MUST be an array"
+
+        "413":
+          description: A quantidade de registros enviado excede o limite da operação (5.000 elementos no array), ou o tamanho do payload excede 10Mb.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+              examples:
+                "Limite de registros excedido":
+                  value:
+                    message: Record limit exceeded
+
+        "401":
+          $ref: "#/components/responses/Default401Unauthorized"
+        "403":
+          $ref: "#/components/responses/Default403Forbidden"
+        "406":
+          $ref: "#/components/responses/Default406NotAcceptable"
+        "415":
+          $ref: "#/components/responses/Default415UnsupportedMediaType"
+        "429":
+          $ref: "#/components/responses/Default429TooManyRequests"
+        default:
+          $ref: "#/components/responses/Default500InternalServerError"
+
+  "/report-api/v2/hybrid-flow/client/redirect-to-server":
+    post:
+      tags:
+        - Private API
+      summary: Inclusão de reportes
+      description: |
+        Inclusão de reportes na plataforma. Ao enviar um lote de reportes, a plataforma vai fazer o processo de validação de cada reporte de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso **todos** dos reportes enviados forem aceitos. Caso pelo menos 1 reporte esteja inconsistente, o status de retorno será 207 - vide documentação de cada status de retorno para maiores informações. 
+        Os dados que são inseridos na API de Reporte são sempre processados de maneira assíncrona, e sua persistência se utiliza de consistência posterior (eventual consistency), portanto, um registro tem um tempo de processamento em que ele não estará disponível para consulta até que ele seja persistido.
+        O limite de reportes de cada envio de lote é de 5.000 entradas no array.
+      operationId: add-reports-client-redirect-to-server
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              maxItems: 5000
+              items:
+                oneOf:
+                  - $ref: "#/components/schemas/ClientReportRequest"
+                  - $ref: "#/components/schemas/ServerReportRequest"
+
+            examples:
+              "Request Valido":
+                description: O request apresentado tem todos os campos validados.
+                value:
+                  - timestamp: "2021-11-11T18:08:08.894Z"
+                    fapiInteractionId: "d78fc4e5-37ca-4da3-adf2-9b082bf92280"
+                    clientSSId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
+                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
+                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
+                    endpoint: "/open-banking/products-services/v1/business-financings"
+                    statusCode: 200
+                    httpMethod: GET
+                    correlationId: "wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf"
+                    processTimespan: 120
+                    endpointUriPrefix: "https://ofin.bank.com/"
+                    role: CLIENT
+                    consentId: "consentId"
+                    uriAuthorizationEndpoint: "uriAuthorizationEndpoint"
+                    plataform: [browser, app]
+                    osVersion: "osVersion"
+                  - timestamp: "2021-11-11T19:22:10.334Z"
+                    fapiInteractionId: "0786fce3-a36f-43f8-b66a-d26ab1dfc639"
+                    clientSSId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
+                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
+                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
+                    endpoint: "/open-banking/products-services/v1/business-financings"
+                    statusCode: 200
+                    httpMethod: GET
+                    correlationId: "8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j"
+                    processTimespan: 117
+                    endpointUriPrefix: "https://ofin.bank.com/"
+                    role: CLIENT
+                    consentId: "consentId"
+                    uriAuthorizationEndpoint: "uriAuthorizationEndpoint"
+                    plataform: [browser, app]
+                    osVersion: "osVersion"
+                  - timestamp: "2021-11-11T19:41:41.811Z"
+                    fapiInteractionId: "d1541b17-3175-477d-a52b-2813ae2c4c36"
+                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
+                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
+                    endpoint: "/open-banking/products-services/v1/business-financings"
+                    statusCode: 200
+                    httpMethod: GET
+                    processTimespan: 125
+                    role: SERVER
+        required: true
+      responses:
+        "200":
+          description: |
+            O status 200 representa a situação onde todos os registros enviados no lote foram validados e serão direcionados para processamento. Se pelo menos 1 registro contiver problemas de validação, o retorno será 207 (vide descrição do status).
+            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
+          content:
+            application/json:
+              schema:
+                type: array
+                maxItems: 5000
+                items:
+                  $ref: "#/components/schemas/ReportResponse"
+              examples:
+                Todos Processados:
+                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação. O payload da resposta vem na mesma ordem do array da solicitação. Uma vez que todos os registros foram validados, o status de retorno é o 200.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
+                      status: ACCEPTED
+                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
+                      correlationId: 8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j
+                      status: ACCEPTED
+                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
+                      status: ACCEPTED
+
+        "207":
+          description: |
+            O status 207 (Multi-Status) informa ao solicitante que o formato da requisição está correto, mas que entradas do array contém erro de validação em pelo menos 1 item. Ou seja, se todos os elementos do array informado estiverem com falha de validação, a operação vai devolver o status 207, e no corpo da resposta todos os elementos do array vão estar com status `DISCARDED` e com sua respectiva mensagem. 
+            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
+          content:
+            application/json:
+              schema:
+                type: array
+                maxItems: 5000
+                items:
+                  $ref: "#/components/schemas/ReportResponse"
+              examples:
+                "Primeiro registro com falha":
+                  description: |
+                    No caso apresentado é o resultado onde o exemplo "Request com falha" foi enviado: o registro com o _fapiInteractionId_ `d78fc4e5-37ca-4da3-adf2-9b082bf92280` apresentou uma falha na validação, mas os demais foram enviados para processamento. Como um dos registros não foi validado, o status de retorno passa a ser 207, e os demais registros são processados normalmente.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
+                      correlationId: 8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j
+                      status: ACCEPTED
+                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
+                      status: ACCEPTED
+                "Todos registros com falha":
+                  description: |
+                    Neste caso, parte-se da premissa que todos os registros foram enviados sem _correlationId_ e sem _uri_. Nesse caso, todos vão falhar na etapa de validação, mas mesmo quando todos os registros falham, o status de retorno é o 207.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                "Campo obrigatório não enviado":
+                  description: |
+                    Registro com campo obrigatório não enviado.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a,
+                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf,
+                      status: DISCARDED,
+                      message: "Missing fields: 'statusCode'"
+
+        "400":
+          description: O formato do corpo da requisição não é um array.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+              examples:
+                "400":
+                  value:
+                    message: "Invalid payload format: MUST be an array"
+
+        "413":
+          description: A quantidade de registros enviado excede o limite da operação (5.000 elementos no array), ou o tamanho do payload excede 10Mb.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+              examples:
+                "Limite de registros excedido":
+                  value:
+                    message: Record limit exceeded
+
+        "401":
+          $ref: "#/components/responses/Default401Unauthorized"
+        "403":
+          $ref: "#/components/responses/Default403Forbidden"
+        "406":
+          $ref: "#/components/responses/Default406NotAcceptable"
+        "415":
+          $ref: "#/components/responses/Default415UnsupportedMediaType"
+        "429":
+          $ref: "#/components/responses/Default429TooManyRequests"
+        default:
+          $ref: "#/components/responses/Default500InternalServerError"
+
+  "/report-api/v2/hybrid-flow/server/redirect-target":
+    post:
+      tags:
+        - Private API
+      summary: Inclusão de reportes
+      description: |
+        Inclusão de reportes na plataforma. Ao enviar um lote de reportes, a plataforma vai fazer o processo de validação de cada reporte de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso **todos** dos reportes enviados forem aceitos. Caso pelo menos 1 reporte esteja inconsistente, o status de retorno será 207 - vide documentação de cada status de retorno para maiores informações. 
+        Os dados que são inseridos na API de Reporte são sempre processados de maneira assíncrona, e sua persistência se utiliza de consistência posterior (eventual consistency), portanto, um registro tem um tempo de processamento em que ele não estará disponível para consulta até que ele seja persistido.
+        O limite de reportes de cada envio de lote é de 5.000 entradas no array.
+      operationId: add-reports-server-redirect-target
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              maxItems: 5000
+              items:
+                oneOf:
+                  - $ref: "#/components/schemas/ClientReportRequest"
+                  - $ref: "#/components/schemas/ServerReportRequest"
+
+            examples:
+              "Request Valido":
+                description: O request apresentado tem todos os campos validados.
+                value:
+                  - timestamp: "2021-11-11T18:08:08.894Z"
+                    fapiInteractionId: "d78fc4e5-37ca-4da3-adf2-9b082bf92280"
+                    clientSSId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
+                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
+                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
+                    endpoint: "/open-banking/products-services/v1/business-financings"
+                    statusCode: 200
+                    httpMethod: GET
+                    correlationId: "wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf"
+                    processTimespan: 120
+                    endpointUriPrefix: "https://ofin.bank.com/"
+                    role: CLIENT
+                    consentId: "consentId"
+                    uriAuthorizationEndpoint: "uriAuthorizationEndpoint"
+                    plataform: [browser, app]
+                    osVersion: "osVersion"
+                  - timestamp: "2021-11-11T19:22:10.334Z"
+                    fapiInteractionId: "0786fce3-a36f-43f8-b66a-d26ab1dfc639"
+                    clientSSId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
+                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
+                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
+                    endpoint: "/open-banking/products-services/v1/business-financings"
+                    statusCode: 200
+                    httpMethod: GET
+                    correlationId: "8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j"
+                    processTimespan: 117
+                    endpointUriPrefix: "https://ofin.bank.com/"
+                    role: CLIENT
+                    consentId: "consentId"
+                    platform: "platform"
+                    osVersion: "osVersion"
+                    type:
+                      [
+                        AWAITING_HANDOFF,
+                        AWAITING_USER_AUTH,
+                        AWAITING_REDIRECT_TO_APP,
+                      ]
+                  - timestamp: "2021-11-11T19:41:41.811Z"
+                    fapiInteractionId: "d1541b17-3175-477d-a52b-2813ae2c4c36"
+                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
+                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
+                    endpoint: "/open-banking/products-services/v1/business-financings"
+                    statusCode: 200
+                    httpMethod: GET
+                    processTimespan: 125
+                    role: SERVER
+        required: true
+      responses:
+        "200":
+          description: |
+            O status 200 representa a situação onde todos os registros enviados no lote foram validados e serão direcionados para processamento. Se pelo menos 1 registro contiver problemas de validação, o retorno será 207 (vide descrição do status).
+            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
+          content:
+            application/json:
+              schema:
+                type: array
+                maxItems: 5000
+                items:
+                  $ref: "#/components/schemas/ReportResponse"
+              examples:
+                Todos Processados:
+                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação. O payload da resposta vem na mesma ordem do array da solicitação. Uma vez que todos os registros foram validados, o status de retorno é o 200.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
+                      status: ACCEPTED
+                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
+                      correlationId: 8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j
+                      status: ACCEPTED
+                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
+                      status: ACCEPTED
+
+        "207":
+          description: |
+            O status 207 (Multi-Status) informa ao solicitante que o formato da requisição está correto, mas que entradas do array contém erro de validação em pelo menos 1 item. Ou seja, se todos os elementos do array informado estiverem com falha de validação, a operação vai devolver o status 207, e no corpo da resposta todos os elementos do array vão estar com status `DISCARDED` e com sua respectiva mensagem. 
+            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
+          content:
+            application/json:
+              schema:
+                type: array
+                maxItems: 5000
+                items:
+                  $ref: "#/components/schemas/ReportResponse"
+              examples:
+                "Primeiro registro com falha":
+                  description: |
+                    No caso apresentado é o resultado onde o exemplo "Request com falha" foi enviado: o registro com o _fapiInteractionId_ `d78fc4e5-37ca-4da3-adf2-9b082bf92280` apresentou uma falha na validação, mas os demais foram enviados para processamento. Como um dos registros não foi validado, o status de retorno passa a ser 207, e os demais registros são processados normalmente.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
+                      correlationId: 8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j
+                      status: ACCEPTED
+                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
+                      status: ACCEPTED
+                "Todos registros com falha":
+                  description: |
+                    Neste caso, parte-se da premissa que todos os registros foram enviados sem _correlationId_ e sem _uri_. Nesse caso, todos vão falhar na etapa de validação, mas mesmo quando todos os registros falham, o status de retorno é o 207.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                "Campo obrigatório não enviado":
+                  description: |
+                    Registro com campo obrigatório não enviado.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a,
+                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf,
+                      status: DISCARDED,
+                      message: "Missing fields: 'statusCode'"
+
+        "400":
+          description: O formato do corpo da requisição não é um array.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+              examples:
+                "400":
+                  value:
+                    message: "Invalid payload format: MUST be an array"
+
+        "413":
+          description: A quantidade de registros enviado excede o limite da operação (5.000 elementos no array), ou o tamanho do payload excede 10Mb.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+              examples:
+                "Limite de registros excedido":
+                  value:
+                    message: Record limit exceeded
+
+        "401":
+          $ref: "#/components/responses/Default401Unauthorized"
+        "403":
+          $ref: "#/components/responses/Default403Forbidden"
+        "406":
+          $ref: "#/components/responses/Default406NotAcceptable"
+        "415":
+          $ref: "#/components/responses/Default415UnsupportedMediaType"
+        "429":
+          $ref: "#/components/responses/Default429TooManyRequests"
+        default:
+          $ref: "#/components/responses/Default500InternalServerError"
+
+  "/report-api/v2/hybrid-flow/server/authenticated":
+    post:
+      tags:
+        - Private API
+      summary: Inclusão de reportes
+      description: |
+        Inclusão de reportes na plataforma. Ao enviar um lote de reportes, a plataforma vai fazer o processo de validação de cada reporte de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso **todos** dos reportes enviados forem aceitos. Caso pelo menos 1 reporte esteja inconsistente, o status de retorno será 207 - vide documentação de cada status de retorno para maiores informações. 
+        Os dados que são inseridos na API de Reporte são sempre processados de maneira assíncrona, e sua persistência se utiliza de consistência posterior (eventual consistency), portanto, um registro tem um tempo de processamento em que ele não estará disponível para consulta até que ele seja persistido.
+        O limite de reportes de cada envio de lote é de 5.000 entradas no array.
+      operationId: add-reports-server-authenticated
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              maxItems: 5000
+              items:
+                oneOf:
+                  - $ref: "#/components/schemas/ClientReportRequest"
+                  - $ref: "#/components/schemas/ServerReportRequest"
+
+            examples:
+              "Request Valido":
+                description: O request apresentado tem todos os campos validados.
+                value:
+                  - timestamp: "2021-11-11T18:08:08.894Z"
+                    fapiInteractionId: "d78fc4e5-37ca-4da3-adf2-9b082bf92280"
+                    clientSSId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
+                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
+                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
+                    endpoint: "/open-banking/products-services/v1/business-financings"
+                    statusCode: 200
+                    httpMethod: GET
+                    correlationId: "wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf"
+                    processTimespan: 120
+                    endpointUriPrefix: "https://ofin.bank.com/"
+                    role: CLIENT
+                    consentId: "consentId"
+                    plataform: [browser, app]
+                    os_version: "os_version"
+                  - timestamp: "2021-11-11T19:22:10.334Z"
+                    fapiInteractionId: "0786fce3-a36f-43f8-b66a-d26ab1dfc639"
+                    clientSSId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
+                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
+                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
+                    endpoint: "/open-banking/products-services/v1/business-financings"
+                    statusCode: 200
+                    httpMethod: GET
+                    correlationId: "8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j"
+                    processTimespan: 117
+                    endpointUriPrefix: "https://ofin.bank.com/"
+                    role: CLIENT
+                    consentId: "consentId"
+                    plataform: [browser, app]
+                    os_version: "os_version"
+                  - timestamp: "2021-11-11T19:41:41.811Z"
+                    fapiInteractionId: "d1541b17-3175-477d-a52b-2813ae2c4c36"
+                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
+                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
+                    endpoint: "/open-banking/products-services/v1/business-financings"
+                    statusCode: 200
+                    httpMethod: GET
+                    processTimespan: 125
+                    role: SERVER
+        required: true
+      responses:
+        "200":
+          description: |
+            O status 200 representa a situação onde todos os registros enviados no lote foram validados e serão direcionados para processamento. Se pelo menos 1 registro contiver problemas de validação, o retorno será 207 (vide descrição do status).
+            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
+          content:
+            application/json:
+              schema:
+                type: array
+                maxItems: 5000
+                items:
+                  $ref: "#/components/schemas/ReportResponse"
+              examples:
+                Todos Processados:
+                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação. O payload da resposta vem na mesma ordem do array da solicitação. Uma vez que todos os registros foram validados, o status de retorno é o 200.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
+                      status: ACCEPTED
+                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
+                      correlationId: 8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j
+                      status: ACCEPTED
+                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
+                      status: ACCEPTED
+
+        "207":
+          description: |
+            O status 207 (Multi-Status) informa ao solicitante que o formato da requisição está correto, mas que entradas do array contém erro de validação em pelo menos 1 item. Ou seja, se todos os elementos do array informado estiverem com falha de validação, a operação vai devolver o status 207, e no corpo da resposta todos os elementos do array vão estar com status `DISCARDED` e com sua respectiva mensagem. 
+            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
+          content:
+            application/json:
+              schema:
+                type: array
+                maxItems: 5000
+                items:
+                  $ref: "#/components/schemas/ReportResponse"
+              examples:
+                "Primeiro registro com falha":
+                  description: |
+                    No caso apresentado é o resultado onde o exemplo "Request com falha" foi enviado: o registro com o _fapiInteractionId_ `d78fc4e5-37ca-4da3-adf2-9b082bf92280` apresentou uma falha na validação, mas os demais foram enviados para processamento. Como um dos registros não foi validado, o status de retorno passa a ser 207, e os demais registros são processados normalmente.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
+                      correlationId: 8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j
+                      status: ACCEPTED
+                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
+                      status: ACCEPTED
+                "Todos registros com falha":
+                  description: |
+                    Neste caso, parte-se da premissa que todos os registros foram enviados sem _correlationId_ e sem _uri_. Nesse caso, todos vão falhar na etapa de validação, mas mesmo quando todos os registros falham, o status de retorno é o 207.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                "Campo obrigatório não enviado":
+                  description: |
+                    Registro com campo obrigatório não enviado.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a,
+                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf,
+                      status: DISCARDED,
+                      message: "Missing fields: 'statusCode'"
+
+        "400":
+          description: O formato do corpo da requisição não é um array.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+              examples:
+                "400":
+                  value:
+                    message: "Invalid payload format: MUST be an array"
+
+        "413":
+          description: A quantidade de registros enviado excede o limite da operação (5.000 elementos no array), ou o tamanho do payload excede 10Mb.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+              examples:
+                "Limite de registros excedido":
+                  value:
+                    message: Record limit exceeded
+
+        "401":
+          $ref: "#/components/responses/Default401Unauthorized"
+        "403":
+          $ref: "#/components/responses/Default403Forbidden"
+        "406":
+          $ref: "#/components/responses/Default406NotAcceptable"
+        "415":
+          $ref: "#/components/responses/Default415UnsupportedMediaType"
+        "429":
+          $ref: "#/components/responses/Default429TooManyRequests"
+        default:
+          $ref: "#/components/responses/Default500InternalServerError"
+
+  "/report-api/v2/hybrid-flow/server/redirect-to-client":
+    post:
+      tags:
+        - Private API
+      summary: Inclusão de reportes
+      description: |
+        Inclusão de reportes na plataforma. Ao enviar um lote de reportes, a plataforma vai fazer o processo de validação de cada reporte de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso **todos** dos reportes enviados forem aceitos. Caso pelo menos 1 reporte esteja inconsistente, o status de retorno será 207 - vide documentação de cada status de retorno para maiores informações. 
+        Os dados que são inseridos na API de Reporte são sempre processados de maneira assíncrona, e sua persistência se utiliza de consistência posterior (eventual consistency), portanto, um registro tem um tempo de processamento em que ele não estará disponível para consulta até que ele seja persistido.
+        O limite de reportes de cada envio de lote é de 5.000 entradas no array.
+      operationId: add-reports-server-redirect-to-client
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              maxItems: 5000
+              items:
+                oneOf:
+                  - $ref: "#/components/schemas/ClientReportRequest"
+                  - $ref: "#/components/schemas/ServerReportRequest"
+
+            examples:
+              "Request Valido":
+                description: O request apresentado tem todos os campos validados.
+                value:
+                  - timestamp: "2021-11-11T18:08:08.894Z"
+                    fapiInteractionId: "d78fc4e5-37ca-4da3-adf2-9b082bf92280"
+                    clientSSId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
+                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
+                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
+                    endpoint: "/open-banking/products-services/v1/business-financings"
+                    statusCode: 200
+                    httpMethod: GET
+                    correlationId: "wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf"
+                    processTimespan: 120
+                    endpointUriPrefix: "https://ofin.bank.com/"
+                    role: CLIENT
+                    consentId: "consentId"
+                    uri_callback: "uri_callback"
+                    plataform: [browser, app]
+                    os_version: "os_version"
+                    type: [AUTHORISED, REJECTED]
+                  - timestamp: "2021-11-11T19:22:10.334Z"
+                    fapiInteractionId: "0786fce3-a36f-43f8-b66a-d26ab1dfc639"
+                    clientSSId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
+                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
+                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
+                    endpoint: "/open-banking/products-services/v1/business-financings"
+                    statusCode: 200
+                    httpMethod: GET
+                    correlationId: "8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j"
+                    processTimespan: 117
+                    endpointUriPrefix: "https://ofin.bank.com/"
+                    role: CLIENT
+                    uri_callback: "uri_callback"
+                    plataform: [browser, app]
+                    os_version: "os_version"
+                    type: [AUTHORISED, REJECTED]
+                  - timestamp: "2021-11-11T19:41:41.811Z"
+                    fapiInteractionId: "d1541b17-3175-477d-a52b-2813ae2c4c36"
+                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
+                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
+                    endpoint: "/open-banking/products-services/v1/business-financings"
+                    statusCode: 200
+                    httpMethod: GET
+                    processTimespan: 125
+                    role: SERVER
+        required: true
+      responses:
+        "200":
+          description: |
+            O status 200 representa a situação onde todos os registros enviados no lote foram validados e serão direcionados para processamento. Se pelo menos 1 registro contiver problemas de validação, o retorno será 207 (vide descrição do status).
+            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
+          content:
+            application/json:
+              schema:
+                type: array
+                maxItems: 5000
+                items:
+                  $ref: "#/components/schemas/ReportResponse"
+              examples:
+                Todos Processados:
+                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação. O payload da resposta vem na mesma ordem do array da solicitação. Uma vez que todos os registros foram validados, o status de retorno é o 200.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
+                      status: ACCEPTED
+                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
+                      correlationId: 8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j
+                      status: ACCEPTED
+                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
+                      status: ACCEPTED
+
+        "207":
+          description: |
+            O status 207 (Multi-Status) informa ao solicitante que o formato da requisição está correto, mas que entradas do array contém erro de validação em pelo menos 1 item. Ou seja, se todos os elementos do array informado estiverem com falha de validação, a operação vai devolver o status 207, e no corpo da resposta todos os elementos do array vão estar com status `DISCARDED` e com sua respectiva mensagem. 
+            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
+          content:
+            application/json:
+              schema:
+                type: array
+                maxItems: 5000
+                items:
+                  $ref: "#/components/schemas/ReportResponse"
+              examples:
+                "Primeiro registro com falha":
+                  description: |
+                    No caso apresentado é o resultado onde o exemplo "Request com falha" foi enviado: o registro com o _fapiInteractionId_ `d78fc4e5-37ca-4da3-adf2-9b082bf92280` apresentou uma falha na validação, mas os demais foram enviados para processamento. Como um dos registros não foi validado, o status de retorno passa a ser 207, e os demais registros são processados normalmente.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
+                      correlationId: 8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j
+                      status: ACCEPTED
+                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
+                      status: ACCEPTED
+                "Todos registros com falha":
+                  description: |
+                    Neste caso, parte-se da premissa que todos os registros foram enviados sem _correlationId_ e sem _uri_. Nesse caso, todos vão falhar na etapa de validação, mas mesmo quando todos os registros falham, o status de retorno é o 207.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                "Campo obrigatório não enviado":
+                  description: |
+                    Registro com campo obrigatório não enviado.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a,
+                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf,
+                      status: DISCARDED,
+                      message: "Missing fields: 'statusCode'"
+
+        "400":
+          description: O formato do corpo da requisição não é um array.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+              examples:
+                "400":
+                  value:
+                    message: "Invalid payload format: MUST be an array"
+
+        "413":
+          description: A quantidade de registros enviado excede o limite da operação (5.000 elementos no array), ou o tamanho do payload excede 10Mb.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+              examples:
+                "Limite de registros excedido":
+                  value:
+                    message: Record limit exceeded
+
+        "401":
+          $ref: "#/components/responses/Default401Unauthorized"
+        "403":
+          $ref: "#/components/responses/Default403Forbidden"
+        "406":
+          $ref: "#/components/responses/Default406NotAcceptable"
+        "415":
+          $ref: "#/components/responses/Default415UnsupportedMediaType"
+        "429":
+          $ref: "#/components/responses/Default429TooManyRequests"
+        default:
+          $ref: "#/components/responses/Default500InternalServerError"
+
+  "/report-api/v2/hybrid-flow/client/redirect-target-with-errors":
+    post:
+      tags:
+        - Private API
+      summary: Inclusão de reportes
+      description: |
+        Inclusão de reportes na plataforma. Ao enviar um lote de reportes, a plataforma vai fazer o processo de validação de cada reporte de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso **todos** dos reportes enviados forem aceitos. Caso pelo menos 1 reporte esteja inconsistente, o status de retorno será 207 - vide documentação de cada status de retorno para maiores informações. 
+        Os dados que são inseridos na API de Reporte são sempre processados de maneira assíncrona, e sua persistência se utiliza de consistência posterior (eventual consistency), portanto, um registro tem um tempo de processamento em que ele não estará disponível para consulta até que ele seja persistido.
+        O limite de reportes de cada envio de lote é de 5.000 entradas no array.
+      operationId: add-reports-client-redirect-target-with-errors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              maxItems: 5000
+              items:
+                oneOf:
+                  - $ref: "#/components/schemas/ClientReportRequest"
+                  - $ref: "#/components/schemas/ServerReportRequest"
+
+            examples:
+              "Request Valido":
+                description: O request apresentado tem todos os campos validados.
+                value:
+                  - timestamp: "2021-11-11T18:08:08.894Z"
+                    fapiInteractionId: "d78fc4e5-37ca-4da3-adf2-9b082bf92280"
+                    clientSSId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
+                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
+                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
+                    endpoint: "/open-banking/products-services/v1/business-financings"
+                    statusCode: 200
+                    httpMethod: GET
+                    correlationId: "wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf"
+                    processTimespan: 120
+                    endpointUriPrefix: "https://ofin.bank.com/"
+                    role: CLIENT
+                    consentId: "consentId"
+                    platform: [browser, app]
+                    os_version: "os_version"
+                    error: "error"
+                  - timestamp: "2021-11-11T19:22:10.334Z"
+                    fapiInteractionId: "0786fce3-a36f-43f8-b66a-d26ab1dfc639"
+                    clientSSId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
+                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
+                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
+                    endpoint: "/open-banking/products-services/v1/business-financings"
+                    statusCode: 200
+                    httpMethod: GET
+                    correlationId: "8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j"
+                    processTimespan: 117
+                    endpointUriPrefix: "https://ofin.bank.com/"
+                    role: CLIENT
+                    consentId: "consentId"
+                    platform: [browser, app]
+                    os_version: "os_version"
+                    error: "error"
+                  - timestamp: "2021-11-11T19:41:41.811Z"
+                    fapiInteractionId: "d1541b17-3175-477d-a52b-2813ae2c4c36"
+                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
+                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
+                    endpoint: "/open-banking/products-services/v1/business-financings"
+                    statusCode: 200
+                    httpMethod: GET
+                    processTimespan: 125
+                    role: SERVER
+        required: true
+      responses:
+        "200":
+          description: |
+            O status 200 representa a situação onde todos os registros enviados no lote foram validados e serão direcionados para processamento. Se pelo menos 1 registro contiver problemas de validação, o retorno será 207 (vide descrição do status).
+            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
+          content:
+            application/json:
+              schema:
+                type: array
+                maxItems: 5000
+                items:
+                  $ref: "#/components/schemas/ReportResponse"
+              examples:
+                Todos Processados:
+                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação. O payload da resposta vem na mesma ordem do array da solicitação. Uma vez que todos os registros foram validados, o status de retorno é o 200.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
+                      status: ACCEPTED
+                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
+                      correlationId: 8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j
+                      status: ACCEPTED
+                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
+                      status: ACCEPTED
+
+        "207":
+          description: |
+            O status 207 (Multi-Status) informa ao solicitante que o formato da requisição está correto, mas que entradas do array contém erro de validação em pelo menos 1 item. Ou seja, se todos os elementos do array informado estiverem com falha de validação, a operação vai devolver o status 207, e no corpo da resposta todos os elementos do array vão estar com status `DISCARDED` e com sua respectiva mensagem. 
+            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
+          content:
+            application/json:
+              schema:
+                type: array
+                maxItems: 5000
+                items:
+                  $ref: "#/components/schemas/ReportResponse"
+              examples:
+                "Primeiro registro com falha":
+                  description: |
+                    No caso apresentado é o resultado onde o exemplo "Request com falha" foi enviado: o registro com o _fapiInteractionId_ `d78fc4e5-37ca-4da3-adf2-9b082bf92280` apresentou uma falha na validação, mas os demais foram enviados para processamento. Como um dos registros não foi validado, o status de retorno passa a ser 207, e os demais registros são processados normalmente.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
+                      correlationId: 8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j
+                      status: ACCEPTED
+                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
+                      status: ACCEPTED
+                "Todos registros com falha":
+                  description: |
+                    Neste caso, parte-se da premissa que todos os registros foram enviados sem _correlationId_ e sem _uri_. Nesse caso, todos vão falhar na etapa de validação, mas mesmo quando todos os registros falham, o status de retorno é o 207.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                "Campo obrigatório não enviado":
+                  description: |
+                    Registro com campo obrigatório não enviado.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a,
+                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf,
+                      status: DISCARDED,
+                      message: "Missing fields: 'statusCode'"
+
+        "400":
+          description: O formato do corpo da requisição não é um array.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+              examples:
+                "400":
+                  value:
+                    message: "Invalid payload format: MUST be an array"
+
+        "413":
+          description: A quantidade de registros enviado excede o limite da operação (5.000 elementos no array), ou o tamanho do payload excede 10Mb.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+              examples:
+                "Limite de registros excedido":
+                  value:
+                    message: Record limit exceeded
+
+        "401":
+          $ref: "#/components/responses/Default401Unauthorized"
+        "403":
+          $ref: "#/components/responses/Default403Forbidden"
+        "406":
+          $ref: "#/components/responses/Default406NotAcceptable"
+        "415":
+          $ref: "#/components/responses/Default415UnsupportedMediaType"
+        "429":
+          $ref: "#/components/responses/Default429TooManyRequests"
+        default:
+          $ref: "#/components/responses/Default500InternalServerError"
+
+  "/report-api/v2/hybrid-flow/client/redirect-target-without-errors":
+    post:
+      tags:
+        - Private API
+      summary: Inclusão de reportes
+      description: |
+        Inclusão de reportes na plataforma. Ao enviar um lote de reportes, a plataforma vai fazer o processo de validação de cada reporte de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso **todos** dos reportes enviados forem aceitos. Caso pelo menos 1 reporte esteja inconsistente, o status de retorno será 207 - vide documentação de cada status de retorno para maiores informações. 
+        Os dados que são inseridos na API de Reporte são sempre processados de maneira assíncrona, e sua persistência se utiliza de consistência posterior (eventual consistency), portanto, um registro tem um tempo de processamento em que ele não estará disponível para consulta até que ele seja persistido.
+        O limite de reportes de cada envio de lote é de 5.000 entradas no array.
+      operationId: add-reports-client-redirect-target-without-errors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              maxItems: 5000
+              items:
+                oneOf:
+                  - $ref: "#/components/schemas/ClientReportRequest"
+                  - $ref: "#/components/schemas/ServerReportRequest"
+
+            examples:
+              "Request Valido":
+                description: O request apresentado tem todos os campos validados.
+                value:
+                  - timestamp: "2021-11-11T18:08:08.894Z"
+                    fapiInteractionId: "d78fc4e5-37ca-4da3-adf2-9b082bf92280"
+                    clientSSId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
+                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
+                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
+                    endpoint: "/open-banking/products-services/v1/business-financings"
+                    statusCode: 200
+                    httpMethod: GET
+                    correlationId: "wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf"
+                    processTimespan: 120
+                    endpointUriPrefix: "https://ofin.bank.com/"
+                    role: CLIENT
+                    consentId: "consentId"
+                    platform: [browser, app]
+                    os_version: "os_version"
+                  - timestamp: "2021-11-11T19:22:10.334Z"
+                    fapiInteractionId: "0786fce3-a36f-43f8-b66a-d26ab1dfc639"
+                    clientSSId: "f0b5419b-2b5f-4f59-9862-6d2a8e23be26"
+                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
+                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
+                    endpoint: "/open-banking/products-services/v1/business-financings"
+                    statusCode: 200
+                    httpMethod: GET
+                    correlationId: "8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j"
+                    processTimespan: 117
+                    endpointUriPrefix: "https://ofin.bank.com/"
+                    role: CLIENT
+                    consentId: "consentId"
+                    platform: "platform"
+                    os_version: "os_version"
+                  - timestamp: "2021-11-11T19:41:41.811Z"
+                    fapiInteractionId: "d1541b17-3175-477d-a52b-2813ae2c4c36"
+                    clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
+                    serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
+                    endpoint: "/open-banking/products-services/v1/business-financings"
+                    statusCode: 200
+                    httpMethod: GET
+                    processTimespan: 125
+                    role: SERVER
+        required: true
+      responses:
+        "200":
+          description: |
+            O status 200 representa a situação onde todos os registros enviados no lote foram validados e serão direcionados para processamento. Se pelo menos 1 registro contiver problemas de validação, o retorno será 207 (vide descrição do status).
+            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
+          content:
+            application/json:
+              schema:
+                type: array
+                maxItems: 5000
+                items:
+                  $ref: "#/components/schemas/ReportResponse"
+              examples:
+                Todos Processados:
+                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação. O payload da resposta vem na mesma ordem do array da solicitação. Uma vez que todos os registros foram validados, o status de retorno é o 200.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
+                      status: ACCEPTED
+                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
+                      correlationId: 8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j
+                      status: ACCEPTED
+                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
+                      status: ACCEPTED
+
+        "207":
+          description: |
+            O status 207 (Multi-Status) informa ao solicitante que o formato da requisição está correto, mas que entradas do array contém erro de validação em pelo menos 1 item. Ou seja, se todos os elementos do array informado estiverem com falha de validação, a operação vai devolver o status 207, e no corpo da resposta todos os elementos do array vão estar com status `DISCARDED` e com sua respectiva mensagem. 
+            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
+          content:
+            application/json:
+              schema:
+                type: array
+                maxItems: 5000
+                items:
+                  $ref: "#/components/schemas/ReportResponse"
+              examples:
+                "Primeiro registro com falha":
+                  description: |
+                    No caso apresentado é o resultado onde o exemplo "Request com falha" foi enviado: o registro com o _fapiInteractionId_ `d78fc4e5-37ca-4da3-adf2-9b082bf92280` apresentou uma falha na validação, mas os demais foram enviados para processamento. Como um dos registros não foi validado, o status de retorno passa a ser 207, e os demais registros são processados normalmente.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
+                      correlationId: 8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j
+                      status: ACCEPTED
+                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
+                      status: ACCEPTED
+                "Todos registros com falha":
+                  description: |
+                    Neste caso, parte-se da premissa que todos os registros foram enviados sem _correlationId_ e sem _uri_. Nesse caso, todos vão falhar na etapa de validação, mas mesmo quando todos os registros falham, o status de retorno é o 207.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                "Campo obrigatório não enviado":
+                  description: |
+                    Registro com campo obrigatório não enviado.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a,
+                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf,
+                      status: DISCARDED,
+                      message: "Missing fields: 'statusCode'"
 
         "400":
           description: O formato do corpo da requisição não é um array.
@@ -237,7 +1282,7 @@ paths:
       description: |
         Operação que permite a consulta de um reporte em específico através de um identificador. A busca por reportes estará sempre no contexto do usuário representado pelo token de acesso, ou seja, o _participante_ só terá acesso à reportes em que instituição que ele pertence é parte, seja como client ou como server.
 
-        O processamento do registro ocorre de maneira assíncrona, o que pode gerar um cenário de consistência eventual: caso a consulta seja feita imediatamente após a inclusão, é possível que o registro ainda não esteja disponível para consulta. 
+        O processamento do registro ocorre de maneira assíncrona, o que pode gerar um cenário de consistência eventual: caso a consulta seja feita imediatamente após a inclusão, é possível que o registro ainda não esteja disponível para consulta.
       operationId: report-by-id
       parameters:
         - name: reportId
@@ -292,9 +1337,9 @@ paths:
         content:
           application/json:
             schema:
-                oneOf:
-                  - $ref: "#/components/schemas/ClientReportRequest"
-                  - $ref: "#/components/schemas/ServerReportRequest"
+              oneOf:
+                - $ref: "#/components/schemas/ClientReportRequest"
+                - $ref: "#/components/schemas/ServerReportRequest"
 
       responses:
         "202":
@@ -303,8 +1348,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/EmptyObject"
-              example:
-                {}
+              example: {}
 
         "400":
           description: O reporte enviado está inconsistente
@@ -334,9 +1378,9 @@ paths:
       summary: Inclusão de reportes
       description: |
         Inclusão de reportes de dados abertos na plataforma. Ao enviar um lote de reportes, a plataforma vai fazer o processo de validação sintática de cada reporte de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso **todos** dos reportes enviados forem aceitos. Caso pelo menos 1 reporte esteja inconsistente, o status de retorno será 207 - vide documentação de cada status de retorno para maiores informações. 
-        
+
         Os dados que são inseridos na API de Reporte são sempre processados de maneira assíncrona, e sua persistência se utiliza de consistência posterior (eventual consistency), portanto, um registro tem um tempo de processamento em que ele não estará disponível para consulta até que ele seja persistido.
-        
+
         O limite de registros de cada lote é de 5.000 registros.
       operationId: add-opendata-reports
       requestBody:
@@ -347,7 +1391,7 @@ paths:
               maxItems: 5000
               items:
                 $ref: "#/components/schemas/OpendataReportRequest"
-                
+
             examples:
               "Request Valido":
                 description: O request apresentado tem todos os campos validados.
@@ -370,9 +1414,9 @@ paths:
       responses:
         "200":
           description: |
-           O status 200 representa a situação onde todos os registros enviados no lote foram validados e serão direcionados para processamento. Se pelo menos 1 registro contiver problemas de validação, o retorno será 207 (vide descrição do status).
-           
-           A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
+            O status 200 representa a situação onde todos os registros enviados no lote foram validados e serão direcionados para processamento. Se pelo menos 1 registro contiver problemas de validação, o retorno será 207 (vide descrição do status).
+
+            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
           content:
             application/json:
               schema:
@@ -499,7 +1543,7 @@ components:
         httpMethod:
           description: Método HTTP da solicitação.
           type: string
-          enum: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
+          enum: ["GET", "POST", "PUT", "DELETE", "PATCH"]
           example: GET
         correlationId:
           description: ID de correlação que identifica uma sequência de chamadas inter-relacionadas no ecossistema. Diferente do fapiInteractionId que serve para identificar cada par request-response (interação), o identificador de correlação serve para ligar diferentes reportes quando estes representam uma jornada ou uma sequência de chamadas. Este valor é de livre provimento pelo reportador.
@@ -544,17 +1588,17 @@ components:
         endpointUriPrefix:
           description: |
             Endereço do servidor de destino da chamada incluindo o prefixo quando houver. O formato do campo deverá ser o seguinte: `https://{host}/{prefixo}`, sendo:
-            
+
             * `host`: endereço FQDN do servidor de destino
             * `prefixo`: toda a parte do path que vem antes da string `/open-banking`
-            
+
             Exemplos:
 
             1. Para uma requisição em `https://openbanking.instituicao-1.com.br/opbk/open-banking/products-services/v1/business-accounts`, o dado a ser enviado é `https://openbanking.instituicao-1.com.br/opbk`.
             1. Para uma requisição em `https://openbanking.instituicao-2.com.br/open-banking/products-services/v1/business-accounts`, o dado a ser enviado é `https://openbanking.instituicao-1.com.br/`.
 
             Nos reportes relativos aos endpoints /token e /register este campo deverá conter a URL inteira do request. 
-            
+
             Exemplos: `https://oauth2.cartaodummy.opf.instituicao/as/token.oauth2` `https://instituicao.com.br/orgs/instituicao/reg`
           type: string
           pattern: ^[- /:_.',0-9a-zA-Z]{0,200}$
@@ -600,7 +1644,7 @@ components:
         httpMethod:
           description: Método HTTP da solicitação.
           type: string
-          enum: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
+          enum: ["GET", "POST", "PUT", "DELETE", "PATCH"]
           example: GET
         correlationId:
           description: Não utilizado pelo server.
@@ -666,7 +1710,7 @@ components:
         httpMethod:
           description: Método HTTP da solicitação.
           type: string
-          enum: ['GET']
+          enum: ["GET"]
           example: GET
         timestamp:
           description: Data/Hora UTC no formato ISO8601 com milissegundos (YYYY-MM-DDTHH:mm:ss.sssZ) do momento em que a chamada foi recebida.
@@ -681,7 +1725,6 @@ components:
           example: 120
         additionalInfo:
           $ref: "#/components/schemas/OpendataAdditionalInfo"
-
 
     ReportResponse:
       description: Representa os dados que serão retornados pelas operações de inclusão de reportes.
@@ -793,7 +1836,7 @@ components:
               maxLength: 28
 
     PrivateReportEndpoints:
-      description: | 
+      description: |
         Identificação do endpoint que foi utilizado na transação reportada. A identificação do endpoint deve estar entre as entradas desse enum para ser considerado válido. Nesse campo não deve ser utilizado o _path_ da requisição original, uma vez que ao comparar com os valores dessa enum, ele não será considerado válido.
 
         Exemplo:
@@ -864,7 +1907,7 @@ components:
         - "/open-banking/payments/v3/pix/payments/{paymentId}"
 
     OpendataReportEndpoints:
-      description: | 
+      description: |
         Identificação do endpoint que foi utilizado na chamada da api de dados abertos. A identificação do endpoint deve estar entre as entradas desse enum para ser considerado válido.
       type: string
       example: "/open-banking/channels/v1/electronic-channels"
@@ -900,14 +1943,12 @@ components:
     AdditionalInfo:
       description: Informações adicionais sobre o reporte deste endpoint/método. Possui característica variável. As regras de preenchimento estão na documentação funcional em https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/37879861/Reporte#additionalInfo. Atenção especial na tabela Excel com a listagem de endpoints em https://openfinancebrasil.atlassian.net/wiki/download/attachments/37879861/Tabela%20additionalInfo%20%E2%80%93%20campos%20contexto%20e%20obrigatoriedade%20(cliente%20server).xlsx?api=v2.
       type: object
-      properties:
-        {}
+      properties: {}
 
     OpendataAdditionalInfo:
       description: Informações adicionais sobre o reporte deste endpoint/método. Possui característica variável. As regras de preenchimento estão na documentação funcional em https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/37879861/Reporte#additionalInfo. Atenção especial na tabela Excel com a listagem de endpoints em https://openfinancebrasil.atlassian.net/wiki/download/attachments/37879861/Tabela%20additionalInfo%20%E2%80%93%20campos%20contexto%20e%20obrigatoriedade%20(cliente%20server).xlsx?api=v2.
       type: object
-      properties:
-        {}
+      properties: {}
 
     GenericError:
       description: Representa uma resposta de erro genérica.
@@ -923,8 +1964,7 @@ components:
       description: Representa um objeto sem propriedades previamente definidas
       type: object
       additionalProperties: false
-      example: 
-        {}
+      example: {}
 
   securitySchemes:
     PCMAccessToken:

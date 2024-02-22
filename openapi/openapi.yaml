@@ -44,6 +44,9 @@ servers:
     description: Produção
 
 tags:
+  - name: Hybrid Flow
+    description: |
+      A Hybrid Flow API fornece operações que permitem a inclusão de relatórios com informações ao longo do fluxo de execução do consentimento.
   - name: Private API
     description: |
       A Private API fornece operações que permitem a inclusão, consulta e alteração dos reportes que representam transações entre participantes do ecossistema do Open Finance.
@@ -231,7 +234,7 @@ paths:
   "/report-api/v2/hybrid-flow/client/redirect-to-server":
     post:
       tags:
-        - Private API
+        - Hybrid Flow
       summary: Inclusão de reportes
       description: |
         Inclusão de reporte na plataforma. Ao enviar um reporte, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
@@ -240,18 +243,10 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              items:
-                $ref: "#/components/schemas/HybridFlowClientRedirectToServerReportRequest"
-
+              $ref: "#/components/schemas/HybridFlowClientRedirectToServerReportRequest"
             examples:
               "Request Valido":
                 description: O request apresentado tem todos os campos validados.
-                value:
-                  - consentId: "consentId"
-                    uriAuthorizationEndpoint: "uriAuthorizationEndpoint"
-                    plataform: [browser, app]
-                    osVersion: "osVersion"
 
         required: true
       responses:
@@ -262,14 +257,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                items:
-                  $ref: "#/components/schemas/HybridFlowReportResponse"
+                $ref: "#/components/schemas/HybridFlowReportResponse"
               examples:
                 Item processado:
-                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação. O payload da resposta vem na mesma ordem do array da solicitação. Uma vez que todos os registros foram validados, o status de retorno é o 200.
-                  value:
-                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação. O payload da resposta vem na mesma ordem do array da solicitação. Uma vez que os registros validados, o status de retorno é o 200.
 
         "400":
           description: O formato do corpo da requisição não é um array.
@@ -294,7 +285,7 @@ paths:
   "/report-api/v2/hybrid-flow/server/redirect-target":
     post:
       tags:
-        - Private API
+        - Hybrid Flow
       summary: Inclusão de reportes
       description: |
         Inclusão de reporte na plataforma. Ao enviar um reporte, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
@@ -311,17 +302,18 @@ paths:
               "Request Valido":
                 description: O request apresentado tem todos os campos validados.
                 value:
-                  - consentId: "consentId"
-                    uriAuthorizationEndpoint: "uriAuthorizationEndpoint"
-                    plataform: [browser, app]
-                    osVersion: "osVersion"
+                  {
+                    consentId: "consentId",
+                    uriAuthorizationEndpoint: "uriAuthorizationEndpoint",
+                    plataform: [browser, app],
+                    osVersion: "osVersion",
                     type:
                       [
                         AWAITING_HANDOFF,
                         AWAITING_USER_AUTH,
                         AWAITING_REDIRECT_TO_APP,
-                      ]
-
+                      ],
+                  }
         required: true
       responses:
         "200":
@@ -358,7 +350,7 @@ paths:
   "/report-api/v2/hybrid-flow/server/authenticated":
     post:
       tags:
-        - Private API
+        - Hybrid Flow
       summary: Inclusão de reportes
       description: |
         Inclusão de reporte na plataforma. Ao enviar um reporte, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
@@ -415,7 +407,7 @@ paths:
   "/report-api/v2/hybrid-flow/server/redirect-to-client":
     post:
       tags:
-        - Private API
+        - Hybrid Flow
       summary: Inclusão de reportes
       description: |
         Inclusão de reporte na plataforma. Ao enviar um reporte, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
@@ -432,11 +424,13 @@ paths:
               "Request Valido":
                 description: O request apresentado tem todos os campos validados.
                 value:
-                  - consentId: "consentId"
-                    uri_callback: "uri_callback"
-                    plataform: [browser, app]
-                    os_version: "os_version"
-                    type: [AUTHORISED, REJECTED]
+                  {
+                    consentId: "consentId",
+                    uri_callback: "uri_callback",
+                    plataform: [browser, app],
+                    os_version: "os_version",
+                    type: [AUTHORISED, REJECTED],
+                  }
 
         required: true
       responses:
@@ -474,7 +468,7 @@ paths:
   "/report-api/v2/hybrid-flow/client/redirect-target-with-errors":
     post:
       tags:
-        - Private API
+        - Hybrid Flow
       summary: Inclusão de reportes
       description: |
         Inclusão de reporte na plataforma. Ao enviar um reporte, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
@@ -491,10 +485,12 @@ paths:
               "Request Valido":
                 description: O request apresentado tem todos os campos validados.
                 value:
-                  - consentId: "consentId"
-                    platform: [browser, app]
-                    os_version: "os_version"
-                    error: "error"
+                  {
+                    consentId: "consentId",
+                    platform: [browser, app],
+                    os_version: "os_version",
+                    error: "error",
+                  }
 
         required: true
       responses:
@@ -532,7 +528,7 @@ paths:
   "/report-api/v2/hybrid-flow/client/redirect-target-without-errors":
     post:
       tags:
-        - Private API
+        - Hybrid Flow
       summary: Inclusão de reportes
       description: |
         Inclusão de reporte na plataforma. Ao enviar um reporte, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
@@ -549,9 +545,11 @@ paths:
               "Request Valido":
                 description: O request apresentado tem todos os campos validados.
                 value:
-                  - consentId: "consentId"
-                    platform: [browser, app]
-                    os_version: "os_version"
+                  {
+                    consentId: "consentId",
+                    platform: [browser, app],
+                    os_version: "os_version",
+                  }
         required: true
       responses:
         "200":
@@ -827,9 +825,17 @@ components:
         - "uriAuthorizationEndpoint"
         - "plataform"
         - "osVersion"
-
+      properties:
+        consentId:
+          type: string
+        uriAuthorizationEndpoint:
+          type: string
+        plataform:
+          type: string
+        osVersion:
+          type: string
     HybridFlowServerRedirectTargetReportRequest:
-      description: ""
+      description: "asdasd"
       type: object
       required:
         - "consentId"
@@ -1121,7 +1127,6 @@ components:
       additionalProperties: false
       required:
         - reportId
-        - status
       type: object
       properties:
         reportId:
@@ -1131,8 +1136,6 @@ components:
           maxLength: 36
           pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
           example: "9a97c2df-b261-4fc2-aa66-d1b5168397da"
-        status:
-          $ref: "#/components/schemas/ReportStatus"
 
     ReportStatus:
       description: |

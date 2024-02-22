@@ -789,6 +789,7 @@ components:
         - "uriAuthorizationEndpoint"
         - "osVersion"
         - "type"
+        - "timestamp"
       properties:
         consentId:
           type: string
@@ -804,6 +805,8 @@ components:
             - AWAITING_HANDOFF
             - AWAITING_USER_AUTH
             - AWAITING_REDIRECT_TO_APP
+        timestamp:
+          type: string
 
     HybridFlowServerAuthenticatedRequest:
       description: ""
@@ -812,6 +815,7 @@ components:
         - "consentId"
         - "plataform"
         - "osVersion"
+        - timestamp
       properties:
         consentId:
           type: string
@@ -824,6 +828,8 @@ components:
               - app
         osVersion:
           type: string
+        timestamp:
+          type: string
     HybridFlowServerRedirectToClientRequest:
       description: ""
       type: object
@@ -833,6 +839,7 @@ components:
         - "plataform"
         - "osVersion"
         - "type"
+        - "timestamp"
       properties:
         consentId:
           type: string
@@ -854,6 +861,8 @@ components:
             enum:
               - AUTHORISED
               - REJECTED
+        timestamp:
+          type: string
 
     HybridFlowServerRedirectTargetWithoutErrorsRequest:
       description: ""
@@ -862,6 +871,7 @@ components:
         - "consentId"
         - "plataform"
         - "osVersion"
+        - timestamp
       properties:
         consentId:
           type: string
@@ -874,6 +884,8 @@ components:
               - app
         osVersion:
           type: string
+        timestamp:
+          type: string
 
     HybridFlowServerRedirectTargetWithErrorsRequest:
       description: ""
@@ -883,6 +895,7 @@ components:
         - "plataform"
         - "osVersion"
         - "error"
+        - "timestamp"
       properties:
         consentId:
           type: string
@@ -896,6 +909,8 @@ components:
         osVersion:
           type: string
         error:
+          type: string
+        timestamp:
           type: string
 
     ClientReportRequest:

@@ -234,9 +234,7 @@ paths:
         - Private API
       summary: Inclusão de reportes
       description: |
-        Inclusão de reportes na plataforma. Ao enviar um lote de reportes, a plataforma vai fazer o processo de validação de cada reporte de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso **todos** dos reportes enviados forem aceitos. Caso pelo menos 1 reporte esteja inconsistente, o status de retorno será 207 - vide documentação de cada status de retorno para maiores informações. 
-        Os dados que são inseridos na API de Reporte são sempre processados de maneira assíncrona, e sua persistência se utiliza de consistência posterior (eventual consistency), portanto, um registro tem um tempo de processamento em que ele não estará disponível para consulta até que ele seja persistido.
-        O limite de reportes de cada envio de lote é de 5.000 entradas no array.
+        Inclusão de reporte na plataforma. Ao enviar um reporte, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
       operationId: add-reports-client-redirect-to-server
       requestBody:
         content:
@@ -244,7 +242,7 @@ paths:
             schema:
               type: object
               items:
-                $ref: "#/components/schemas/ClientReportRequest"
+                $ref: "#/components/schemas/HybridFlowClientRedirectToServerReportRequest"
 
             examples:
               "Request Valido":
@@ -272,7 +270,6 @@ paths:
                   description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação. O payload da resposta vem na mesma ordem do array da solicitação. Uma vez que todos os registros foram validados, o status de retorno é o 200.
                   value:
                     - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
-                      status: ACCEPTED
 
         "400":
           description: O formato do corpo da requisição não é um array.
@@ -300,20 +297,15 @@ paths:
         - Private API
       summary: Inclusão de reportes
       description: |
-        Inclusão de reportes na plataforma. Ao enviar um lote de reportes, a plataforma vai fazer o processo de validação de cada reporte de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso **todos** dos reportes enviados forem aceitos. Caso pelo menos 1 reporte esteja inconsistente, o status de retorno será 207 - vide documentação de cada status de retorno para maiores informações. 
-        Os dados que são inseridos na API de Reporte são sempre processados de maneira assíncrona, e sua persistência se utiliza de consistência posterior (eventual consistency), portanto, um registro tem um tempo de processamento em que ele não estará disponível para consulta até que ele seja persistido.
-        O limite de reportes de cada envio de lote é de 5.000 entradas no array.
+        Inclusão de reporte na plataforma. Ao enviar um reporte, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
       operationId: add-reports-server-redirect-target
       requestBody:
         content:
           application/json:
             schema:
-              type: array
-              maxItems: 5000
+              type: object
               items:
-                oneOf:
-                  - $ref: "#/components/schemas/ClientReportRequest"
-                  - $ref: "#/components/schemas/ServerReportRequest"
+                $ref: "#/components/schemas/HybridFlowServerRedirectTargetReportRequest"
 
             examples:
               "Request Valido":
@@ -340,68 +332,8 @@ paths:
             application/json:
               schema:
                 type: array
-                maxItems: 5000
                 items:
-                  $ref: "#/components/schemas/ReportResponse"
-              examples:
-                Todos Processados:
-                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação. O payload da resposta vem na mesma ordem do array da solicitação. Uma vez que todos os registros foram validados, o status de retorno é o 200.
-                  value:
-                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
-                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
-                      status: ACCEPTED
-                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
-                      correlationId: 8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j
-                      status: ACCEPTED
-                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
-                      status: ACCEPTED
-
-        "207":
-          description: |
-            O status 207 (Multi-Status) informa ao solicitante que o formato da requisição está correto, mas que entradas do array contém erro de validação em pelo menos 1 item. Ou seja, se todos os elementos do array informado estiverem com falha de validação, a operação vai devolver o status 207, e no corpo da resposta todos os elementos do array vão estar com status `DISCARDED` e com sua respectiva mensagem. 
-            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
-          content:
-            application/json:
-              schema:
-                type: array
-                maxItems: 5000
-                items:
-                  $ref: "#/components/schemas/ReportResponse"
-              examples:
-                "Primeiro registro com falha":
-                  description: |
-                    No caso apresentado é o resultado onde o exemplo "Request com falha" foi enviado: o registro com o _fapiInteractionId_ `d78fc4e5-37ca-4da3-adf2-9b082bf92280` apresentou uma falha na validação, mas os demais foram enviados para processamento. Como um dos registros não foi validado, o status de retorno passa a ser 207, e os demais registros são processados normalmente.
-                  value:
-                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
-                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
-                      status: DISCARDED
-                      message: "Missing fields: 'fapiInteractionId'"
-                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
-                      correlationId: 8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j
-                      status: ACCEPTED
-                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
-                      status: ACCEPTED
-                "Todos registros com falha":
-                  description: |
-                    Neste caso, parte-se da premissa que todos os registros foram enviados sem _correlationId_ e sem _uri_. Nesse caso, todos vão falhar na etapa de validação, mas mesmo quando todos os registros falham, o status de retorno é o 207.
-                  value:
-                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
-                      status: DISCARDED
-                      message: "Missing fields: 'fapiInteractionId'"
-                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
-                      status: DISCARDED
-                      message: "Missing fields: 'fapiInteractionId'"
-                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
-                      status: DISCARDED
-                      message: "Missing fields: 'fapiInteractionId'"
-                "Campo obrigatório não enviado":
-                  description: |
-                    Registro com campo obrigatório não enviado.
-                  value:
-                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a,
-                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf,
-                      status: DISCARDED,
-                      message: "Missing fields: 'statusCode'"
+                  $ref: "#/components/schemas/HybridFlowReportResponse"
 
         "400":
           description: O formato do corpo da requisição não é um array.
@@ -409,21 +341,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenericError"
-              examples:
-                "400":
-                  value:
-                    message: "Invalid payload format: MUST be an array"
-
-        "413":
-          description: A quantidade de registros enviado excede o limite da operação (5.000 elementos no array), ou o tamanho do payload excede 10Mb.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GenericError"
-              examples:
-                "Limite de registros excedido":
-                  value:
-                    message: Record limit exceeded
 
         "401":
           $ref: "#/components/responses/Default401Unauthorized"
@@ -444,20 +361,15 @@ paths:
         - Private API
       summary: Inclusão de reportes
       description: |
-        Inclusão de reportes na plataforma. Ao enviar um lote de reportes, a plataforma vai fazer o processo de validação de cada reporte de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso **todos** dos reportes enviados forem aceitos. Caso pelo menos 1 reporte esteja inconsistente, o status de retorno será 207 - vide documentação de cada status de retorno para maiores informações. 
-        Os dados que são inseridos na API de Reporte são sempre processados de maneira assíncrona, e sua persistência se utiliza de consistência posterior (eventual consistency), portanto, um registro tem um tempo de processamento em que ele não estará disponível para consulta até que ele seja persistido.
-        O limite de reportes de cada envio de lote é de 5.000 entradas no array.
+        Inclusão de reporte na plataforma. Ao enviar um reporte, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
       operationId: add-reports-server-authenticated
       requestBody:
         content:
           application/json:
             schema:
-              type: array
-              maxItems: 5000
+              type: object
               items:
-                oneOf:
-                  - $ref: "#/components/schemas/ClientReportRequest"
-                  - $ref: "#/components/schemas/ServerReportRequest"
+                $ref: "#/components/schemas/HybridFlowServerAuthenticatedRequest"
 
             examples:
               "Request Valido":
@@ -476,69 +388,9 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                maxItems: 5000
+                type: object
                 items:
-                  $ref: "#/components/schemas/ReportResponse"
-              examples:
-                Todos Processados:
-                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação. O payload da resposta vem na mesma ordem do array da solicitação. Uma vez que todos os registros foram validados, o status de retorno é o 200.
-                  value:
-                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
-                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
-                      status: ACCEPTED
-                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
-                      correlationId: 8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j
-                      status: ACCEPTED
-                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
-                      status: ACCEPTED
-
-        "207":
-          description: |
-            O status 207 (Multi-Status) informa ao solicitante que o formato da requisição está correto, mas que entradas do array contém erro de validação em pelo menos 1 item. Ou seja, se todos os elementos do array informado estiverem com falha de validação, a operação vai devolver o status 207, e no corpo da resposta todos os elementos do array vão estar com status `DISCARDED` e com sua respectiva mensagem. 
-            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
-          content:
-            application/json:
-              schema:
-                type: array
-                maxItems: 5000
-                items:
-                  $ref: "#/components/schemas/ReportResponse"
-              examples:
-                "Primeiro registro com falha":
-                  description: |
-                    No caso apresentado é o resultado onde o exemplo "Request com falha" foi enviado: o registro com o _fapiInteractionId_ `d78fc4e5-37ca-4da3-adf2-9b082bf92280` apresentou uma falha na validação, mas os demais foram enviados para processamento. Como um dos registros não foi validado, o status de retorno passa a ser 207, e os demais registros são processados normalmente.
-                  value:
-                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
-                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
-                      status: DISCARDED
-                      message: "Missing fields: 'fapiInteractionId'"
-                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
-                      correlationId: 8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j
-                      status: ACCEPTED
-                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
-                      status: ACCEPTED
-                "Todos registros com falha":
-                  description: |
-                    Neste caso, parte-se da premissa que todos os registros foram enviados sem _correlationId_ e sem _uri_. Nesse caso, todos vão falhar na etapa de validação, mas mesmo quando todos os registros falham, o status de retorno é o 207.
-                  value:
-                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
-                      status: DISCARDED
-                      message: "Missing fields: 'fapiInteractionId'"
-                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
-                      status: DISCARDED
-                      message: "Missing fields: 'fapiInteractionId'"
-                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
-                      status: DISCARDED
-                      message: "Missing fields: 'fapiInteractionId'"
-                "Campo obrigatório não enviado":
-                  description: |
-                    Registro com campo obrigatório não enviado.
-                  value:
-                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a,
-                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf,
-                      status: DISCARDED,
-                      message: "Missing fields: 'statusCode'"
+                  $ref: "#/components/schemas/HybridFlowReportResponse"
 
         "400":
           description: O formato do corpo da requisição não é um array.
@@ -546,21 +398,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenericError"
-              examples:
-                "400":
-                  value:
-                    message: "Invalid payload format: MUST be an array"
-
-        "413":
-          description: A quantidade de registros enviado excede o limite da operação (5.000 elementos no array), ou o tamanho do payload excede 10Mb.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GenericError"
-              examples:
-                "Limite de registros excedido":
-                  value:
-                    message: Record limit exceeded
 
         "401":
           $ref: "#/components/responses/Default401Unauthorized"
@@ -581,20 +418,15 @@ paths:
         - Private API
       summary: Inclusão de reportes
       description: |
-        Inclusão de reportes na plataforma. Ao enviar um lote de reportes, a plataforma vai fazer o processo de validação de cada reporte de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso **todos** dos reportes enviados forem aceitos. Caso pelo menos 1 reporte esteja inconsistente, o status de retorno será 207 - vide documentação de cada status de retorno para maiores informações. 
-        Os dados que são inseridos na API de Reporte são sempre processados de maneira assíncrona, e sua persistência se utiliza de consistência posterior (eventual consistency), portanto, um registro tem um tempo de processamento em que ele não estará disponível para consulta até que ele seja persistido.
-        O limite de reportes de cada envio de lote é de 5.000 entradas no array.
+        Inclusão de reporte na plataforma. Ao enviar um reporte, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
       operationId: add-reports-server-redirect-to-client
       requestBody:
         content:
           application/json:
             schema:
-              type: array
-              maxItems: 5000
+              type: object
               items:
-                oneOf:
-                  - $ref: "#/components/schemas/ClientReportRequest"
-                  - $ref: "#/components/schemas/ServerReportRequest"
+                $ref: "#/components/schemas/HybridFlowClientRedirectToServerReportRequest"
 
             examples:
               "Request Valido":
@@ -615,22 +447,9 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                maxItems: 5000
+                type: object
                 items:
-                  $ref: "#/components/schemas/ReportResponse"
-              examples:
-                Todos Processados:
-                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação. O payload da resposta vem na mesma ordem do array da solicitação. Uma vez que todos os registros foram validados, o status de retorno é o 200.
-                  value:
-                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
-                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
-                      status: ACCEPTED
-                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
-                      correlationId: 8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j
-                      status: ACCEPTED
-                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
-                      status: ACCEPTED
+                  $ref: "#/components/schemas/HybridFlowReportResponse"
 
         "400":
           description: O formato do corpo da requisição não é um array.
@@ -638,10 +457,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenericError"
-              examples:
-                "400":
-                  value:
-                    message: "Invalid payload format: MUST be an array"
 
         "401":
           $ref: "#/components/responses/Default401Unauthorized"
@@ -662,20 +477,15 @@ paths:
         - Private API
       summary: Inclusão de reportes
       description: |
-        Inclusão de reportes na plataforma. Ao enviar um lote de reportes, a plataforma vai fazer o processo de validação de cada reporte de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso **todos** dos reportes enviados forem aceitos. Caso pelo menos 1 reporte esteja inconsistente, o status de retorno será 207 - vide documentação de cada status de retorno para maiores informações. 
-        Os dados que são inseridos na API de Reporte são sempre processados de maneira assíncrona, e sua persistência se utiliza de consistência posterior (eventual consistency), portanto, um registro tem um tempo de processamento em que ele não estará disponível para consulta até que ele seja persistido.
-        O limite de reportes de cada envio de lote é de 5.000 entradas no array.
+        Inclusão de reporte na plataforma. Ao enviar um reporte, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
       operationId: add-reports-client-redirect-target-with-errors
       requestBody:
         content:
           application/json:
             schema:
-              type: array
-              maxItems: 5000
+              type: object
               items:
-                oneOf:
-                  - $ref: "#/components/schemas/ClientReportRequest"
-                  - $ref: "#/components/schemas/ServerReportRequest"
+                $ref: "#/components/schemas/HybridFlowServerRedirectTargetWithErrorsRequest"
 
             examples:
               "Request Valido":
@@ -698,66 +508,7 @@ paths:
                 type: array
                 maxItems: 5000
                 items:
-                  $ref: "#/components/schemas/ReportResponse"
-              examples:
-                Todos Processados:
-                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação. O payload da resposta vem na mesma ordem do array da solicitação. Uma vez que todos os registros foram validados, o status de retorno é o 200.
-                  value:
-                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
-                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
-                      status: ACCEPTED
-                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
-                      correlationId: 8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j
-                      status: ACCEPTED
-                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
-                      status: ACCEPTED
-
-        "207":
-          description: |
-            O status 207 (Multi-Status) informa ao solicitante que o formato da requisição está correto, mas que entradas do array contém erro de validação em pelo menos 1 item. Ou seja, se todos os elementos do array informado estiverem com falha de validação, a operação vai devolver o status 207, e no corpo da resposta todos os elementos do array vão estar com status `DISCARDED` e com sua respectiva mensagem. 
-            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
-          content:
-            application/json:
-              schema:
-                type: array
-                maxItems: 5000
-                items:
-                  $ref: "#/components/schemas/ReportResponse"
-              examples:
-                "Primeiro registro com falha":
-                  description: |
-                    No caso apresentado é o resultado onde o exemplo "Request com falha" foi enviado: o registro com o _fapiInteractionId_ `d78fc4e5-37ca-4da3-adf2-9b082bf92280` apresentou uma falha na validação, mas os demais foram enviados para processamento. Como um dos registros não foi validado, o status de retorno passa a ser 207, e os demais registros são processados normalmente.
-                  value:
-                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
-                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
-                      status: DISCARDED
-                      message: "Missing fields: 'fapiInteractionId'"
-                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
-                      correlationId: 8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j
-                      status: ACCEPTED
-                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
-                      status: ACCEPTED
-                "Todos registros com falha":
-                  description: |
-                    Neste caso, parte-se da premissa que todos os registros foram enviados sem _correlationId_ e sem _uri_. Nesse caso, todos vão falhar na etapa de validação, mas mesmo quando todos os registros falham, o status de retorno é o 207.
-                  value:
-                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
-                      status: DISCARDED
-                      message: "Missing fields: 'fapiInteractionId'"
-                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
-                      status: DISCARDED
-                      message: "Missing fields: 'fapiInteractionId'"
-                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
-                      status: DISCARDED
-                      message: "Missing fields: 'fapiInteractionId'"
-                "Campo obrigatório não enviado":
-                  description: |
-                    Registro com campo obrigatório não enviado.
-                  value:
-                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a,
-                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf,
-                      status: DISCARDED,
-                      message: "Missing fields: 'statusCode'"
+                  $ref: "#/components/schemas/HybridFlowReportResponse"
 
         "400":
           description: O formato do corpo da requisição não é um array.
@@ -765,21 +516,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenericError"
-              examples:
-                "400":
-                  value:
-                    message: "Invalid payload format: MUST be an array"
-
-        "413":
-          description: A quantidade de registros enviado excede o limite da operação (5.000 elementos no array), ou o tamanho do payload excede 10Mb.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GenericError"
-              examples:
-                "Limite de registros excedido":
-                  value:
-                    message: Record limit exceeded
 
         "401":
           $ref: "#/components/responses/Default401Unauthorized"
@@ -800,20 +536,15 @@ paths:
         - Private API
       summary: Inclusão de reportes
       description: |
-        Inclusão de reportes na plataforma. Ao enviar um lote de reportes, a plataforma vai fazer o processo de validação de cada reporte de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso **todos** dos reportes enviados forem aceitos. Caso pelo menos 1 reporte esteja inconsistente, o status de retorno será 207 - vide documentação de cada status de retorno para maiores informações. 
-        Os dados que são inseridos na API de Reporte são sempre processados de maneira assíncrona, e sua persistência se utiliza de consistência posterior (eventual consistency), portanto, um registro tem um tempo de processamento em que ele não estará disponível para consulta até que ele seja persistido.
-        O limite de reportes de cada envio de lote é de 5.000 entradas no array.
+        Inclusão de reporte na plataforma. Ao enviar um reporte, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
       operationId: add-reports-client-redirect-target-without-errors
       requestBody:
         content:
           application/json:
             schema:
-              type: array
-              maxItems: 5000
+              type: object
               items:
-                oneOf:
-                  - $ref: "#/components/schemas/ClientReportRequest"
-                  - $ref: "#/components/schemas/ServerReportRequest"
+                $ref: "#/components/schemas/HybridFlowServerRedirectTargetWithoutErrorsRequest"
 
             examples:
               "Request Valido":
@@ -831,69 +562,9 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                maxItems: 5000
+                type: object
                 items:
-                  $ref: "#/components/schemas/ReportResponse"
-              examples:
-                Todos Processados:
-                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação. O payload da resposta vem na mesma ordem do array da solicitação. Uma vez que todos os registros foram validados, o status de retorno é o 200.
-                  value:
-                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
-                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
-                      status: ACCEPTED
-                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
-                      correlationId: 8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j
-                      status: ACCEPTED
-                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
-                      status: ACCEPTED
-
-        "207":
-          description: |
-            O status 207 (Multi-Status) informa ao solicitante que o formato da requisição está correto, mas que entradas do array contém erro de validação em pelo menos 1 item. Ou seja, se todos os elementos do array informado estiverem com falha de validação, a operação vai devolver o status 207, e no corpo da resposta todos os elementos do array vão estar com status `DISCARDED` e com sua respectiva mensagem. 
-            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
-          content:
-            application/json:
-              schema:
-                type: array
-                maxItems: 5000
-                items:
-                  $ref: "#/components/schemas/ReportResponse"
-              examples:
-                "Primeiro registro com falha":
-                  description: |
-                    No caso apresentado é o resultado onde o exemplo "Request com falha" foi enviado: o registro com o _fapiInteractionId_ `d78fc4e5-37ca-4da3-adf2-9b082bf92280` apresentou uma falha na validação, mas os demais foram enviados para processamento. Como um dos registros não foi validado, o status de retorno passa a ser 207, e os demais registros são processados normalmente.
-                  value:
-                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
-                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
-                      status: DISCARDED
-                      message: "Missing fields: 'fapiInteractionId'"
-                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
-                      correlationId: 8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j
-                      status: ACCEPTED
-                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
-                      status: ACCEPTED
-                "Todos registros com falha":
-                  description: |
-                    Neste caso, parte-se da premissa que todos os registros foram enviados sem _correlationId_ e sem _uri_. Nesse caso, todos vão falhar na etapa de validação, mas mesmo quando todos os registros falham, o status de retorno é o 207.
-                  value:
-                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
-                      status: DISCARDED
-                      message: "Missing fields: 'fapiInteractionId'"
-                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
-                      status: DISCARDED
-                      message: "Missing fields: 'fapiInteractionId'"
-                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
-                      status: DISCARDED
-                      message: "Missing fields: 'fapiInteractionId'"
-                "Campo obrigatório não enviado":
-                  description: |
-                    Registro com campo obrigatório não enviado.
-                  value:
-                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a,
-                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf,
-                      status: DISCARDED,
-                      message: "Missing fields: 'statusCode'"
+                  $ref: "#/components/schemas/HybridFlowReportResponse"
 
         "400":
           description: O formato do corpo da requisição não é um array.
@@ -901,21 +572,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenericError"
-              examples:
-                "400":
-                  value:
-                    message: "Invalid payload format: MUST be an array"
-
-        "413":
-          description: A quantidade de registros enviado excede o limite da operação (5.000 elementos no array), ou o tamanho do payload excede 10Mb.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/GenericError"
-              examples:
-                "Limite de registros excedido":
-                  value:
-                    message: Record limit exceeded
 
         "401":
           $ref: "#/components/responses/Default401Unauthorized"
@@ -1172,6 +828,46 @@ components:
         - "uriAuthorizationEndpoint"
         - "plataform"
         - "osVersion"
+
+    HybridFlowServerRedirectTargetReportRequest:
+      description: ""
+      type: object
+      required:
+        - "consentId"
+        - "uriAuthorizationEndpoint"
+        - "plataform"
+        - "osVersion"
+    HybridFlowServerAuthenticatedRequest:
+      description: ""
+      type: object
+      required:
+        - "consentId"
+        - "plataform"
+        - "osVersion"
+    HybridFlowServerRedirectToClientRequest:
+      description: ""
+      type: object
+      required:
+        - "consentId"
+        - "uri_callback"
+        - "plataform"
+        - "osVersion"
+        - "type"
+    HybridFlowServerRedirectTargetWithoutErrorsRequest:
+      description: ""
+      type: object
+      required:
+        - "consentId"
+        - "plataform"
+        - "osVersion"
+    HybridFlowServerRedirectTargetWithErrorsRequest:
+      description: ""
+      type: object
+      required:
+        - "consentId"
+        - "plataform"
+        - "osVersion"
+        - "error"
 
     ClientReportRequest:
       description: Representa os dados que deverão ser enviados para a inclusão de reportes pelo lado do Client (iniciador da chamada). Informações adicionais sobre cada campo podem ser encontradas na documentação funcional em https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/37879861/Reporte#Modelos-para-reportes-Private
@@ -1438,12 +1134,6 @@ components:
           example: "9a97c2df-b261-4fc2-aa66-d1b5168397da"
         status:
           $ref: "#/components/schemas/ReportStatus"
-        message:
-          description: Caso a solicitação contenha algum problema em seu formato, ou caso haja algum tipo de falha detectável no momento da requisição, esse campo trará detalhes sobre o erro ocorrido. Informações adicionais sobre os tipos de erros podem ser encontradas em https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/46170119/Troubleshooting+-+PCM
-          type: string
-          pattern: ^[- /:_.',0-9a-zA-Z]{0,200}$
-          maxLength: 200
-          example: "Missing fields: 'fapiInteractionId', 'endpoint'"
 
     ReportStatus:
       description: |

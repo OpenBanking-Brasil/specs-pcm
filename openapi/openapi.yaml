@@ -235,7 +235,7 @@ paths:
     post:
       tags:
         - Hybrid Flow
-      summary: Inclusão de reportes
+      summary: Inclusão de relatório Hybrid Flow de redirecionamento para o servidor (lado cliente)
       description: |
         Inclusão de reporte na plataforma. Ao enviar um reporte, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
       operationId: add-reports-client-redirect-to-server
@@ -252,22 +252,24 @@ paths:
       responses:
         "200":
           description: |
-            O status 200 representa a situação onde  o registro enviado foi validado e será validado. Se o registro contiver problemas de validação.
-            A operação vai devolver um objeto com resultado.
+            O status 200 representa a situação onde  o registro enviado foi validado.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/HybridFlowReportResponse"
               examples:
                 Item processado:
-                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação. O payload da resposta vem na mesma ordem do array da solicitação. Uma vez que os registros validados, o status de retorno é o 200.
-
+                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação.
         "400":
-          description: O formato do corpo da requisição não é um array.
+          description: O formato do corpo da requisição não é um objeto válido.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenericError"
+              examples:
+                "400":
+                  value:
+                    message: "Report Invalid"
 
         "401":
           $ref: "#/components/responses/Default401Unauthorized"
@@ -286,7 +288,7 @@ paths:
     post:
       tags:
         - Hybrid Flow
-      summary: Inclusão de reportes
+      summary: Inclusão de relatório Hybrid Flow de redirecionamento para o destino (lado servidor)
       description: |
         Inclusão de reporte na plataforma. Ao enviar um reporte, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
       operationId: add-reports-server-redirect-target
@@ -307,16 +309,18 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/HybridFlowReportResponse"
+                $ref: "#/components/schemas/HybridFlowReportResponse"
 
         "400":
-          description: O formato do corpo da requisição não é um array.
+          description: O formato do corpo da requisição não é um objeto válido.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenericError"
+              examples:
+                "400":
+                  value:
+                    message: "Report Invalid"
 
         "401":
           $ref: "#/components/responses/Default401Unauthorized"
@@ -335,7 +339,7 @@ paths:
     post:
       tags:
         - Hybrid Flow
-      summary: Inclusão de reportes
+      summary: Inclusão de relatório de authenticação para o Hybrid Flow (lado servidor)
       description: |
         Inclusão de reporte na plataforma. Ao enviar um reporte, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
       operationId: add-reports-server-authenticated
@@ -345,28 +349,31 @@ paths:
             schema:
               $ref: "#/components/schemas/HybridFlowServerAuthenticatedRequest"
             examples:
-              "Request Valido":
+              "Request Válido":
                 description: O request apresentado tem todos os campos validados.
 
         required: true
       responses:
         "200":
           description: |
-            O status 200 representa a situação onde  o registro enviado foi validado e será validado. Se o registro contiver problemas de validação.
-            A operação vai devolver um objeto com resultado.
+            O status 200 representa a situação onde  o registro enviado foi validado.
           content:
             application/json:
               schema:
-                type: object
-                items:
-                  $ref: "#/components/schemas/HybridFlowReportResponse"
-
+                $ref: "#/components/schemas/HybridFlowReportResponse"
+              examples:
+                Item processado:
+                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação.
         "400":
-          description: O formato do corpo da requisição não é um array.
+          description: O formato do corpo da requisição não é um objeto válido.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenericError"
+              examples:
+                "400":
+                  value:
+                    message: "Report Invalid"
 
         "401":
           $ref: "#/components/responses/Default401Unauthorized"
@@ -385,7 +392,7 @@ paths:
     post:
       tags:
         - Hybrid Flow
-      summary: Inclusão de reportes
+      summary: Inclusão de relatório de redirecionamento para o cliente Hybrid Flow (lado servidor)
       description: |
         Inclusão de reporte na plataforma. Ao enviar um reporte, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
       operationId: add-reports-server-redirect-to-client
@@ -403,21 +410,24 @@ paths:
       responses:
         "200":
           description: |
-            O status 200 representa a situação onde  o registro enviado foi validado e será validado. Se o registro contiver problemas de validação.
-            A operação vai devolver um objeto com resultado.
+            O status 200 representa a situação onde  o registro enviado foi validado.
           content:
             application/json:
               schema:
-                type: object
-                items:
-                  $ref: "#/components/schemas/HybridFlowReportResponse"
-
+                $ref: "#/components/schemas/HybridFlowReportResponse"
+              examples:
+                Item processado:
+                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação.
         "400":
-          description: O formato do corpo da requisição não é um array.
+          description: O formato do corpo da requisição não é um objeto válido.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenericError"
+              examples:
+                "400":
+                  value:
+                    message: "Report Invalid"
 
         "401":
           $ref: "#/components/responses/Default401Unauthorized"
@@ -436,7 +446,7 @@ paths:
     post:
       tags:
         - Hybrid Flow
-      summary: Inclusão de reportes
+      summary: Inclusão de relatório de redirecionamento com erro para o destino Hybrid Flow (lado cliente)
       description: |
         Inclusão de reporte na plataforma. Ao enviar um reporte, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
       operationId: add-reports-client-redirect-target-with-errors
@@ -447,26 +457,31 @@ paths:
               $ref: "#/components/schemas/HybridFlowServerRedirectTargetWithErrorsRequest"
 
             examples:
-              "Request Valido":
+              "Request Válido":
                 description: O request apresentado tem todos os campos validados.
 
         required: true
       responses:
         "200":
           description: |
-            O status 200 representa a situação onde  o registro enviado foi validado e será validado. Se o registro contiver problemas de validação.
-            A operação vai devolver um objeto com resultado.
+            O status 200 representa a situação onde  o registro enviado foi validado.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/HybridFlowReportResponse"
-
+              examples:
+                Item processado:
+                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação.
         "400":
-          description: O formato do corpo da requisição não é um array.
+          description: O formato do corpo da requisição não é um objeto válido.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenericError"
+              examples:
+                "400":
+                  value:
+                    message: "Report Invalid"
 
         "401":
           $ref: "#/components/responses/Default401Unauthorized"
@@ -485,7 +500,7 @@ paths:
     post:
       tags:
         - Hybrid Flow
-      summary: Inclusão de reportes
+      summary: Inclusão de relatório de redirecionamento sem erro para o destino Hybrid Flow (lado cliente)
       description: |
         Inclusão de reporte na plataforma. Ao enviar um reporte, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
       operationId: add-reports-client-redirect-target-without-errors
@@ -496,26 +511,31 @@ paths:
               $ref: "#/components/schemas/HybridFlowServerRedirectTargetWithoutErrorsRequest"
 
             examples:
-              "Request Valido":
+              "Request Válido":
                 description: O request apresentado tem todos os campos validados.
 
         required: true
       responses:
         "200":
           description: |
-            O status 200 representa a situação onde  o registro enviado foi validado e será validado. Se o registro contiver problemas de validação.
-            A operação vai devolver um objeto com resultado.
+            O status 200 representa a situação onde  o registro enviado foi validado.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/HybridFlowReportResponse"
-
+              examples:
+                Item processado:
+                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação.
         "400":
-          description: O formato do corpo da requisição não é um array.
+          description: O formato do corpo da requisição não é um objeto válido.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenericError"
+              examples:
+                "400":
+                  value:
+                    message: "Report Invalid"
 
         "401":
           $ref: "#/components/responses/Default401Unauthorized"
@@ -1460,7 +1480,7 @@ components:
           examples:
             NotAcceptable:
               value:
-                message: "Unsupported Media Type"
+                message: "Too Many Requests"
     Default500InternalServerError:
       description: É devolvido quando ocorre um erro não identificado no servidor
       content:

@@ -245,7 +245,7 @@ paths:
             schema:
               $ref: "#/components/schemas/HybridFlowClientRedirectToServerReportRequest"
             examples:
-              "Request Valido":
+              "Request Válido":
                 description: O request apresentado tem todos os campos validados.
 
         required: true
@@ -294,26 +294,10 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              items:
-                $ref: "#/components/schemas/HybridFlowServerRedirectTargetReportRequest"
-
+              $ref: "#/components/schemas/HybridFlowServerRedirectTargetReportRequest"
             examples:
-              "Request Valido":
+              "Request Válido":
                 description: O request apresentado tem todos os campos validados.
-                value:
-                  {
-                    consentId: "consentId",
-                    uriAuthorizationEndpoint: "uriAuthorizationEndpoint",
-                    plataform: [browser, app],
-                    osVersion: "osVersion",
-                    type:
-                      [
-                        AWAITING_HANDOFF,
-                        AWAITING_USER_AUTH,
-                        AWAITING_REDIRECT_TO_APP,
-                      ],
-                  }
         required: true
       responses:
         "200":
@@ -359,17 +343,10 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              items:
-                $ref: "#/components/schemas/HybridFlowServerAuthenticatedRequest"
-
+              $ref: "#/components/schemas/HybridFlowServerAuthenticatedRequest"
             examples:
               "Request Valido":
                 description: O request apresentado tem todos os campos validados.
-                value:
-                  - consentId: "consentId"
-                    plataform: [browser, app]
-                    os_version: "os_version"
 
         required: true
       responses:
@@ -416,21 +393,11 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              items:
-                $ref: "#/components/schemas/HybridFlowClientRedirectToServerReportRequest"
+              $ref: "#/components/schemas/HybridFlowServerRedirectToClientRequest"
 
             examples:
-              "Request Valido":
+              "Request Válido":
                 description: O request apresentado tem todos os campos validados.
-                value:
-                  {
-                    consentId: "consentId",
-                    uri_callback: "uri_callback",
-                    plataform: [browser, app],
-                    os_version: "os_version",
-                    type: [AUTHORISED, REJECTED],
-                  }
 
         required: true
       responses:
@@ -477,20 +444,11 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              items:
-                $ref: "#/components/schemas/HybridFlowServerRedirectTargetWithErrorsRequest"
+              $ref: "#/components/schemas/HybridFlowServerRedirectTargetWithErrorsRequest"
 
             examples:
               "Request Valido":
                 description: O request apresentado tem todos os campos validados.
-                value:
-                  {
-                    consentId: "consentId",
-                    platform: [browser, app],
-                    os_version: "os_version",
-                    error: "error",
-                  }
 
         required: true
       responses:
@@ -501,9 +459,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                items:
-                  $ref: "#/components/schemas/HybridFlowReportResponse"
+                $ref: "#/components/schemas/HybridFlowReportResponse"
 
         "400":
           description: O formato do corpo da requisição não é um array.
@@ -537,19 +493,12 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              items:
-                $ref: "#/components/schemas/HybridFlowServerRedirectTargetWithoutErrorsRequest"
+              $ref: "#/components/schemas/HybridFlowServerRedirectTargetWithoutErrorsRequest"
 
             examples:
               "Request Valido":
                 description: O request apresentado tem todos os campos validados.
-                value:
-                  {
-                    consentId: "consentId",
-                    platform: [browser, app],
-                    os_version: "os_version",
-                  }
+
         required: true
       responses:
         "200":
@@ -559,9 +508,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                items:
-                  $ref: "#/components/schemas/HybridFlowReportResponse"
+                $ref: "#/components/schemas/HybridFlowReportResponse"
 
         "400":
           description: O formato do corpo da requisição não é um array.
@@ -835,13 +782,29 @@ components:
         osVersion:
           type: string
     HybridFlowServerRedirectTargetReportRequest:
-      description: "asdasd"
+      description: ""
       type: object
       required:
         - "consentId"
         - "uriAuthorizationEndpoint"
-        - "plataform"
         - "osVersion"
+        - "type"
+      properties:
+        consentId:
+          type: string
+        uriAuthorizationEndpoint:
+          type: string
+        osVersion:
+          type: string
+        type:
+          type: array
+          items:
+            type: string
+          enum:
+            - AWAITING_HANDOFF
+            - AWAITING_USER_AUTH
+            - AWAITING_REDIRECT_TO_APP
+
     HybridFlowServerAuthenticatedRequest:
       description: ""
       type: object
@@ -849,6 +812,18 @@ components:
         - "consentId"
         - "plataform"
         - "osVersion"
+      properties:
+        consentId:
+          type: string
+        plataform:
+          type: array
+          items:
+            type: string
+            enum:
+              - browser
+              - app
+        osVersion:
+          type: string
     HybridFlowServerRedirectToClientRequest:
       description: ""
       type: object
@@ -858,6 +833,28 @@ components:
         - "plataform"
         - "osVersion"
         - "type"
+      properties:
+        consentId:
+          type: string
+        uri_callback:
+          type: string
+        plataform:
+          type: array
+          items:
+            type: string
+            enum:
+              - browser
+              - app
+        osVersion:
+          type: string
+        type:
+          type: array
+          items:
+            type: string
+            enum:
+              - AUTHORISED
+              - REJECTED
+
     HybridFlowServerRedirectTargetWithoutErrorsRequest:
       description: ""
       type: object
@@ -865,6 +862,19 @@ components:
         - "consentId"
         - "plataform"
         - "osVersion"
+      properties:
+        consentId:
+          type: string
+        plataform:
+          type: array
+          items:
+            type: string
+            enum:
+              - browser
+              - app
+        osVersion:
+          type: string
+
     HybridFlowServerRedirectTargetWithErrorsRequest:
       description: ""
       type: object
@@ -873,6 +883,20 @@ components:
         - "plataform"
         - "osVersion"
         - "error"
+      properties:
+        consentId:
+          type: string
+        plataform:
+          type: array
+          items:
+            type: string
+            enum:
+              - browser
+              - app
+        osVersion:
+          type: string
+        error:
+          type: string
 
     ClientReportRequest:
       description: Representa os dados que deverão ser enviados para a inclusão de reportes pelo lado do Client (iniciador da chamada). Informações adicionais sobre cada campo podem ser encontradas na documentação funcional em https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/37879861/Reporte#Modelos-para-reportes-Private

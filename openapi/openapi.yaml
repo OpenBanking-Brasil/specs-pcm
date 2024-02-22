@@ -779,7 +779,12 @@ components:
         uriAuthorizationEndpoint:
           type: string
         plataform:
-          type: string
+          type: array
+          items:
+            type: string
+            enum:
+              - browser
+              - app
         osVersion:
           type: string
         timestamp:

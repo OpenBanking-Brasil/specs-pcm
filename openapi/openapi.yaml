@@ -772,6 +772,7 @@ components:
         - "uriAuthorizationEndpoint"
         - "plataform"
         - "osVersion"
+        - "timestamp"
       properties:
         consentId:
           type: string
@@ -780,6 +781,8 @@ components:
         plataform:
           type: string
         osVersion:
+          type: string
+        timestamp:
           type: string
     HybridFlowServerRedirectTargetReportRequest:
       description: ""

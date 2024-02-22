@@ -799,12 +799,10 @@ components:
         uriAuthorizationEndpoint:
           type: string
         plataform:
-          type: array
-          items:
-            type: string
-            enum:
-              - browser
-              - app
+          type: string
+          enum:
+            - browser
+            - app
         osVersion:
           type: string
         timestamp:
@@ -826,9 +824,7 @@ components:
         osVersion:
           type: string
         type:
-          type: array
-          items:
-            type: string
+          type: string
           enum:
             - AWAITING_HANDOFF
             - AWAITING_USER_AUTH
@@ -848,12 +844,10 @@ components:
         consentId:
           type: string
         plataform:
-          type: array
-          items:
-            type: string
-            enum:
-              - browser
-              - app
+          type: string
+          enum:
+            - browser
+            - app
         osVersion:
           type: string
         timestamp:
@@ -874,21 +868,17 @@ components:
         uri_callback:
           type: string
         plataform:
-          type: array
-          items:
-            type: string
-            enum:
-              - browser
-              - app
+          type: string
+          enum:
+            - browser
+            - app
         osVersion:
           type: string
         type:
-          type: array
-          items:
-            type: string
-            enum:
-              - AUTHORISED
-              - REJECTED
+          type: string
+          enum:
+            - AUTHORISED
+            - REJECTED
         timestamp:
           type: string
 
@@ -904,12 +894,10 @@ components:
         consentId:
           type: string
         plataform:
-          type: array
-          items:
-            type: string
-            enum:
-              - browser
-              - app
+          type: string
+          enum:
+            - browser
+            - app
         osVersion:
           type: string
         timestamp:
@@ -928,12 +916,10 @@ components:
         consentId:
           type: string
         plataform:
-          type: array
-          items:
-            type: string
-            enum:
-              - browser
-              - app
+          type: string
+          enum:
+            - browser
+            - app
         osVersion:
           type: string
         error:

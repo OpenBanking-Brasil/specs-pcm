@@ -326,8 +326,8 @@ paths:
       responses:
         "200":
           description: |
-            O status 200 representa a situação onde todos os registros enviados no lote foram validados e serão direcionados para processamento. Se pelo menos 1 registro contiver problemas de validação, o retorno será 207 (vide descrição do status).
-            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
+            O status 200 representa a situação onde  o registro enviado foi validado e será validado. Se o registro contiver problemas de validação.
+            A operação vai devolver um objeto com resultado.
           content:
             application/json:
               schema:
@@ -383,8 +383,8 @@ paths:
       responses:
         "200":
           description: |
-            O status 200 representa a situação onde todos os registros enviados no lote foram validados e serão direcionados para processamento. Se pelo menos 1 registro contiver problemas de validação, o retorno será 207 (vide descrição do status).
-            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
+            O status 200 representa a situação onde  o registro enviado foi validado e será validado. Se o registro contiver problemas de validação.
+            A operação vai devolver um objeto com resultado.
           content:
             application/json:
               schema:
@@ -442,8 +442,8 @@ paths:
       responses:
         "200":
           description: |
-            O status 200 representa a situação onde todos os registros enviados no lote foram validados e serão direcionados para processamento. Se pelo menos 1 registro contiver problemas de validação, o retorno será 207 (vide descrição do status).
-            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
+            O status 200 representa a situação onde  o registro enviado foi validado e será validado. Se o registro contiver problemas de validação.
+            A operação vai devolver um objeto com resultado.
           content:
             application/json:
               schema:
@@ -500,13 +500,12 @@ paths:
       responses:
         "200":
           description: |
-            O status 200 representa a situação onde todos os registros enviados no lote foram validados e serão direcionados para processamento. Se pelo menos 1 registro contiver problemas de validação, o retorno será 207 (vide descrição do status).
-            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
+            O status 200 representa a situação onde  o registro enviado foi validado e será validado. Se o registro contiver problemas de validação.
+            A operação vai devolver um objeto com resultado.
           content:
             application/json:
               schema:
-                type: array
-                maxItems: 5000
+                type: object
                 items:
                   $ref: "#/components/schemas/HybridFlowReportResponse"
 
@@ -557,8 +556,8 @@ paths:
       responses:
         "200":
           description: |
-            O status 200 representa a situação onde todos os registros enviados no lote foram validados e serão direcionados para processamento. Se pelo menos 1 registro contiver problemas de validação, o retorno será 207 (vide descrição do status).
-            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
+            O status 200 representa a situação onde  o registro enviado foi validado e será validado. Se o registro contiver problemas de validação.
+            A operação vai devolver um objeto com resultado.
           content:
             application/json:
               schema:

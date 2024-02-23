@@ -237,7 +237,7 @@ paths:
         - Hybrid Flow
       summary: Inclusão de relatório Hybrid Flow de redirecionamento para o servidor (lado cliente)
       description: |
-        Inclusão de reporte na plataforma. Ao enviar um reporte, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
+        Inclusão de relatório de redirecionamento para o servidor na plataforma. Ao enviar um relatório, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
       operationId: add-reports-client-redirect-to-server
       requestBody:
         content:
@@ -290,7 +290,7 @@ paths:
         - Hybrid Flow
       summary: Inclusão de relatório Hybrid Flow de redirecionamento para o destino (lado servidor)
       description: |
-        Inclusão de reporte na plataforma. Ao enviar um reporte, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
+        Inclusão de relatório de redirecionamento para o destino na plataforma. Ao enviar um relatório, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
       operationId: add-reports-server-redirect-target
       requestBody:
         content:
@@ -339,9 +339,9 @@ paths:
     post:
       tags:
         - Hybrid Flow
-      summary: Inclusão de relatório de authenticação para o Hybrid Flow (lado servidor)
+      summary: Inclusão de relatório Hybrid Flow de autenticação (lado servidor)
       description: |
-        Inclusão de reporte na plataforma. Ao enviar um reporte, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
+        Inclusão de relatório de autenticação na plataforma. Ao enviar um relatório, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
       operationId: add-reports-server-authenticated
       requestBody:
         content:
@@ -392,9 +392,9 @@ paths:
     post:
       tags:
         - Hybrid Flow
-      summary: Inclusão de relatório de redirecionamento para o cliente Hybrid Flow (lado servidor)
+      summary: Inclusão de relatório Hybrid Flow de redirecionamento para o cliente (lado servidor)
       description: |
-        Inclusão de reporte na plataforma. Ao enviar um reporte, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
+        Inclusão de relatório de redirecionamento para o cliente na plataforma. Ao enviar um relatório, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
       operationId: add-reports-server-redirect-to-client
       requestBody:
         content:
@@ -446,9 +446,9 @@ paths:
     post:
       tags:
         - Hybrid Flow
-      summary: Inclusão de relatório de redirecionamento com erro para o destino Hybrid Flow (lado cliente)
+      summary: Inclusão de relatório Hybrid Flow de redirecionamento com erro para o destino (lado cliente)
       description: |
-        Inclusão de reporte na plataforma. Ao enviar um reporte, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
+        Inclusão de relatório de redirecionamento com erro para o destino na plataforma. Ao enviar um relatório, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
       operationId: add-reports-client-redirect-target-with-errors
       requestBody:
         content:
@@ -500,9 +500,9 @@ paths:
     post:
       tags:
         - Hybrid Flow
-      summary: Inclusão de relatório de redirecionamento sem erro para o destino Hybrid Flow (lado cliente)
+      summary: Inclusão de relatório Hybrid Flow de redirecionamento sem erro para o destino (lado cliente)
       description: |
-        Inclusão de reporte na plataforma. Ao enviar um reporte, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
+        Inclusão de relatório de redirecionamento sem erro para o destino na plataforma. Ao enviar um relatório, a plataforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
       operationId: add-reports-client-redirect-target-without-errors
       requestBody:
         content:

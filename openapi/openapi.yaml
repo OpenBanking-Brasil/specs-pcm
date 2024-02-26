@@ -784,6 +784,15 @@ paths:
 
 components:
   schemas:
+    HybridFlowOS:
+      type: string
+      enum:
+        - Android
+        - Windows
+        - iOS
+        - macOS
+        - Linux
+        - others
     HybridFlowClientRedirectToServerReportRequest:
       description: ""
       type: object
@@ -792,6 +801,7 @@ components:
         - "uriAuthorizationEndpoint"
         - "plataform"
         - "osVersion"
+        - "os"
         - "timestamp"
       properties:
         consentId:
@@ -805,6 +815,8 @@ components:
             - app
         osVersion:
           type: string
+        os:
+          $ref: "#/components/schemas/HybridFlowOS"
         timestamp:
           type: string
     HybridFlowServerRedirectTargetReportRequest:
@@ -814,6 +826,7 @@ components:
         - "consentId"
         - "uriAuthorizationEndpoint"
         - "osVersion"
+        - "os"
         - "type"
         - "timestamp"
       properties:
@@ -823,6 +836,8 @@ components:
           type: string
         osVersion:
           type: string
+        os:
+          $ref: "#/components/schemas/HybridFlowOS"
         type:
           type: string
           enum:
@@ -839,6 +854,7 @@ components:
         - "consentId"
         - "plataform"
         - "osVersion"
+        - "os"
         - timestamp
       properties:
         consentId:
@@ -850,6 +866,8 @@ components:
             - app
         osVersion:
           type: string
+        os:
+          $ref: "#/components/schemas/HybridFlowOS"
         timestamp:
           type: string
     HybridFlowServerRedirectToClientRequest:
@@ -860,6 +878,7 @@ components:
         - "uri_callback"
         - "plataform"
         - "osVersion"
+        - "os"
         - "type"
         - "timestamp"
       properties:
@@ -874,6 +893,8 @@ components:
             - app
         osVersion:
           type: string
+        os:
+          $ref: "#/components/schemas/HybridFlowOS"
         type:
           type: string
           enum:
@@ -889,6 +910,7 @@ components:
         - "consentId"
         - "plataform"
         - "osVersion"
+        - "os"
         - timestamp
       properties:
         consentId:
@@ -900,6 +922,8 @@ components:
             - app
         osVersion:
           type: string
+        os:
+          $ref: "#/components/schemas/HybridFlowOS"
         timestamp:
           type: string
 
@@ -910,6 +934,7 @@ components:
         - "consentId"
         - "plataform"
         - "osVersion"
+        - "os"
         - "error"
         - "timestamp"
       properties:
@@ -922,6 +947,8 @@ components:
             - app
         osVersion:
           type: string
+        os:
+          $ref: "#/components/schemas/HybridFlowOS"
         error:
           type: string
         timestamp:

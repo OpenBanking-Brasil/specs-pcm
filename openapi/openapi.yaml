@@ -784,14 +784,45 @@ paths:
 
 components:
   schemas:
-    HybridFlowOS:
+    Plataform:
+      $ref: "#/components/schemas/Plataform"
+    URI:
+      type: string
+      format: uri
+      pattern: ^(https:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)$
+      maxLength: 2000
+      example: https://api.banco.com.br/open-banking/api/v1/resource
+    Timestamp:
+      description: Data/Hora UTC no formato ISO8601 com milissegundos (YYYY-MM-DDTHH:mm:ss.sssZ) do momento em que a chamada foi disparada, imediatamente antes do primeiro byte enviado na requisição.
+      type: string
+      format: date-time
+      maxLength: 28
+      example: "2021-11-11T18:08:08.278Z"
+    ConsentId:
+      type: string
+      pattern: ^urn:[a-zA-Z0-9][a-zA-Z0-9-]{0,31}:[a-zA-Z0-9()+,\-.:=@;$_!*'%\/?#]+$
+      maxLength: 256
+      example: urn:bancoex:C1DD33123
+      description: |
+
+        O consentId é o identificador único do consentimento e deverá ser um URN - Uniform Resource Name.  
+        Um URN, conforme definido na RFC8141 é um Uniform Resource Identifier - URI - que é atribuído sob o URI scheme "urn" e um namespace URN específico, com a intenção de que o URN seja um identificador de recurso persistente e independente da localização.  
+        Considerando a string urn:bancoex:C1DD33123 como exemplo para consentId temos:
+
+        * o namespace(urn)
+        * o identificador associado ao namespace da instituição transnmissora (bancoex)
+        * o identificador específico dentro do namespace (C1DD33123).
+        Informações mais detalhadas sobre a construção de namespaces devem ser consultadas na RFC8141.
+
+    OSType:
       type: string
       enum:
-        - Android
-        - Windows
-        - iOS
-        - macOS
-        - Linux
+        - linux
+        - macos
+        - unix
+        - windows
+        - ios
+        - android
         - others
     HybridFlowClientRedirectToServerReportRequest:
       description: ""
@@ -805,20 +836,17 @@ components:
         - "timestamp"
       properties:
         consentId:
-          type: string
+          $ref: "#/components/schemas/ConsentId"
         uriAuthorizationEndpoint:
-          type: string
+          $ref: "#/components/schemas/URI"
         plataform:
-          type: string
-          enum:
-            - browser
-            - app
+          $ref: "#/components/schemas/Plataform"
         osVersion:
           type: string
         os:
-          $ref: "#/components/schemas/HybridFlowOS"
+          $ref: "#/components/schemas/OSType"
         timestamp:
-          type: string
+          $ref: "#/components/schemas/Timestamp"
     HybridFlowServerRedirectTargetReportRequest:
       description: ""
       type: object
@@ -831,13 +859,13 @@ components:
         - "timestamp"
       properties:
         consentId:
-          type: string
+          $ref: "#/components/schemas/ConsentId"
         uriAuthorizationEndpoint:
-          type: string
+          $ref: "#/components/schemas/URI"
         osVersion:
           type: string
         os:
-          $ref: "#/components/schemas/HybridFlowOS"
+          $ref: "#/components/schemas/OSType"
         type:
           type: string
           enum:
@@ -845,7 +873,7 @@ components:
             - AWAITING_USER_AUTH
             - AWAITING_REDIRECT_TO_APP
         timestamp:
-          type: string
+          $ref: "#/components/schemas/Timestamp"
 
     HybridFlowServerAuthenticatedRequest:
       description: ""
@@ -858,18 +886,15 @@ components:
         - timestamp
       properties:
         consentId:
-          type: string
+          $ref: "#/components/schemas/ConsentId"
         plataform:
-          type: string
-          enum:
-            - browser
-            - app
+          $ref: "#/components/schemas/Plataform"
         osVersion:
           type: string
         os:
-          $ref: "#/components/schemas/HybridFlowOS"
+          $ref: "#/components/schemas/OSType"
         timestamp:
-          type: string
+          $ref: "#/components/schemas/Timestamp"
     HybridFlowServerRedirectToClientRequest:
       description: ""
       type: object
@@ -883,25 +908,22 @@ components:
         - "timestamp"
       properties:
         consentId:
-          type: string
+          $ref: "#/components/schemas/ConsentId"
         uri_callback:
-          type: string
+          $ref: "#/components/schemas/URI"
         plataform:
-          type: string
-          enum:
-            - browser
-            - app
+          $ref: "#/components/schemas/Plataform"
         osVersion:
           type: string
         os:
-          $ref: "#/components/schemas/HybridFlowOS"
+          $ref: "#/components/schemas/OSType"
         type:
           type: string
           enum:
             - AUTHORISED
             - REJECTED
         timestamp:
-          type: string
+          $ref: "#/components/schemas/Timestamp"
 
     HybridFlowServerRedirectTargetWithoutErrorsRequest:
       description: ""
@@ -914,18 +936,15 @@ components:
         - timestamp
       properties:
         consentId:
-          type: string
+          $ref: "#/components/schemas/ConsentId"
         plataform:
-          type: string
-          enum:
-            - browser
-            - app
+          $ref: "#/components/schemas/Plataform"
         osVersion:
           type: string
         os:
-          $ref: "#/components/schemas/HybridFlowOS"
+          $ref: "#/components/schemas/OSType"
         timestamp:
-          type: string
+          $ref: "#/components/schemas/Timestamp"
 
     HybridFlowServerRedirectTargetWithErrorsRequest:
       description: ""
@@ -939,7 +958,7 @@ components:
         - "timestamp"
       properties:
         consentId:
-          type: string
+          $ref: "#/components/schemas/ConsentId"
         plataform:
           type: string
           enum:
@@ -948,11 +967,11 @@ components:
         osVersion:
           type: string
         os:
-          $ref: "#/components/schemas/HybridFlowOS"
+          $ref: "#/components/schemas/OSType"
         error:
           type: string
         timestamp:
-          type: string
+          $ref: "#/components/schemas/Timestamp"
 
     ClientReportRequest:
       description: Representa os dados que deverão ser enviados para a inclusão de reportes pelo lado do Client (iniciador da chamada). Informações adicionais sobre cada campo podem ser encontradas na documentação funcional em https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/37879861/Reporte#Modelos-para-reportes-Private

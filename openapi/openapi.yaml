@@ -1,34 +1,35 @@
 openapi: 3.0.3
 info:
-  title: "Plataforma de Coleta de Métricas"
+  title: "Platforma de Coleta de Métricas"
   description: |
     # Introdução
 
-    A plataforma de Coleta de Métricas foi idealizada com o objetivo de contabilizar as interações entre as instituições participantes, de modo a promover um ambiente equitativo e não discriminatório. Se trata de uma plataforma localizada no perímetro central, gerida pelo regulador do ecossistema.
+    A Platforma de Coleta de Métricas foi idealizada com o objetivo de contabilizar as interações entre as instituições participantes, de modo a promover um ambiente equitativo e não discriminatório. Se trata de uma Platforma localizada no perímetro central, gerida pelo regulador do ecossistema.
 
     ## Motivação
 
-    Para que o ecossistema do Open Finance Brasil seja saudável para instituições e clientes finais, fez-se necessária a criação de uma plataforma que deverá concentrar dados sobre as chamadas que as instituições fazem umas às outras. Dessa forma, torna-se possível coletar informações com o objetivo de se criar métricas e indicadores a fim de se ter visibilidade sobre todo o ambiente.
+    Para que o ecossistema do Open Finance Brasil seja saudável para instituições e clientes finais, fez-se necessária a criação de uma Platforma que deverá concentrar dados sobre as chamadas que as instituições fazem umas às outras. Dessa forma, torna-se possível coletar informações com o objetivo de se criar métricas e indicadores a fim de se ter visibilidade sobre todo o ambiente.
 
     No intuito de manter a integridade e consistência nos dados, o envio destes pelas instituições deverá passar por um processo de conciliação. Quando divergente, as instituições serão notificadas e terão a possibilidade de ajustar os reportes, o que promove um ambiente saudável de auto-regulação, prevenindo assim uma disputa.
 
-    ## O que a plataforma não é
+    ## O que a Platforma não é
 
-    A plataforma recebe os dados de maneira póstuma, ou seja, dentro do período de fechamento mas depois de a chamada concreta ter sido feita. Dada essa natureza, a plataforma não pode atuar como um agente que proíbe, bloqueia ou interfere nas interações entre as instituiçoes.
+    A Platforma recebe os dados de maneira póstuma, ou seja, dentro do período de fechamento mas depois de a chamada concreta ter sido feita. Dada essa natureza, a Platforma não pode atuar como um agente que proíbe, bloqueia ou interfere nas interações entre as instituiçoes.
 
-    Por mais que concentre informações importantes das chamadas entre as instituições, a plataforma não é uma ferramenta de BI, e o controle de acesso aos dados é feito em diferentes níveis (participante, regulador e administrador).
+    Por mais que concentre informações importantes das chamadas entre as instituições, a Platforma não é uma ferramenta de BI, e o controle de acesso aos dados é feito em diferentes níveis (participante, regulador e administrador).
 
     ## Premissas Técnicas
 
-    * Tanto o envio por parte dos participantes quanto o processamento por parte da plataforma serão feitos de maneira assíncrona;
+    * Tanto o envio por parte dos participantes quanto o processamento por parte da Platforma serão feitos de maneira assíncrona;
 
     ## Terminologia
 
     * **Server e Client**: em uma interação, a parte que solicita os dados é chamada de _client_, ao passo que a parte que devolve os dados é o _server_. O ponto de vista para o uso dessa terminologia é o tráfego dos dados da transação e não o ponto de partida da chamada. Portanto, supondo que A faça uma consulta em B pelos dados de uma conta, esses dados vão ser transmitidos por quem recebeu a solicitação, e recebidos por quem a fez, nesse caso, "A" é o Client e "B" é o Server.
 
-    * **Reporte**: no contexto da API de Coleta de Métricas, um _reporte_ é o registro da chamada que será enviado tanto pelo server quanto pelo client. Esse registro será armazenado na Plataforma para posterior processo de conciliação de chamadas e extração de dados estatísticos.
+    * **Reporte**: no contexto da API de Coleta de Métricas, um _reporte_ é o registro da chamada que será enviado tanto pelo server quanto pelo client. Esse registro será armazenado na Platforma para posterior processo de conciliação de chamadas e extração de dados estatísticos.
 
     * **Divergência**: Quando Server e Client enviam reportes, cada um destes reportes se refere à uma chamada em específico. Nos casos em que uma das partes não envia o reporte sobre essa chamada em específico, é caracterizada uma divergência. As divergências podem ser resolvidas pela chamada às operações de modificação de reportes em suas respectivas APIs. Uma divergência é considerada fechada apenas quando todos os reportes encontram sua respectiva correspondência do outro lado da chamada.
+
 
     Para informações detalhadas sobre a PCM, consulte o [site da documentação da Plataforma](https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/17378055/Plataforma+de+Coleta+de+M+tricas).
 
@@ -44,6 +45,9 @@ servers:
     description: Produção
 
 tags:
+  - name: Hybrid Flow
+    description: |
+      A Hybrid Flow API fornece operações que permitem a inclusão de relatórios com informações ao longo do fluxo de execução do consentimento.
   - name: Private API
     description: |
       A Private API fornece operações que permitem a inclusão, consulta e alteração dos reportes que representam transações entre participantes do ecossistema do Open Finance.
@@ -228,6 +232,325 @@ paths:
         default:
           $ref: "#/components/responses/Default500InternalServerError"
 
+  "/report-api/v2/hybrid-flow/client/redirect-to-server":
+    post:
+      tags:
+        - Hybrid Flow
+      summary: Inclusão de relatório Hybrid Flow de redirecionamento para o servidor (lado cliente)
+      description: |
+        Inclusão de relatório de redirecionamento para o servidor na Platforma. Ao enviar um relatório, a Platforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
+      operationId: add-reports-client-redirect-to-server
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HybridFlowClientRedirectToServerReportRequest"
+            examples:
+              "Request Válido":
+                description: O request apresentado tem todos os campos validados.
+
+        required: true
+      responses:
+        "200":
+          description: |
+            O status 200 representa a situação onde  o registro enviado foi validado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HybridFlowReportResponse"
+              examples:
+                Item processado:
+                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação.
+        "400":
+          description: O formato do corpo da requisição não é um objeto válido.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+              examples:
+                "400":
+                  value:
+                    message: "Report Invalid"
+
+        "401":
+          $ref: "#/components/responses/Default401Unauthorized"
+        "403":
+          $ref: "#/components/responses/Default403Forbidden"
+        "406":
+          $ref: "#/components/responses/Default406NotAcceptable"
+        "415":
+          $ref: "#/components/responses/Default415UnsupportedMediaType"
+        "429":
+          $ref: "#/components/responses/Default429TooManyRequests"
+        default:
+          $ref: "#/components/responses/Default500InternalServerError"
+
+  "/report-api/v2/hybrid-flow/server/redirect-target":
+    post:
+      tags:
+        - Hybrid Flow
+      summary: Inclusão de relatório Hybrid Flow de redirecionamento para o destino (lado servidor)
+      description: |
+        Inclusão de relatório de redirecionamento para o destino na Platforma. Ao enviar um relatório, a Platforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
+      operationId: add-reports-server-redirect-target
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HybridFlowServerRedirectTargetReportRequest"
+            examples:
+              "Request Válido":
+                description: O request apresentado tem todos os campos validados.
+        required: true
+      responses:
+        "200":
+          description: |
+            O status 200 representa a situação onde  o registro enviado foi validado e será validado. Se o registro contiver problemas de validação.
+            A operação vai devolver um objeto com resultado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HybridFlowReportResponse"
+
+        "400":
+          description: O formato do corpo da requisição não é um objeto válido.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+              examples:
+                "400":
+                  value:
+                    message: "Report Invalid"
+
+        "401":
+          $ref: "#/components/responses/Default401Unauthorized"
+        "403":
+          $ref: "#/components/responses/Default403Forbidden"
+        "406":
+          $ref: "#/components/responses/Default406NotAcceptable"
+        "415":
+          $ref: "#/components/responses/Default415UnsupportedMediaType"
+        "429":
+          $ref: "#/components/responses/Default429TooManyRequests"
+        default:
+          $ref: "#/components/responses/Default500InternalServerError"
+
+  "/report-api/v2/hybrid-flow/server/authenticated":
+    post:
+      tags:
+        - Hybrid Flow
+      summary: Inclusão de relatório Hybrid Flow de autenticação (lado servidor)
+      description: |
+        Inclusão de relatório de autenticação na Platforma. Ao enviar um relatório, a Platforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
+      operationId: add-reports-server-authenticated
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HybridFlowServerAuthenticatedRequest"
+            examples:
+              "Request Válido":
+                description: O request apresentado tem todos os campos validados.
+
+        required: true
+      responses:
+        "200":
+          description: |
+            O status 200 representa a situação onde  o registro enviado foi validado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HybridFlowReportResponse"
+              examples:
+                Item processado:
+                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação.
+        "400":
+          description: O formato do corpo da requisição não é um objeto válido.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+              examples:
+                "400":
+                  value:
+                    message: "Report Invalid"
+
+        "401":
+          $ref: "#/components/responses/Default401Unauthorized"
+        "403":
+          $ref: "#/components/responses/Default403Forbidden"
+        "406":
+          $ref: "#/components/responses/Default406NotAcceptable"
+        "415":
+          $ref: "#/components/responses/Default415UnsupportedMediaType"
+        "429":
+          $ref: "#/components/responses/Default429TooManyRequests"
+        default:
+          $ref: "#/components/responses/Default500InternalServerError"
+
+  "/report-api/v2/hybrid-flow/server/redirect-to-client":
+    post:
+      tags:
+        - Hybrid Flow
+      summary: Inclusão de relatório Hybrid Flow de redirecionamento para o cliente (lado servidor)
+      description: |
+        Inclusão de relatório de redirecionamento para o cliente na Platforma. Ao enviar um relatório, a Platforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
+      operationId: add-reports-server-redirect-to-client
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HybridFlowServerRedirectToClientRequest"
+
+            examples:
+              "Request Válido":
+                description: O request apresentado tem todos os campos validados.
+
+        required: true
+      responses:
+        "200":
+          description: |
+            O status 200 representa a situação onde  o registro enviado foi validado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HybridFlowReportResponse"
+              examples:
+                Item processado:
+                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação.
+        "400":
+          description: O formato do corpo da requisição não é um objeto válido.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+              examples:
+                "400":
+                  value:
+                    message: "Report Invalid"
+
+        "401":
+          $ref: "#/components/responses/Default401Unauthorized"
+        "403":
+          $ref: "#/components/responses/Default403Forbidden"
+        "406":
+          $ref: "#/components/responses/Default406NotAcceptable"
+        "415":
+          $ref: "#/components/responses/Default415UnsupportedMediaType"
+        "429":
+          $ref: "#/components/responses/Default429TooManyRequests"
+        default:
+          $ref: "#/components/responses/Default500InternalServerError"
+
+  "/report-api/v2/hybrid-flow/client/redirect-target-with-errors":
+    post:
+      tags:
+        - Hybrid Flow
+      summary: Inclusão de relatório Hybrid Flow de redirecionamento com erro para o destino (lado cliente)
+      description: |
+        Inclusão de relatório de redirecionamento com erro para o destino na Platforma. Ao enviar um relatório, a Platforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
+      operationId: add-reports-client-redirect-target-with-errors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HybridFlowServerRedirectTargetWithErrorsRequest"
+
+            examples:
+              "Request Válido":
+                description: O request apresentado tem todos os campos validados.
+
+        required: true
+      responses:
+        "200":
+          description: |
+            O status 200 representa a situação onde  o registro enviado foi validado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HybridFlowReportResponse"
+              examples:
+                Item processado:
+                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação.
+        "400":
+          description: O formato do corpo da requisição não é um objeto válido.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+              examples:
+                "400":
+                  value:
+                    message: "Report Invalid"
+
+        "401":
+          $ref: "#/components/responses/Default401Unauthorized"
+        "403":
+          $ref: "#/components/responses/Default403Forbidden"
+        "406":
+          $ref: "#/components/responses/Default406NotAcceptable"
+        "415":
+          $ref: "#/components/responses/Default415UnsupportedMediaType"
+        "429":
+          $ref: "#/components/responses/Default429TooManyRequests"
+        default:
+          $ref: "#/components/responses/Default500InternalServerError"
+
+  "/report-api/v2/hybrid-flow/client/redirect-target-without-errors":
+    post:
+      tags:
+        - Hybrid Flow
+      summary: Inclusão de relatório Hybrid Flow de redirecionamento sem erro para o destino (lado cliente)
+      description: |
+        Inclusão de relatório de redirecionamento sem erro para o destino na Platforma. Ao enviar um relatório, a Platforma vai fazer o processo de validação de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso o reporte enviado seja aceito.
+      operationId: add-reports-client-redirect-target-without-errors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HybridFlowServerRedirectTargetWithoutErrorsRequest"
+
+            examples:
+              "Request Válido":
+                description: O request apresentado tem todos os campos validados.
+
+        required: true
+      responses:
+        "200":
+          description: |
+            O status 200 representa a situação onde  o registro enviado foi validado.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HybridFlowReportResponse"
+              examples:
+                Item processado:
+                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação.
+        "400":
+          description: O formato do corpo da requisição não é um objeto válido.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+              examples:
+                "400":
+                  value:
+                    message: "Report Invalid"
+
+        "401":
+          $ref: "#/components/responses/Default401Unauthorized"
+        "403":
+          $ref: "#/components/responses/Default403Forbidden"
+        "406":
+          $ref: "#/components/responses/Default406NotAcceptable"
+        "415":
+          $ref: "#/components/responses/Default415UnsupportedMediaType"
+        "429":
+          $ref: "#/components/responses/Default429TooManyRequests"
+        default:
+          $ref: "#/components/responses/Default500InternalServerError"
+
   "/report-api/v1/private/report/{reportId}":
     get:
       tags:
@@ -331,6 +654,7 @@ paths:
         - Opendata API
       summary: Inclusão de reportes
       description: |
+      
         Inclusão de reportes de dados abertos na plataforma. Ao enviar um lote de reportes, a plataforma vai fazer o processo de validação sintática de cada reporte de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso **todos** dos reportes enviados forem aceitos. Caso pelo menos 1 reporte esteja inconsistente, o status de retorno será 207 - vide documentação de cada status de retorno para maiores informações. 
 
         Os dados que são inseridos na API de Reporte são sempre processados de maneira assíncrona, e sua persistência se utiliza de consistência posterior (eventual consistency), portanto, um registro tem um tempo de processamento em que ele não estará disponível para consulta até que ele seja persistido.
@@ -462,6 +786,200 @@ paths:
 
 components:
   schemas:
+    Platform:
+      type: string
+      enum:
+        - browser
+        - app
+      example: browser
+    URI:
+      type: string
+      format: uri
+      pattern: ^(https:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)$
+      maxLength: 2000
+      example: https://api.banco.com.br/open-banking/api/v1/resource
+    Timestamp:
+      description: Data/Hora UTC no formato ISO8601 com milissegundos (YYYY-MM-DDTHH:mm:ss.sssZ) do momento em que a chamada foi disparada, imediatamente antes do primeiro byte enviado na requisição.
+      type: string
+      format: date-time
+      maxLength: 28
+      example: "2021-11-11T18:08:08.278Z"
+    ConsentId:
+      type: string
+      pattern: ^urn:[a-zA-Z0-9][a-zA-Z0-9-]{0,31}:[a-zA-Z0-9()+,\-.:=@;$_!*'%\/?#]+$
+      maxLength: 256
+      example: urn:bancoex:C1DD33123
+      description: |
+
+        O consentId é o identificador único do consentimento e deverá ser um URN - Uniform Resource Name.  
+        Um URN, conforme definido na RFC8141 é um Uniform Resource Identifier - URI - que é atribuído sob o URI scheme "urn" e um namespace URN específico, com a intenção de que o URN seja um identificador de recurso persistente e independente da localização.  
+        Considerando a string urn:bancoex:C1DD33123 como exemplo para consentId temos:
+
+        * o namespace(urn)
+        * o identificador associado ao namespace da instituição transnmissora (bancoex)
+        * o identificador específico dentro do namespace (C1DD33123).
+        Informações mais detalhadas sobre a construção de namespaces devem ser consultadas na RFC8141.
+
+    OSType:
+      type: string
+      example: linux
+      enum:
+        - linux
+        - macos
+        - unix
+        - windows
+        - ios
+        - android
+        - other
+    HybridFlowClientRedirectToServerReportRequest:
+      description: ""
+      type: object
+      required:
+        - "consentId"
+        - "uriAuthorizationEndpoint"
+        - "platform"
+        - "osVersion"
+        - "os"
+        - "timestamp"
+      properties:
+        consentId:
+          $ref: "#/components/schemas/ConsentId"
+        uriAuthorizationEndpoint:
+          $ref: "#/components/schemas/URI"
+        Platform:
+          $ref: "#/components/schemas/Platform"
+        osVersion:
+          type: string
+        os:
+          $ref: "#/components/schemas/OSType"
+        timestamp:
+          $ref: "#/components/schemas/Timestamp"
+    HybridFlowServerRedirectTargetReportRequest:
+      description: ""
+      type: object
+      required:
+        - "consentId"
+        - "uriAuthorizationEndpoint"
+        - "osVersion"
+        - "os"
+        - "type"
+        - "timestamp"
+      properties:
+        consentId:
+          $ref: "#/components/schemas/ConsentId"
+        uriAuthorizationEndpoint:
+          $ref: "#/components/schemas/URI"
+        osVersion:
+          type: string
+        os:
+          $ref: "#/components/schemas/OSType"
+        type:
+          type: string
+          enum:
+            - AWAITING_HANDOFF
+            - AWAITING_USER_AUTH
+            - AWAITING_REDIRECT_TO_APP
+        timestamp:
+          $ref: "#/components/schemas/Timestamp"
+
+    HybridFlowServerAuthenticatedRequest:
+      description: ""
+      type: object
+      required:
+        - "consentId"
+        - "Platform"
+        - "osVersion"
+        - "os"
+        - timestamp
+      properties:
+        consentId:
+          $ref: "#/components/schemas/ConsentId"
+        Platform:
+          $ref: "#/components/schemas/Platform"
+        osVersion:
+          type: string
+        os:
+          $ref: "#/components/schemas/OSType"
+        timestamp:
+          $ref: "#/components/schemas/Timestamp"
+    HybridFlowServerRedirectToClientRequest:
+      description: ""
+      type: object
+      required:
+        - "consentId"
+        - "uri_callback"
+        - "Platform"
+        - "osVersion"
+        - "os"
+        - "type"
+        - "timestamp"
+      properties:
+        consentId:
+          $ref: "#/components/schemas/ConsentId"
+        uri_callback:
+          $ref: "#/components/schemas/URI"
+        Platform:
+          $ref: "#/components/schemas/Platform"
+        osVersion:
+          type: string
+        os:
+          $ref: "#/components/schemas/OSType"
+        type:
+          type: string
+          enum:
+            - AUTHORISED
+            - REJECTED
+        timestamp:
+          $ref: "#/components/schemas/Timestamp"
+
+    HybridFlowServerRedirectTargetWithoutErrorsRequest:
+      description: ""
+      type: object
+      required:
+        - "consentId"
+        - "Platform"
+        - "osVersion"
+        - "os"
+        - timestamp
+      properties:
+        consentId:
+          $ref: "#/components/schemas/ConsentId"
+        Platform:
+          $ref: "#/components/schemas/Platform"
+        osVersion:
+          type: string
+        os:
+          $ref: "#/components/schemas/OSType"
+        timestamp:
+          $ref: "#/components/schemas/Timestamp"
+
+    HybridFlowServerRedirectTargetWithErrorsRequest:
+      description: ""
+      type: object
+      required:
+        - "consentId"
+        - "Platform"
+        - "osVersion"
+        - "os"
+        - "error"
+        - "timestamp"
+      properties:
+        consentId:
+          $ref: "#/components/schemas/ConsentId"
+        Platform:
+          type: string
+          enum:
+            - browser
+            - app
+        osVersion:
+          type: string
+        os:
+          $ref: "#/components/schemas/OSType"
+        error:
+          type: string
+        timestamp:
+          $ref: "#/components/schemas/Timestamp"
+
     ClientReportRequest:
       description: Representa os dados que deverão ser enviados para a inclusão de reportes pelo lado do Client (iniciador da chamada). Informações adicionais sobre cada campo podem ser encontradas na documentação funcional em https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/37879861/Reporte#Modelos-para-reportes-Private
       type: object
@@ -710,6 +1228,21 @@ components:
           maxLength: 200
           example: "Missing fields: 'fapiInteractionId', 'endpoint'"
 
+    HybridFlowReportResponse:
+      description: Representa os dados que serão retornados pelas operações de inclusão de reportes.
+      additionalProperties: false
+      required:
+        - reportId
+      type: object
+      properties:
+        reportId:
+          description: Identificator único interno do reporte no formato UUID v4.
+          type: string
+          format: uuid
+          maxLength: 36
+          pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          example: "9a97c2df-b261-4fc2-aa66-d1b5168397da"
+
     ReportStatus:
       description: |
         Informa o status do registro de reporte.
@@ -736,7 +1269,7 @@ components:
           properties:
             reportId:
               description: |
-                Identificador único do registro criado na plataforma de Coleta de Métricas.
+                Identificador único do registro criado na Platforma de Coleta de Métricas.
               type: string
               format: uuid
               maxLength: 36
@@ -771,7 +1304,7 @@ components:
           properties:
             reportId:
               description: |
-                Identificador único do registro criado na plataforma de Coleta de Métricas.
+                Identificador único do registro criado na Platforma de Coleta de Métricas.
               type: string
               format: uuid
               maxLength: 36
@@ -897,6 +1430,7 @@ components:
     AdditionalInfo:
       description: Informações adicionais sobre o reporte deste endpoint/método. Possui característica variável. As regras de preenchimento estão na documentação funcional em https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/37879861/Reporte#additionalInfo. Atenção especial na tabela Excel com a listagem de endpoints em https://openfinancebrasil.atlassian.net/wiki/download/attachments/37879861/Tabela%20additionalInfo%20%E2%80%93%20campos%20contexto%20e%20obrigatoriedade%20(cliente%20server).xlsx?api=v2.
       type: object
+
       properties:
         consentId:
           description: Deve ser preenchido com a mesma string obtida no campo `.data.consentId` retornado após a chamada inicial na API "POST /consent". *Ao reportar o uso de um endpoint /token, o identificador único de consentimento só será reportado nos casos em que "grant_type" é do tipo "authorization_code" ou do tipo "refresh_token", uma vez que esta informação de consentId é inexistente quando "grant_type" é do tipo
@@ -961,6 +1495,7 @@ components:
             - POST /open-banking/payments/v4/consents​
             - POST /open-banking/enrollments/v1/enrollments​
             - POST /open-banking/automatic-payments/v1​/recurring-consents​
+
 
     OpendataAdditionalInfo:
       description: Informações adicionais sobre o reporte deste endpoint/método. Possui característica variável. As regras de preenchimento estão na documentação funcional em https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/37879861/Reporte#additionalInfo. Atenção especial na tabela Excel com a listagem de endpoints em https://openfinancebrasil.atlassian.net/wiki/download/attachments/37879861/Tabela%20additionalInfo%20%E2%80%93%20campos%20contexto%20e%20obrigatoriedade%20(cliente%20server).xlsx?api=v2.
@@ -1049,7 +1584,7 @@ components:
           examples:
             NotAcceptable:
               value:
-                message: "Unsupported Media Type"
+                message: "Too Many Requests"
     Default500InternalServerError:
       description: É devolvido quando ocorre um erro não identificado no servidor
       content:

@@ -49,7 +49,7 @@ tags:
     description: |
       A Hybrid Flow API fornece operações que permitem a inclusão de relatórios com informações ao longo do fluxo de execução do consentimento.
       
-      ![Sample Image](hybrid-flow-diagram.png)
+      ![Sample Image](https://github.com/OpenBanking-Brasil/specs-pcm/blob/feature/PCM-122/openapi/hybrid-flow-diagram.png?raw=true)
   - name: Private API
     description: |
       A Private API fornece operações que permitem a inclusão, consulta e alteração dos reportes que representam transações entre participantes do ecossistema do Open Finance.

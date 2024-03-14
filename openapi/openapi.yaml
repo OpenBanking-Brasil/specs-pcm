@@ -650,7 +650,7 @@ paths:
 
         Os dados que são inseridos na API de Reporte são sempre processados de maneira assíncrona, e sua persistência se utiliza de consistência posterior (eventual consistency), portanto, um registro tem um tempo de processamento em que ele não estará disponível para consulta até que ele seja persistido.
 
-        O limite de registros de cada lote é de 5.000 registros.
+        O limite de registros de cada lote é de 5.000 registros tanto para o ambiente de produção quanto para o de sandbox.
       operationId: add-opendata-reports
       requestBody:
         content:

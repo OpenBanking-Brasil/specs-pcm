@@ -68,7 +68,7 @@ paths:
 
         Os dados que são inseridos na API de Reporte são sempre processados de maneira assíncrona, e sua persistência se utiliza de consistência posterior (eventual consistency), portanto, um registro tem um tempo de processamento em que ele não estará disponível para consulta até que ele seja persistido.
 
-        O limite de reportes de cada envio de lote é de 5.000 entradas no array.
+        O limite de reportes de cada envio de lote é de 5.000 entradas no array tanto para o ambiente de produção quanto para o de sandbox.
       operationId: add-reports
       requestBody:
         content:
@@ -137,19 +137,16 @@ paths:
                 type: array
                 maxItems: 5000
                 items:
-                  $ref: "#/components/schemas/ReportResponse"
+                  $ref: "#/components/schemas/ReportResponseOpenData"
               examples:
                 Todos Processados:
                   description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação. O payload da resposta vem na mesma ordem do array da solicitação. Uma vez que todos os registros foram validados, o status de retorno é o 200.
                   value:
                     - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
                       correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
-                      status: ACCEPTED
                     - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
                       correlationId: 8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j
-                      status: ACCEPTED
                     - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
-                      status: ACCEPTED
 
         "207":
           description: |
@@ -162,7 +159,7 @@ paths:
                 type: array
                 maxItems: 5000
                 items:
-                  $ref: "#/components/schemas/ReportResponse"
+                  $ref: "#/components/schemas/ReportResponseOpenData"
               examples:
                 "Primeiro registro com falha":
                   description: |
@@ -170,25 +167,20 @@ paths:
                   value:
                     - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
                       correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf
-                      status: DISCARDED
                       message: "Missing fields: 'fapiInteractionId'"
                     - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
                       correlationId: 8qPzRL4nBzesCc3H1827UlqqEuTT4F5lN82DuJllcnL5VnnY5j
-                      status: ACCEPTED
                     - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
-                      status: ACCEPTED
+
                 "Todos registros com falha":
                   description: |
                     Neste caso, parte-se da premissa que todos os registros foram enviados sem _correlationId_ e sem _uri_. Nesse caso, todos vão falhar na etapa de validação, mas mesmo quando todos os registros falham, o status de retorno é o 207.
                   value:
                     - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
-                      status: DISCARDED
                       message: "Missing fields: 'fapiInteractionId'"
                     - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
-                      status: DISCARDED
                       message: "Missing fields: 'fapiInteractionId'"
                     - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
-                      status: DISCARDED
                       message: "Missing fields: 'fapiInteractionId'"
                 "Campo obrigatório não enviado":
                   description: |
@@ -196,7 +188,6 @@ paths:
                   value:
                     - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a,
                       correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf,
-                      status: DISCARDED,
                       message: "Missing fields: 'statusCode'"
 
         "400":
@@ -656,12 +647,12 @@ paths:
         - Opendata API
       summary: Inclusão de reportes
       description: |
-      
+
         Inclusão de reportes de dados abertos na plataforma. Ao enviar um lote de reportes, a plataforma vai fazer o processo de validação sintática de cada reporte de maneira síncrona e devolver o resultado dessa validação na resposta. O status HTTP de retorno será 200 caso **todos** dos reportes enviados forem aceitos. Caso pelo menos 1 reporte esteja inconsistente, o status de retorno será 207 - vide documentação de cada status de retorno para maiores informações. 
 
         Os dados que são inseridos na API de Reporte são sempre processados de maneira assíncrona, e sua persistência se utiliza de consistência posterior (eventual consistency), portanto, um registro tem um tempo de processamento em que ele não estará disponível para consulta até que ele seja persistido.
 
-        O limite de registros de cada lote é de 5.000 registros.
+        O limite de registros de cada lote é de 5.000 registros tanto para o ambiente de produção quanto para o de sandbox.
       operationId: add-opendata-reports
       requestBody:
         content:
@@ -1230,6 +1221,32 @@ components:
           maxLength: 200
           example: "Missing fields: 'fapiInteractionId', 'endpoint'"
 
+    ReportResponseOpenData:
+      description: Representa os dados que serão retornados pelas operações de inclusão de reportes.
+      additionalProperties: false
+      required:
+        - reportId
+      type: object
+      properties:
+        reportId:
+          description: Identificator único interno do reporte no formato UUID v4.
+          type: string
+          format: uuid
+          maxLength: 36
+          pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          example: "9a97c2df-b261-4fc2-aa66-d1b5168397da"
+        correlationId:
+          description: Retorna o valor do atributo `correlationId` informado na solicitação de inclusão de reporte sem alteração.
+          type: string
+          pattern: ^[- /:_.',0-9a-zA-Z]{0,100}$
+          maxLength: 100
+          example: "uGQHwNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf2"
+        message:
+          description: Caso a solicitação contenha algum problema em seu formato, ou caso haja algum tipo de falha detectável no momento da requisição, esse campo trará detalhes sobre o erro ocorrido. Informações adicionais sobre os tipos de erros podem ser encontradas em https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/46170119/Troubleshooting+-+PCM
+          type: string
+          pattern: ^[- /:_.',0-9a-zA-Z]{0,200}$
+          maxLength: 200
+          example: "Missing fields: 'fapiInteractionId', 'endpoint'"
     HybridFlowReportResponse:
       description: Representa os dados que serão retornados pelas operações de inclusão de reportes.
       additionalProperties: false
@@ -1497,7 +1514,6 @@ components:
             - POST /open-banking/payments/v4/consents​
             - POST /open-banking/enrollments/v1/enrollments​
             - POST /open-banking/automatic-payments/v1​/recurring-consents​
-
 
     OpendataAdditionalInfo:
       description: Informações adicionais sobre o reporte deste endpoint/método. Possui característica variável. As regras de preenchimento estão na documentação funcional em https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/37879861/Reporte#additionalInfo. Atenção especial na tabela Excel com a listagem de endpoints em https://openfinancebrasil.atlassian.net/wiki/download/attachments/37879861/Tabela%20additionalInfo%20%E2%80%93%20campos%20contexto%20e%20obrigatoriedade%20(cliente%20server).xlsx?api=v2.

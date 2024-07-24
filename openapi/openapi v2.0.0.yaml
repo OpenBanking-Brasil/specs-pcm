@@ -791,51 +791,6 @@ paths:
 
 components:
   schemas:
-    Platform:
-      type: string
-      enum:
-        - BROWSER
-        - APP
-      example: BROWSER
-    URI:
-      type: string
-      format: uri
-      pattern: ^(https:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)$
-      maxLength: 2000
-      example: https://api.banco.com.br/open-banking/api/v1/resource
-    Timestamp:
-      description: Data/Hora UTC no formato ISO8601 com milissegundos (YYYY-MM-DDTHH:mm:ss.sssZ) do momento em que a chamada foi disparada, imediatamente antes do primeiro byte enviado na requisição.
-      type: string
-      format: date-time
-      maxLength: 28
-      example: "2021-11-11T18:08:08.278Z"
-    ConsentId:
-      type: string
-      pattern: ^urn:[a-zA-Z0-9][a-zA-Z0-9-]{0,31}:[a-zA-Z0-9()+,\-.:=@;$_!*'%\/?#]+$
-      maxLength: 256
-      example: urn:bancoex:C1DD33123
-      description: |
-
-        O consentId é o identificador único do consentimento e deverá ser um URN - Uniform Resource Name.  
-        Um URN, conforme definido na RFC8141 é um Uniform Resource Identifier - URI - que é atribuído sob o URI scheme "urn" e um namespace URN específico, com a intenção de que o URN seja um identificador de recurso persistente e independente da localização.  
-        Considerando a string urn:bancoex:C1DD33123 como exemplo para consentId temos:
-
-        * o namespace(urn)
-        * o identificador associado ao namespace da instituição transnmissora (bancoex)
-        * o identificador específico dentro do namespace (C1DD33123).
-        Informações mais detalhadas sobre a construção de namespaces devem ser consultadas na RFC8141.
-
-    OSType:
-      type: string
-      example: LINUX
-      enum:
-        - LINUX
-        - MACOS
-        - UNIX
-        - WINDOWS
-        - IOS
-        - ANDROID
-        - OTHER
     HybridFlowClientRedirectToServerReportRequest:
       description: ""
       type: array
@@ -849,21 +804,60 @@ components:
           - "osVersion"
           - "os"
           - "timestamp"
-          - clientOrgId
+          - "clientOrgId"
         properties:
           consentId:
-            $ref: "#/components/schemas/ConsentId"
+            type: string
+            pattern: ^(?!\s)[\w\W\s]*[^\s]$
+            maxLength: 256
+            example: urn:bancoex:C1DD33123
+            description: |
+      
+              O consentId deve ser preenchido com a mesma string do identificador único de um fluxo de consentimento de dados, de pagamento ou de vínculo
+      
+              exemplos:    
+              
+                * pós `POST` /open-banking/payments/v4/consents utilizar a string obtida/enviada em data.consentId
+              
+                * pós `POST` /open-banking/consents/v3/consents utilizar a string obtida/enviada em data.consentId
+              
+                * pós `POST` /automatic-payments/v1/recurring-consents utilizar a string obtida/enviada em data.recurringConsentId
+              
+                * pós `POST` /automatic-payments/v1/pix/recurring-payments utilizar a string obtida/enviada em data.recurringConsentId
+              
+                * pós `POST` /open-banking/enrollments/v1/enrollments utilizar a string obtida/enviada em data.enrollmentId
           uriAuthorizationEndpoint:
-            $ref: "#/components/schemas/URI"
+            type: string
+            format: uri
+            pattern: ^(https:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)$
+            maxLength: 2000
+            example: https://api.banco.com.br/open-banking/api/v1/resource
           platform:
-            $ref: "#/components/schemas/Platform"
+            type: string
+            enum:
+              - BROWSER
+              - APP
+            example: BROWSER
           osVersion:
             type: string
             example: "20.04"
           os:
-            $ref: "#/components/schemas/OSType"
+            type: string
+            example: LINUX
+            enum:
+              - LINUX
+              - MACOS
+              - UNIX
+              - WINDOWS
+              - IOS
+              - ANDROID
+              - OTHER
           timestamp:
-            $ref: "#/components/schemas/Timestamp"
+            description: Data/Hora UTC no formato ISO8601 com milissegundos (YYYY-MM-DDTHH:mm:ss.sssZ) do momento em que a chamada foi disparada, imediatamente antes do primeiro byte enviado na requisição.
+            type: string
+            format: date-time
+            maxLength: 28
+            example: "2021-11-11T18:08:08.278Z"
           clientOrgId:
             description: A ser enviado vazio caso o report seja da mesma instituição que obteve o token para uso da PCM e, caso contrário, deve ser preenchido com o organasationId da instituição filha para o qual a instituição mãe está fazendo o report.
             type: string
@@ -888,14 +882,45 @@ components:
           - serverOrgId
         properties:
           consentId:
-            $ref: "#/components/schemas/ConsentId"
+            type: string
+            pattern: ^(?!\s)[\w\W\s]*[^\s]$
+            maxLength: 256
+            example: urn:bancoex:C1DD33123
+            description: |
+      
+              O consentId deve ser preenchido com a mesma string do identificador único de um fluxo de consentimento de dados, de pagamento ou de vínculo
+      
+              exemplos:    
+              
+                * pós `POST` /open-banking/payments/v4/consents utilizar a string obtida/enviada em data.consentId
+              
+                * pós `POST` /open-banking/consents/v3/consents utilizar a string obtida/enviada em data.consentId
+              
+                * pós `POST` /automatic-payments/v1/recurring-consents utilizar a string obtida/enviada em data.recurringConsentId
+              
+                * pós `POST` /automatic-payments/v1/pix/recurring-payments utilizar a string obtida/enviada em data.recurringConsentId
+              
+                * pós `POST` /open-banking/enrollments/v1/enrollments utilizar a string obtida/enviada em data.enrollmentId
           uriAuthorizationEndpoint:
-            $ref: "#/components/schemas/URI"
+            type: string
+            format: uri
+            pattern: ^(https:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)$
+            maxLength: 2000
+            example: https://api.banco.com.br/open-banking/api/v1/resource
           osVersion:
             type: string
             example: "20.04"
           os:
-            $ref: "#/components/schemas/OSType"
+            type: string
+            example: LINUX
+            enum:
+              - LINUX
+              - MACOS
+              - UNIX
+              - WINDOWS
+              - IOS
+              - ANDROID
+              - OTHER
           type:
             type: string
             enum:
@@ -903,7 +928,12 @@ components:
               - AWAITING_USER_AUTH
               - AWAITING_REDIRECT_TO_APP
           timestamp:
-            $ref: "#/components/schemas/Timestamp"
+            description: |
+              Data/Hora UTC no formato ISO8601 com milissegundos (YYYY-MM-DDTHH:mm:ss.sssZ) do momento em que a chamada foi disparada, imediatamente antes do primeiro byte enviado na requisição.
+            type: string
+            format: date-time
+            maxLength: 28
+            example: "2021-11-11T18:08:08.278Z"
           serverOrgId:
             description: A ser enviado vazio caso o report seja da mesma instituição que obteve o token para uso da PCM e, caso contrário, deve ser preenchido com o organasationId da instituição filha para o qual a instituição mãe está fazendo o report.
             type: string
@@ -928,16 +958,52 @@ components:
           - serverOrgId
         properties:
           consentId:
-            $ref: "#/components/schemas/ConsentId"
+            type: string
+            pattern: ^(?!\s)[\w\W\s]*[^\s]$
+            maxLength: 256
+            example: urn:bancoex:C1DD33123
+            description: |
+      
+              O consentId deve ser preenchido com a mesma string do identificador único de um fluxo de consentimento de dados, de pagamento ou de vínculo
+      
+              exemplos:    
+              
+                * pós `POST` /open-banking/payments/v4/consents utilizar a string obtida/enviada em data.consentId
+              
+                * pós `POST` /open-banking/consents/v3/consents utilizar a string obtida/enviada em data.consentId
+              
+                * pós `POST` /automatic-payments/v1/recurring-consents utilizar a string obtida/enviada em data.recurringConsentId
+              
+                * pós `POST` /automatic-payments/v1/pix/recurring-payments utilizar a string obtida/enviada em data.recurringConsentId
+              
+                * pós `POST` /open-banking/enrollments/v1/enrollments utilizar a string obtida/enviada em data.enrollmentId
           platform:
-            $ref: "#/components/schemas/Platform"
+            type: string
+            enum:
+              - BROWSER
+              - APP
+            example: BROWSER
           osVersion:
             type: string
             example: "20.04"
           os:
-            $ref: "#/components/schemas/OSType"
+            type: string
+            example: LINUX
+            enum:
+              - LINUX
+              - MACOS
+              - UNIX
+              - WINDOWS
+              - IOS
+              - ANDROID
+              - OTHER
           timestamp:
-            $ref: "#/components/schemas/Timestamp"
+            description: |
+              Data/Hora UTC no formato ISO8601 com milissegundos (YYYY-MM-DDTHH:mm:ss.sssZ) do momento em que a chamada foi disparada, imediatamente antes do primeiro byte enviado na requisição.
+            type: string
+            format: date-time
+            maxLength: 28
+            example: "2021-11-11T18:08:08.278Z"
           serverOrgId:
             description: A ser enviado vazio caso o report seja da mesma instituição que obteve o token para uso da PCM e, caso contrário, deve ser preenchido com o organasationId da instituição filha para o qual a instituição mãe está fazendo o report.
             type: string
@@ -963,23 +1029,63 @@ components:
           - serverOrgId
         properties:
           consentId:
-            $ref: "#/components/schemas/ConsentId"
+            type: string
+            pattern: ^(?!\s)[\w\W\s]*[^\s]$
+            maxLength: 256
+            example: urn:bancoex:C1DD33123
+            description: |
+      
+              O consentId deve ser preenchido com a mesma string do identificador único de um fluxo de consentimento de dados, de pagamento ou de vínculo
+      
+              exemplos:    
+              
+                * pós `POST` /open-banking/payments/v4/consents utilizar a string obtida/enviada em data.consentId
+              
+                * pós `POST` /open-banking/consents/v3/consents utilizar a string obtida/enviada em data.consentId
+              
+                * pós `POST` /automatic-payments/v1/recurring-consents utilizar a string obtida/enviada em data.recurringConsentId
+              
+                * pós `POST` /automatic-payments/v1/pix/recurring-payments utilizar a string obtida/enviada em data.recurringConsentId
+              
+                * pós `POST` /open-banking/enrollments/v1/enrollments utilizar a string obtida/enviada em data.enrollmentId
           uri_callback:
-            $ref: "#/components/schemas/URI"
+            type: string
+            format: uri
+            pattern: ^(https:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)$
+            maxLength: 2000
+            example: https://api.banco.com.br/open-banking/api/v1/resource
           platform:
-            $ref: "#/components/schemas/Platform"
+            type: string
+            enum:
+              - BROWSER
+              - APP
+            example: BROWSER
           osVersion:
             type: string
             example: "20.04"
           os:
-            $ref: "#/components/schemas/OSType"
+            type: string
+            example: LINUX
+            enum:
+              - LINUX
+              - MACOS
+              - UNIX
+              - WINDOWS
+              - IOS
+              - ANDROID
+              - OTHER
           type:
             type: string
             enum:
               - AUTHORISED
               - REJECTED
           timestamp:
-            $ref: "#/components/schemas/Timestamp"
+            description: |
+              Data/Hora UTC no formato ISO8601 com milissegundos (YYYY-MM-DDTHH:mm:ss.sssZ) do momento em que a chamada foi disparada, imediatamente antes do primeiro byte enviado na requisição.
+            type: string
+            format: date-time
+            maxLength: 28
+            example: "2021-11-11T18:08:08.278Z"
           serverOrgId:
             description: A ser enviado vazio caso o report seja da mesma instituição que obteve o token para uso da PCM e, caso contrário, deve ser preenchido com o organasationId da instituição filha para o qual a instituição mãe está fazendo o report.
             type: string
@@ -1004,16 +1110,52 @@ components:
           - clientOrgId
         properties:
           consentId:
-            $ref: "#/components/schemas/ConsentId"
+            type: string
+            pattern: ^(?!\s)[\w\W\s]*[^\s]$
+            maxLength: 256
+            example: urn:bancoex:C1DD33123
+            description: |
+      
+              O consentId deve ser preenchido com a mesma string do identificador único de um fluxo de consentimento de dados, de pagamento ou de vínculo
+      
+              exemplos:    
+              
+                * pós `POST` /open-banking/payments/v4/consents utilizar a string obtida/enviada em data.consentId
+              
+                * pós `POST` /open-banking/consents/v3/consents utilizar a string obtida/enviada em data.consentId
+              
+                * pós `POST` /automatic-payments/v1/recurring-consents utilizar a string obtida/enviada em data.recurringConsentId
+              
+                * pós `POST` /automatic-payments/v1/pix/recurring-payments utilizar a string obtida/enviada em data.recurringConsentId
+              
+                * pós `POST` /open-banking/enrollments/v1/enrollments utilizar a string obtida/enviada em data.enrollmentId
           platform:
-            $ref: "#/components/schemas/Platform"
+            type: string
+            enum:
+              - BROWSER
+              - APP
+            example: BROWSER
           osVersion:
             type: string
             example: "20.04"
           os:
-            $ref: "#/components/schemas/OSType"
+            type: string
+            example: LINUX
+            enum:
+              - LINUX
+              - MACOS
+              - UNIX
+              - WINDOWS
+              - IOS
+              - ANDROID
+              - OTHER
           timestamp:
-            $ref: "#/components/schemas/Timestamp"
+            description: |
+              Data/Hora UTC no formato ISO8601 com milissegundos (YYYY-MM-DDTHH:mm:ss.sssZ) do momento em que a chamada foi disparada, imediatamente antes do primeiro byte enviado na requisição.
+            type: string
+            format: date-time
+            maxLength: 28
+            example: "2021-11-11T18:08:08.278Z"
           clientOrgId:
             description: A ser enviado vazio caso o report seja da mesma instituição que obteve o token para uso da PCM e, caso contrário, deve ser preenchido com o organasationId da instituição filha para o qual a instituição mãe está fazendo o report.
             type: string
@@ -1039,19 +1181,55 @@ components:
           - clientOrgId
         properties:
           consentId:
-            $ref: "#/components/schemas/ConsentId"
+            type: string
+            pattern: ^(?!\s)[\w\W\s]*[^\s]$
+            maxLength: 256
+            example: urn:bancoex:C1DD33123
+            description: |
+      
+              O consentId deve ser preenchido com a mesma string do identificador único de um fluxo de consentimento de dados, de pagamento ou de vínculo
+      
+              exemplos:    
+              
+                * pós `POST` /open-banking/payments/v4/consents utilizar a string obtida/enviada em data.consentId
+              
+                * pós `POST` /open-banking/consents/v3/consents utilizar a string obtida/enviada em data.consentId
+              
+                * pós `POST` /automatic-payments/v1/recurring-consents utilizar a string obtida/enviada em data.recurringConsentId
+              
+                * pós `POST` /automatic-payments/v1/pix/recurring-payments utilizar a string obtida/enviada em data.recurringConsentId
+              
+                * pós `POST` /open-banking/enrollments/v1/enrollments utilizar a string obtida/enviada em data.enrollmentId
           platform:
-            $ref: "#/components/schemas/Platform"
+            type: string
+            enum:
+              - BROWSER
+              - APP
+            example: BROWSER
           osVersion:
             type: string
             example: "20.04"
           os:
-            $ref: "#/components/schemas/OSType"
+            type: string
+            example: LINUX
+            enum:
+              - LINUX
+              - MACOS
+              - UNIX
+              - WINDOWS
+              - IOS
+              - ANDROID
+              - OTHER
           error:
             type: string
             example: "Código de erro retornado no payload do Hybrid Flow"
           timestamp:
-            $ref: "#/components/schemas/Timestamp"
+            description: |
+              Data/Hora UTC no formato ISO8601 com milissegundos (YYYY-MM-DDTHH:mm:ss.sssZ) do momento em que a chamada foi disparada, imediatamente antes do primeiro byte enviado na requisição.
+            type: string
+            format: date-time
+            maxLength: 28
+            example: "2021-11-11T18:08:08.278Z"
           clientOrgId:
             description: A ser enviado vazio caso o report seja da mesma instituição que obteve o token para uso da PCM e, caso contrário, deve ser preenchido com o organasationId da instituição filha para o qual a instituição mãe está fazendo o report.
             type: string
@@ -1189,10 +1367,10 @@ components:
                 <br>
               type: string
               enum:
-                - IMMEDIATE: Pix sem configuração de agendamento​
-                - SCHEDULED: Pix com configuração de agendamento​
-                - RECURRENT: Pix sem configuração de agendamento e configuração de recorrência​
-                - SWEEPING: para todas as chamadas de pagamentos inteligentes​
+                - "IMMEDIATE: Pix sem configuração de agendamento​"
+                - "SCHEDULED: Pix com configuração de agendamento​"
+                - "RECURRENT: Pix sem configuração de agendamento e configuração de recorrência​"
+                - "SWEEPING: para todas as chamadas de pagamentos inteligentes​"
             dropReason:
               description: |
                 1. O campo dropReason deve ser adicionado nas informações do campo additionalInfo que deverá ser enviado no reporte do provedor do serviço consumido (papel SERVER)
@@ -1271,9 +1449,9 @@ components:
                 <br>
               type: string
               enum:
-                - INICIADORA: apenas para a role CLient
-                - USUARIO: para a role Server e Client
-                - DETENTORA: apenas para a role Server
+                - "INICIADORA: apenas para a role CLient"
+                - "USUARIO: para a role Server e Client"
+                - "DETENTORA: apenas para a role Server"
             RevokedFrom:
               description: |
                 Canal onde iniciou-se o processo de revogação
@@ -1298,8 +1476,8 @@ components:
                 <br>
               type: string
               enum:
-                - INICIADORA: para a role Server e Client
-                - DETENTORA: apenas para a role Server
+                - "INICIADORA: para a role Server e Client"
+                - "DETENTORA: apenas para a role Server"
             RejectedBy:
               description: |
                 Quem iniciou a solicitação de rejeição
@@ -1324,9 +1502,9 @@ components:
                 <br>
               type: string
               enum:
-                - INICIADORA: apenas para a role Client
-                - USUARIO: para a role Server e Client
-                - DETENTORA: apenas para a role Server
+                - "INICIADORA: apenas para a role Client"
+                - "USUARIO: para a role Server e Client"
+                - "DETENTORA: apenas para a role Server"
             RejectedFrom:
               description: |
                 Canal onde iniciou-se o processo de rejeição
@@ -1351,8 +1529,8 @@ components:
                 <br>
               type: string
               enum:
-                - INICIADORA: para a role Server e Client
-                - DETENTORA: apenas para a role Server
+                - "INICIADORA: para a role Server e Client"
+                - "DETENTORA: apenas para a role Server"
         timestamp:
           description: Data/Hora UTC no formato ISO8601 com milissegundos (YYYY-MM-DDTHH:mm:ss.sssZ) do momento em que a chamada foi disparada, imediatamente antes do primeiro byte enviado na requisição.
           type: string
@@ -1516,10 +1694,15 @@ components:
         - httpMethod
         - timestamp
         - processTimespan
-        - additionalInfo
       properties:
         endpoint:
-          $ref: "#/components/schemas/OpendataReportEndpoints"
+          description: |
+            Para maiores detalhes sobre opções do ENUM acesse [Lista de Endpoints Válidos](https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/37879861/Reporte).
+          
+            Identificação do endpoint que foi utilizado na chamada da api de dados abertos. A identificação do endpoint deve estar entre as entradas desse enum para ser considerado válido.
+          type: string
+          example: "/open-banking/channels/v1/electronic-channels"
+          x-extensible-enum-href: https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/37879861/Reporte
         statusCode:
           description: Status de retorno HTTP da solicitação.
           type: integer
@@ -1543,8 +1726,6 @@ components:
           type: integer
           format: int16
           example: 120
-        additionalInfo:
-          $ref: "#/components/schemas/OpendataAdditionalInfo"
 
     ReportResponse:
       description: Representa os dados que serão retornados pelas operações de inclusão de reportes.
@@ -1562,7 +1743,22 @@ components:
           pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
           example: "9a97c2df-b261-4fc2-aa66-d1b5168397da"
         status:
-          $ref: "#/components/schemas/ReportStatus"
+          description: |
+            Informa o status do registro de reporte.
+            * **DISCARDED**: O status `DISCARDED` indica que o reporte enviado pelo participante foi rejeitado pela PCM. O motivo do descarte será enviado com a resposta, podendo ser por conta de um reporte inválido ou por um erro no processamento. Não é possível modificar um reporte `DISCARDED`, portanto o reportador deverá corrigir o registro que apresentou erro e reenviar via POST.
+            * **SINGLE**: O status `SINGLE` indica que o reporte em questão não tem uma contraparte. Ele é utilizado em casos onde a conciliação entre dois reportes não é possível.
+            * **ACCEPTED**: O status `ACCEPTED` indica que a validação de formato do reporte não tem erros e este será enviado para processamento.
+            * **UNPAIRED**: O status `UNPAIRED` significa que o reporte atual não possui uma correspondência em outro reporte através do atributo `fapiInteractionId`. Indica um reporte _divergente_.
+            * **PAIRED_INCONSISTENT**: O status `PAIRED_INCONSISTENT` significa que o reporte corrente possui uma contraparte com o mesmo `fapiInteractionId`, mas os demais dados estão inconsistentes. Indica um reporte _divergente_.
+            * **PAIRED**: Indica que o reporte tem uma contraparte com o mesmo `fapiInteractionId` e os demais dados estão conciliados. Representa o estado final desejado em um fluxo correto.
+          type: string
+          enum:
+            - DISCARDED
+            - SINGLE
+            - ACCEPTED
+            - UNPAIRED
+            - PAIRED_INCONSISTENT
+            - PAIRED
         correlationId:
           description: Retorna o valor do atributo `correlationId` informado na solicitação de inclusão de reporte sem alteração.
           type: string
@@ -1592,24 +1788,6 @@ components:
             maxLength: 36
             pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
             example: "9a97c2df-b261-4fc2-aa66-d1b5168397da"
-
-    ReportStatus:
-      description: |
-        Informa o status do registro de reporte.
-        * **DISCARDED**: O status `DISCARDED` indica que o reporte enviado pelo participante foi rejeitado pela PCM. O motivo do descarte será enviado com a resposta, podendo ser por conta de um reporte inválido ou por um erro no processamento. Não é possível modificar um reporte `DISCARDED`, portanto o reportador deverá corrigir o registro que apresentou erro e reenviar via POST.
-        * **SINGLE**: O status `SINGLE` indica que o reporte em questão não tem uma contraparte. Ele é utilizado em casos onde a conciliação entre dois reportes não é possível.
-        * **ACCEPTED**: O status `ACCEPTED` indica que a validação de formato do reporte não tem erros e este será enviado para processamento.
-        * **UNPAIRED**: O status `UNPAIRED` significa que o reporte atual não possui uma correspondência em outro reporte através do atributo `fapiInteractionId`. Indica um reporte _divergente_.
-        * **PAIRED_INCONSISTENT**: O status `PAIRED_INCONSISTENT` significa que o reporte corrente possui uma contraparte com o mesmo `fapiInteractionId`, mas os demais dados estão inconsistentes. Indica um reporte _divergente_.
-        * **PAIRED**: Indica que o reporte tem uma contraparte com o mesmo `fapiInteractionId` e os demais dados estão conciliados. Representa o estado final desejado em um fluxo correto.
-      type: string
-      enum:
-        - DISCARDED
-        - SINGLE
-        - ACCEPTED
-        - UNPAIRED
-        - PAIRED_INCONSISTENT
-        - PAIRED
 
     ReportModel:
       description: Representa um reporte devidamente persistido.
@@ -1660,328 +1838,6 @@ components:
               type: string
               format: date-time
               maxLength: 28
-
-    OpendataReportModel:
-      description: Representa um reporte devidamente persistido.
-      allOf:
-        - $ref: "#/components/schemas/OpendataReportRequest"
-        - type: object
-          properties:
-            reportId:
-              description: |
-                Identificador único do registro criado na Plataforma de Coleta de Métricas.
-              type: string
-              format: uuid
-              maxLength: 36
-              pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-            createdAt:
-              description: |
-                Carimbo do tempo do momento da criação do registro
-              type: string
-              format: date-time
-              maxLength: 28
-            updatedAt:
-              description: |
-                Carimbo do tempo do momento da última atualização do registro
-              type: string
-              format: date-time
-              maxLength: 28
-
-    OpendataReportEndpoints:
-      description: |
-        Identificação do endpoint que foi utilizado na chamada da api de dados abertos. A identificação do endpoint deve estar entre as entradas desse enum para ser considerado válido.
-      type: string
-      example: "/open-banking/channels/v1/electronic-channels"
-      enum:
-        - "/open-banking/opendata-accounts/v1/personal-accounts"
-        - "/open-banking/opendata-accounts/v1/business-accounts"
-        - "/open-banking/opendata-loans/v1/personal-loans"
-        - "/open-banking/opendata-loans/v1/business-loans"
-        - "/open-banking/opendata-financings/v1/personal-financings"
-        - "/open-banking/opendata-financings/v1/business-financings"
-        - "/open-banking/opendata-invoicefinancings/v1/personal-invoice-financings"
-        - "/open-banking/opendata-invoicefinancings/v1/business-invoice-financings"
-        - "/open-banking/opendata-creditcards/v1/personal-credit-cards"
-        - "/open-banking/opendata-creditcards/v1/business-credit-cards"
-        - "/open-banking/opendata-unarranged/v1/personal-unarranged-account-overdraft"
-        - "/open-banking/opendata-unarranged/v1/business-unarranged-account-overdraft"
-        - "/open-banking/channels/v2/branches"
-        - "/open-banking/channels/v2/electronic-channels"
-        - "/open-banking/channels/v2/phone-channels"
-        - "/open-banking/channels/v2/banking-agents"
-        - "/open-banking/channels/v2/shared-automated-teller-machines"
-        - "/open-banking/capitalization-bonds/v2/bonds"
-        - "/open-banking/investments/v1/funds"
-        - "/open-banking/exchange/v1/online-rates"
-        - "/open-banking/exchange/v1/vet-values"
-        - "/open-banking/acquiring-services/v1/personals"
-        - "/open-banking/acquiring-services/v1/businesses"
-        - "/open-banking/pension/v2/risk-coverages"
-        - "/open-banking/pension/v2/survival-coverages"
-        - "/open-banking/insurance/v2/personals"
-        - "/open-banking/pension/v1/risk-coverages"
-        - "/open-banking/insurance/v1/automotives"
-        - "/open-banking/insurance/v1/homes"
-        - "/open-banking/insurance/v1/personals"
-        - "/open-banking/opendata-capitalization/v2/bonds"
-        - "/open-banking/opendata-pension/v2/risk-coverages"
-        - "/open-banking/opendata-pension/v2/survival-coverages"
-        - "/open-banking/opendata-insurance/v2/personals"
-        - "/open-banking/opendata-investments/v1/funds"
-        - "/open-banking/opendata-investments/v1/bank-fixed-incomes"
-        - "/open-banking/opendata-investments/v1/credit-fixed-incomes"
-        - "/open-banking/opendata-investments/v1/variable-incomes"
-        - "/open-banking/opendata-investments/v1/treasure-titles"
-        - "/open-banking/opendata-exchange/v1/online-rates"
-        - "/open-banking/opendata-exchange/v1/vet-values"
-        - "/open-banking/opendata-acquiring-services/v1/personals"
-        - "/open-banking/opendata-acquiring-services/v1/businesses"
-
-    AdditionalInfo:
-      description: Informações adicionais sobre o reporte deste endpoint/método. Possui característica variável. As regras de preenchimento estão na documentação funcional em [https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/37879861/Reporte#additionalInfo](https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/37879861/Reporte#additionalInfo). Atenção especial na tabela Excel com a listagem de endpoints em [https://openfinancebrasil.atlassian.net/wiki/download/attachments/37879861/Tabela%20additionalInfo%20%E2%80%93%20campos%20contexto%20e%20obrigatoriedade_v17-.xlsx?api=v2](https://openfinancebrasil.atlassian.net/wiki/download/attachments/37879861/Tabela%20additionalInfo%20%E2%80%93%20campos%20contexto%20e%20obrigatoriedade_v17-.xlsx?api=v2).
-      type: object
-
-      properties:
-        consentId:
-          description: Deve ser preenchido com a mesma string obtida no campo `.data.consentId` retornado após a chamada inicial na API "POST /consent". *Ao reportar o uso de um endpoint /token, o identificador único de consentimento só será reportado nos casos em que "grant_type" é do tipo "authorization_code" ou do tipo "refresh_token", uma vez que esta informação de consentId é inexistente quando "grant_type" é do tipo
-          type: string
-        personType:
-          description: Deve ser preenchida baseado no tipo de pessoa responsável pelo consentimento. Deverá ser obserdado se `.data.businessEntity` estiver preenchido no payload, se estiver então preencher com "PJ", se não estiver então preencher com "PF"
-          type: string
-        localInstrument:
-          description: Deve ser preenchido com a mesma string informada no payload ".data.localInstrument"
-          type: string
-        status:
-          description: Deve ser preenchido com a mesma string obtida no ".data.status"
-          type: string
-        clientIp:
-          description: Deve ser preenchido com o Endereço IPv4 ou IPv6 do client que fez a requisição
-          type: string
-        rejectReason:
-          description: Deve ser preenchido com a mesma string obtida no ".data.rejectionReason.code"
-          type: string
-        errorCodes:
-          description: Caso o HTTP Code seja 4XX ou 5XX, esse campo deve ser preenchido com a lista das strings obtidas em ".errors[].code" . Não havendo string, deve ser enviada uma lista vazia.
-          type: string
-        webhookEnable:
-          description: Deve ser preenchido com o valor booleano TRUE caso haja pelo menos um item indicado na lista do campo ".webhook_uris" no payload, caso contrário deverá ser preenchido com o valor booleano FALSE
-          type: string
-        webhookInteractionId:
-          description: Caso o GET esteja sendo feito após o estímulo do webhook, o x-webhook-interaction-id deverá ser indicado
-          type: string
-        enrollmentId:
-          description: Deve ser preenchido com a mesma string obtida no campo `.data.enrollmentId` retornado após a chamada inicial na API "POST /enrollments". *Ao reportar o uso de um endpoint /token, o identificador único de consentimento só será reportado nos casos em que "grant_type" é do tipo "authorization_code" ou do tipo "refresh_token", uma vez que esta informação de enrollmentId é inexistente quando "grant_type" é do tipo "client_credentials".
-          type: string
-        authenticatorAttachment:
-          description: Deve ser preenchido com a mesma string definida em ".data.authenticatorAttachment".  Não havendo string, deve ser explicitamente enviada esse additionalInfo como sendo uma string vazia.
-          type: string
-        platform:
-          description: Deve ser preenchido com a mesma string definida em ".data.platform"
-          type: string
-        rp:
-          description: Deve ser preenchido com a mesma string definida em ".data.rp"
-          type: string
-        rejectionReasonCode:
-          description: Deve ser preenchido com a mesma string obtida no ".data.rejectionReason.code"
-          type: string
-        rejectionReasonDetail:
-          description: Deve ser preenchido com a mesma string obtida no ".data.rejectionReason.detail"
-          type: string
-        authorisationFlow:
-          description: Deve ser preenchido com a mesma string obtida no ".data.authorisationFlow"
-          type: string
-        dropReason:
-          description: |
-            1. O campo dropReason deve ser adicionado nas informações do campo additionalInfo que deverá ser enviado no reporte do provedor do serviço consumido (papel SERVER)
-            2. O campo deve ser preenchido como “NO_CREDENTIAL" caso o CPF/CNPJ não seja cliente ou “NONE” caso contrário.
-            3. Neste contexto define-se como cliente o CPF/CNPJ que possui credencial autenticadora para prosseguir no fluxo monitorado.
-            4. O reporte deverá ser feito por todos os transmissores de dados e detentoras de conta.
-            5. Para o caso em que o operador não possui poder, após autenticação dele e desambiguação de quem está operando, o reporte deve ser realizado com "NO_CREDENTIAL".
-          type: string
-        paymentType:
-          description: |
-            Identifica o modo de pagamento acionado no consentimento
-            1. Envio obrigatório para a role Client​
-            2. Conteudo ENUM do novo campo varia de acordo com o endpoint conforme tabela abaixo
-
-            | Endpoint | Valores possíveis |
-            |----------|-------------|
-            | <br>POST /open-banking/payments/v4/consents&nbsp;&nbsp;&nbsp;    |  <br>IMMEDIATE<br>SCHEDULED<br>RECURRENT
-            |----------|-------------|
-            | <br>POST /open-banking/payments/v4/pix/payments&nbsp;&nbsp;&nbsp;    |  <br>IMMEDIATE<br>SCHEDULED<br>RECURRENT
-            |----------|-------------|
-            | <br>PATCH /open-banking/payments/v4/pix/payments/{paymentId}​&nbsp;&nbsp;&nbsp;    |  <br>IMMEDIATE<br>SCHEDULED<br>RECURRENT
-            |----------|-------------|
-            | <br>POST /automatic-payments/v1/recurring-consents&nbsp;&nbsp;&nbsp;    |  <br>SWEEPING
-            |----------|-------------|
-            | <br>PATCH /automatic-payments/v1/recurring-consents/{consentId}&nbsp;&nbsp;&nbsp;    |  <br>SWEEPING
-            |----------|-------------|
-            | <br>POST /automatic-payments/v1/pix/recurring-payments&nbsp;&nbsp;&nbsp;    |  <br>SWEEPING
-            |----------|-------------|
-            | <br>PATCH /automatic-payments/v1/pix/recurring-payments/{paymentId}&nbsp;&nbsp;&nbsp;   |  <br>SWEEPING
-            <br>
-          type: string
-          enum:
-            - IMMEDIATE: Pix sem configuração de agendamento​
-            - SCHEDULED: Pix com configuração de agendamento​
-            - RECURRENT: Pix sem configuração de agendamento e configuração de recorrência​
-            - SWEEPING: para todas as chamadas de pagamentos inteligentes​
-        RevocationReasonCode:
-          description: |
-            Código indicador do motivo da revogação
-
-            | Endpoint  | Descrição Jornada | Obrigatoriedade Client  | Obrigatoriedade Server  |
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | POST /automatic-payments/v1/recurring-consents                  | Criar consentimento para iniciação de pagamento​                                                                              | -                                    | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | GET /automatic-payments/v1/recurring-consents/{consentId}​       | Consultar consentimento para iniciação de pagamento​​                                                                          | Se revogation: {RevocationReasonCode, RevocationReasonDetail, RevokedBy, RevokedFrom}​ <br> Se rejected: {RejectedBy, RejectedFrom}​        | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | PATCH /automatic-payments/v1/recurring-consents/{consentId}​     | Rejeita, revoga ou edita um consentimento​          ​                                                                          | Se revogation: {RevocationReasonCode, RevocationReasonDetail, RevokedBy, RevokedFrom}​ <br> Se rejected: {RejectedBy, RejectedFrom}​        | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |        
-            | POST /automatic-payments/v1/pix/recurring-payments​​              | Pix - Criar iniciação de pagamento limitada por parametrização de tempo ou limite total realizada no consentimento​​           | -                                  
-            | --------- | ----------------- | ----------------------- | ----------------------- |        
-            | GET /automatic-payments/v1/pix/recurring-payments?consentId=​    | Pix – Consulta informações de transações de pagamentos associadas a um consentimento​                                         | -                                
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | GET /automatic-payments/v1/pix/recurring-payments/{paymentId}​   | Pix - Consultar iniciação de pagamento​                                                                                       | -                                    | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | PATCH /automatic-payments/v1/pix/recurring-payments/{paymentId}​ | Pix - Cancelar iniciação de pagamento​​                                                                                        | Será necessário o reporte porém temos que aguardar a <br> definição do nome do campo pelo GT Especificações Serviços​                      | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            <br>
-           
-          type: string
-        RevocationReasonDetail:
-          description: |
-            Detalhe sobre o motivo de revogação indicado no campo
-
-            | Endpoint  | Descrição Jornada | Obrigatoriedade Client  | Obrigatoriedade Server  |
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | POST /automatic-payments/v1/recurring-consents                  | Criar consentimento para iniciação de pagamento​                                                                              | -                                    | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | GET /automatic-payments/v1/recurring-consents/{consentId}​       | Consultar consentimento para iniciação de pagamento​​                                                                          | Se revogation: {RevocationReasonCode, RevocationReasonDetail, RevokedBy, RevokedFrom}​ <br> Se rejected: {RejectedBy, RejectedFrom}​        | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | PATCH /automatic-payments/v1/recurring-consents/{consentId}​     | Rejeita, revoga ou edita um consentimento​          ​                                                                          | Se revogation: {RevocationReasonCode, RevocationReasonDetail, RevokedBy, RevokedFrom}​ <br> Se rejected: {RejectedBy, RejectedFrom}​        | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |        
-            | POST /automatic-payments/v1/pix/recurring-payments​​              | Pix - Criar iniciação de pagamento limitada por parametrização de tempo ou limite total realizada no consentimento​​           | -                                  
-            | --------- | ----------------- | ----------------------- | ----------------------- |        
-            | GET /automatic-payments/v1/pix/recurring-payments?consentId=​    | Pix – Consulta informações de transações de pagamentos associadas a um consentimento​                                         | -                                
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | GET /automatic-payments/v1/pix/recurring-payments/{paymentId}​   | Pix - Consultar iniciação de pagamento​                                                                                       | -                                    | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | PATCH /automatic-payments/v1/pix/recurring-payments/{paymentId}​ | Pix - Cancelar iniciação de pagamento​​                                                                                        | Será necessário o reporte porém temos que aguardar a <br> definição do nome do campo pelo GT Especificações Serviços​                      | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            <br>
-
-          type: string
-        RevokedBy:
-          description: |
-            Quem iniciou a solicitação de revogação 
-
-            | Endpoint  | Descrição Jornada | Obrigatoriedade Client  | Obrigatoriedade Server  |
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | POST /automatic-payments/v1/recurring-consents                  | Criar consentimento para iniciação de pagamento​                                                                              | -                                    | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | GET /automatic-payments/v1/recurring-consents/{consentId}​       | Consultar consentimento para iniciação de pagamento​​                                                                          | Se revogation: {RevocationReasonCode, RevocationReasonDetail, RevokedBy, RevokedFrom}​ <br> Se rejected: {RejectedBy, RejectedFrom}​        | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | PATCH /automatic-payments/v1/recurring-consents/{consentId}​     | Rejeita, revoga ou edita um consentimento​          ​                                                                          | Se revogation: {RevocationReasonCode, RevocationReasonDetail, RevokedBy, RevokedFrom}​ <br> Se rejected: {RejectedBy, RejectedFrom}​        | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |        
-            | POST /automatic-payments/v1/pix/recurring-payments​​              | Pix - Criar iniciação de pagamento limitada por parametrização de tempo ou limite total realizada no consentimento​​           | -                                  
-            | --------- | ----------------- | ----------------------- | ----------------------- |        
-            | GET /automatic-payments/v1/pix/recurring-payments?consentId=​    | Pix – Consulta informações de transações de pagamentos associadas a um consentimento​                                         | -                                
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | GET /automatic-payments/v1/pix/recurring-payments/{paymentId}​   | Pix - Consultar iniciação de pagamento​                                                                                       | -                                    | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | PATCH /automatic-payments/v1/pix/recurring-payments/{paymentId}​ | Pix - Cancelar iniciação de pagamento​​                                                                                        | Será necessário o reporte porém temos que aguardar a <br> definição do nome do campo pelo GT Especificações Serviços​                      | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            <br>
-
-          type: string
-          enum:
-            - INICIADORA
-            - USUARIO
-            - DETENTORA
-        RevokedFrom:
-          description: |
-            Canal onde iniciou-se o processo de revogação
-
-            | Endpoint  | Descrição Jornada | Obrigatoriedade Client  | Obrigatoriedade Server  |
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | POST /automatic-payments/v1/recurring-consents                  | Criar consentimento para iniciação de pagamento​                                                                              | -                                    | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | GET /automatic-payments/v1/recurring-consents/{consentId}​       | Consultar consentimento para iniciação de pagamento​​                                                                          | Se revogation: {RevocationReasonCode, RevocationReasonDetail, RevokedBy, RevokedFrom}​ <br> Se rejected: {RejectedBy, RejectedFrom}​        | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | PATCH /automatic-payments/v1/recurring-consents/{consentId}​     | Rejeita, revoga ou edita um consentimento​          ​                                                                          | Se revogation: {RevocationReasonCode, RevocationReasonDetail, RevokedBy, RevokedFrom}​ <br> Se rejected: {RejectedBy, RejectedFrom}​        | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |        
-            | POST /automatic-payments/v1/pix/recurring-payments​​              | Pix - Criar iniciação de pagamento limitada por parametrização de tempo ou limite total realizada no consentimento​​           | -                                  
-            | --------- | ----------------- | ----------------------- | ----------------------- |        
-            | GET /automatic-payments/v1/pix/recurring-payments?consentId=​    | Pix – Consulta informações de transações de pagamentos associadas a um consentimento​                                         | -                                
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | GET /automatic-payments/v1/pix/recurring-payments/{paymentId}​   | Pix - Consultar iniciação de pagamento​                                                                                       | -                                    | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | PATCH /automatic-payments/v1/pix/recurring-payments/{paymentId}​ | Pix - Cancelar iniciação de pagamento​​                                                                                        | Será necessário o reporte porém temos que aguardar a <br> definição do nome do campo pelo GT Especificações Serviços​                      | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            <br>
-
-          type: string
-          enum:
-            - INICIADORA
-            - DETENTORA
-        RejectedBy:
-          description: |
-            Quem iniciou a solicitação de rejeição
-
-            | Endpoint  | Descrição Jornada | Obrigatoriedade Client  | Obrigatoriedade Server  |
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | POST /automatic-payments/v1/recurring-consents                  | Criar consentimento para iniciação de pagamento​                                                                              | -                                    | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | GET /automatic-payments/v1/recurring-consents/{consentId}​       | Consultar consentimento para iniciação de pagamento​​                                                                          | Se revogation: {RevocationReasonCode, RevocationReasonDetail, RevokedBy, RevokedFrom}​ <br> Se rejected: {RejectedBy, RejectedFrom}​        | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | PATCH /automatic-payments/v1/recurring-consents/{consentId}​     | Rejeita, revoga ou edita um consentimento​          ​                                                                          | Se revogation: {RevocationReasonCode, RevocationReasonDetail, RevokedBy, RevokedFrom}​ <br> Se rejected: {RejectedBy, RejectedFrom}​        | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |        
-            | POST /automatic-payments/v1/pix/recurring-payments​​              | Pix - Criar iniciação de pagamento limitada por parametrização de tempo ou limite total realizada no consentimento​​           | -                                  
-            | --------- | ----------------- | ----------------------- | ----------------------- |        
-            | GET /automatic-payments/v1/pix/recurring-payments?consentId=​    | Pix – Consulta informações de transações de pagamentos associadas a um consentimento​                                         | -                                
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | GET /automatic-payments/v1/pix/recurring-payments/{paymentId}​   | Pix - Consultar iniciação de pagamento​                                                                                       | -                                    | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | PATCH /automatic-payments/v1/pix/recurring-payments/{paymentId}​ | Pix - Cancelar iniciação de pagamento​​                                                                                        | Será necessário o reporte porém temos que aguardar a <br> definição do nome do campo pelo GT Especificações Serviços​                      | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            <br>
-
-          type: string
-          enum:
-            - INICIADORA
-            - USUARIO
-            - DETENTORA
-        RejectedFrom:
-          description: |
-            Canal onde iniciou-se o processo de rejeição
-
-            | Endpoint  | Descrição Jornada | Obrigatoriedade Client  | Obrigatoriedade Server  |
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | POST /automatic-payments/v1/recurring-consents                  | Criar consentimento para iniciação de pagamento​                                                                              | -                                    | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | GET /automatic-payments/v1/recurring-consents/{consentId}​       | Consultar consentimento para iniciação de pagamento​​                                                                          | Se revogation: {RevocationReasonCode, RevocationReasonDetail, RevokedBy, RevokedFrom}​ <br> Se rejected: {RejectedBy, RejectedFrom}​        | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | PATCH /automatic-payments/v1/recurring-consents/{consentId}​     | Rejeita, revoga ou edita um consentimento​          ​                                                                          | Se revogation: {RevocationReasonCode, RevocationReasonDetail, RevokedBy, RevokedFrom}​ <br> Se rejected: {RejectedBy, RejectedFrom}​        | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |        
-            | POST /automatic-payments/v1/pix/recurring-payments​​              | Pix - Criar iniciação de pagamento limitada por parametrização de tempo ou limite total realizada no consentimento​​           | -                                  
-            | --------- | ----------------- | ----------------------- | ----------------------- |        
-            | GET /automatic-payments/v1/pix/recurring-payments?consentId=​    | Pix – Consulta informações de transações de pagamentos associadas a um consentimento​                                         | -                                
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | GET /automatic-payments/v1/pix/recurring-payments/{paymentId}​   | Pix - Consultar iniciação de pagamento​                                                                                       | -                                    | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            | PATCH /automatic-payments/v1/pix/recurring-payments/{paymentId}​ | Pix - Cancelar iniciação de pagamento​​                                                                                        | Será necessário o reporte porém temos que aguardar a <br> definição do nome do campo pelo GT Especificações Serviços​                      | -
-            | --------- | ----------------- | ----------------------- | ----------------------- |
-            <br>
-
-          type: string
-          enum:
-            - INICIADORA
-            - DETENTORA
-    OpendataAdditionalInfo:
-      description: Informações adicionais sobre o reporte deste endpoint/método. Possui característica variável. As regras de preenchimento estão na documentação funcional em [https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/37879861/Reporte#additionalInfo](https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/37879861/Reporte#additionalInfo). Atenção especial na tabela Excel com a listagem de endpoints em [https://openfinancebrasil.atlassian.net/wiki/download/attachments/37879861/Tabela%20additionalInfo%20%E2%80%93%20campos%20contexto%20e%20obrigatoriedade_v17-.xlsx?api=v2](https://openfinancebrasil.atlassian.net/wiki/download/attachments/37879861/Tabela%20additionalInfo%20%E2%80%93%20campos%20contexto%20e%20obrigatoriedade_v17-.xlsx?api=v2).
-      type: object
-      properties: {}
 
     GenericError:
       description: Representa uma resposta de erro genérica.

@@ -789,6 +789,136 @@ paths:
         default:
           $ref: "#/components/responses/Default500InternalServerError"
 
+  "/report-api/v1/consents/stock":
+    post:
+      tags:
+        - Consents API
+      summary: Gerencia informações referentes ao estoque de consentimentos ativos
+      description: |
+        API dedicada à obtenção de estoque de consentimentos, a partir do autorreporte das instituições, com endpoint único para os papeis Client/Server. Registra a quantidade total de estoque de consentimentos ativos até a data de referência, assegurando que a quantidade de consentimentos únicos para PF/PJ não exceda a quantidade de consentimentos ativos. Deve-se garantir o envio diários dos dados relativos a uma data de referência até 08h00 do dia seguinte. 
+      operationId: add-reports
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConsentStockRequest"
+
+            examples:
+              "Request Valido":
+                description: O request apresentado tem todos os campos validados.
+                value:
+                  timestamp: "2021-11-11"
+                  orgId: "d78fc4e5-37ca-4da3-adf2-9b082bf92280"
+                  role: CLIENT
+                  scope: "DADOS"
+                  totalCustomerPF: 10
+                  totalCustomerPJ: 10
+                  consentsStockList: 
+                    - clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
+                      serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
+                      totalActiveConsents: 222
+                    - clientOrgId: "082ff90b-9d65-46bb-b123-b88eb47fd61c"
+                      serverOrgId: "b8e34d5a-2ed5-451e-8ddb-45a1edc76243"
+                      totalActiveConsents: 223
+        required: true
+      responses:
+        "200":
+          description: |
+            O status 200 representa a situação onde todos os registros enviados no lote foram validados e serão direcionados para processamento. Se pelo menos 1 registro contiver problemas de validação, o retorno será 207 (veja descrição do status).
+
+            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
+          content:
+            application/json:
+              schema:
+                type: array
+                maxItems: 5000
+                items:
+                  $ref: "#/components/schemas/ReportResponse"
+              examples:
+                Todos Processados:
+                  description: Esta seria a resposta para uma solicitação com o exemplo "Request Válido" da documentação. O payload da resposta vem na mesma ordem do array da solicitação. Uma vez que todos os registros foram validados, o status de retorno é o 200.
+                  value:
+                    reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                    status: ACCEPTED
+
+        "207":
+          description: |
+            O status 207 (Multi-Status) informa ao solicitante que o formato da requisição está correto, mas que entradas do array contém erro de validação em pelo menos 1 item. Ou seja, se todos os elementos do array informado estiverem com falha de validação, a operação vai devolver o status 207, e no corpo da resposta todos os elementos do array vão estar com status `DISCARDED` e com sua respectiva mensagem. 
+
+            A operação vai devolver um array com todos os resultados, e garante que ele esteja na mesma ordem do array da requisição.
+          content:
+            application/json:
+              schema:
+                type: array
+                maxItems: 5000
+                items:
+                  $ref: "#/components/schemas/ReportResponse"
+              examples:
+                "Primeiro registro com falha":
+                  description: |
+                    No caso apresentado é o resultado onde o exemplo "Request com falha" foi enviado: o registro com o _fapiInteractionId_ `d78fc4e5-37ca-4da3-adf2-9b082bf92280` apresentou uma falha na validação, mas os demais foram enviados para processamento. Como um dos registros não foi validado, o status de retorno passa a ser 207, e os demais registros são processados normalmente.
+                  value:
+                    reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                    status: DISCARDED
+                    message: "Invalid field value, httpMethod: httpMethod must be in enum"
+                "Todos registros com falha":
+                  description: |
+                    Neste caso, parte-se da premissa que todos os registros foram enviados sem _correlationId_ e sem _uri_. Nesse caso, todos vão falhar na etapa de validação, mas mesmo quando todos os registros falham, o status de retorno é o 207.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                    - reportId: 4095388d-f44f-499a-a9a7-2dbffce1bb8a
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                    - reportId: 0f3fcceb-39f6-41b4-a75d-8444244bd836
+                      status: DISCARDED
+                      message: "Missing fields: 'fapiInteractionId'"
+                "Campo obrigatório não enviado":
+                  description: |
+                    Registro com campo obrigatório não enviado.
+                  value:
+                    - reportId: 424ad55c-36cc-4077-b85e-c22ea984cc4a,
+                      correlationId: wNupARo7I9E2PLJZph18a0M9y7DcUe7ITt3DqUOJd9NVjnskxf,
+                      status: DISCARDED,
+                      message: "Missing fields: 'statusCode'"
+
+        "400":
+          description: O formato do corpo da requisição não é um array.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+              examples:
+                "400":
+                  value:
+                    message: "Invalid payload format: MUST be an array"
+
+        "413":
+          description: A quantidade de registros enviado excede o limite da operação (5.000 elementos no array), ou o tamanho do payload excede 10Mb.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericError"
+              examples:
+                "Limite de registros excedido":
+                  value:
+                    message: Record limit exceeded
+
+        "401":
+          $ref: "#/components/responses/Default401Unauthorized"
+        "403":
+          $ref: "#/components/responses/Default403Forbidden"
+        "406":
+          $ref: "#/components/responses/Default406NotAcceptable"
+        "415":
+          $ref: "#/components/responses/Default415UnsupportedMediaType"
+        "429":
+          $ref: "#/components/responses/Default429TooManyRequests"
+        default:
+          $ref: "#/components/responses/Default500InternalServerError"
+
+
 components:
   schemas:
     HybridFlowClientRedirectToServerReportRequest:
@@ -829,7 +959,7 @@ components:
           uriAuthorizationEndpoint:
             type: string
             format: uri
-            pattern: ^(https:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)$
+            pattern: ^[- /:_.',0-9a-zA-Z]{0,200}$
             maxLength: 2000
             example: https://api.banco.com.br/open-banking/api/v1/resource
           platform:
@@ -904,7 +1034,7 @@ components:
           uriAuthorizationEndpoint:
             type: string
             format: uri
-            pattern: ^(https:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)$
+            pattern: ^[- /:_.',0-9a-zA-Z]{0,200}$
             maxLength: 2000
             example: https://api.banco.com.br/open-banking/api/v1/resource
           osVersion:
@@ -1011,6 +1141,7 @@ components:
             maxLength: 36
             pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
             example: "c1ca8e62-9d6f-4ea3-84f2-d66bc0a8f7dc"
+            
     HybridFlowServerRedirectToClientRequest:
       description: ""
       type: array
@@ -1051,7 +1182,7 @@ components:
           uri_callback:
             type: string
             format: uri
-            pattern: ^(https:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)$
+            pattern: ^[- /:_.',0-9a-zA-Z]{0,200}$
             maxLength: 2000
             example: https://api.banco.com.br/open-banking/api/v1/resource
           platform:
@@ -1933,6 +2064,24 @@ components:
             pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
             example: "9a97c2df-b261-4fc2-aa66-d1b5168397da"
 
+    ReportStatus:
+      description: |
+        Informa o status do registro de reporte.
+        * **DISCARDED**: O status `DISCARDED` indica que o reporte enviado pelo participante foi rejeitado pela PCM. O motivo do descarte será enviado com a resposta, podendo ser por conta de um reporte inválido ou por um erro no processamento. Não é possível modificar um reporte `DISCARDED`, portanto o reportador deverá corrigir o registro que apresentou erro e reenviar via POST.
+        * **SINGLE**: O status `SINGLE` indica que o reporte em questão não tem uma contraparte. Ele é utilizado em casos onde a conciliação entre dois reportes não é possível.
+        * **ACCEPTED**: O status `ACCEPTED` indica que a validação de formato do reporte não tem erros e este será enviado para processamento.
+        * **UNPAIRED**: O status `UNPAIRED` significa que o reporte atual não possui uma correspondência em outro reporte através do atributo `fapiInteractionId`. Indica um reporte _divergente_.
+        * **PAIRED_INCONSISTENT**: O status `PAIRED_INCONSISTENT` significa que o reporte corrente possui uma contraparte com o mesmo `fapiInteractionId`, mas os demais dados estão inconsistentes. Indica um reporte _divergente_.
+        * **PAIRED**: Indica que o reporte tem uma contraparte com o mesmo `fapiInteractionId` e os demais dados estão conciliados. Representa o estado final desejado em um fluxo correto.
+      type: string
+      enum:
+        - DISCARDED
+        - SINGLE
+        - ACCEPTED
+        - UNPAIRED
+        - PAIRED_INCONSISTENT
+        - PAIRED
+
     ReportModel:
       description: Representa um reporte devidamente persistido.
       allOf:
@@ -1998,6 +2147,98 @@ components:
       type: object
       additionalProperties: false
       example: {}
+    
+    ConsentStockRequest:
+      description: ""
+      type: object
+      required:
+        - "date"
+        - "orgId"          
+        - "role"
+        - "scope"
+        - "totalAmountOfUniqueClients"
+        - "clientOrgId"
+        - "serverOrgId"
+        - "consentsStockList"
+      properties:
+        date:
+          description: Data UTC no formato ISO8601 (YYYY-MM-DD) do momento em que a chamada foi disparada, imediatamente antes do primeiro byte enviado na requisição. Deve conter a data a que se referem os dados de consentimento enviados na mensagem.
+          type: string
+          format: date
+          maxLength: 10
+          example: "2021-11-11"
+        orgId: 
+          description: Organização de envio da mensagem referente ao papel do Transmissor ou Receptor, conforme Role, a ser preenchido a partir do Certificado. 
+          type: string
+          format: uuid
+          maxLength: 36
+          pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          example: "c1ca8e62-9d6f-4ea3-84f2-d66bc0a8f7dc"
+        role:
+          description: ENUM indicando se o reporte que está sendo enviado apresenta a visão do SERVER ou do CLIENT.
+          type: string
+          enum:
+            - CLIENT
+            - SERVER
+        scope:
+          description: "A ser preenchido com a role 'Dados'"
+          type: string
+          enum:
+            - DADOS
+        totalCustomerPF:
+          description: "A ser preenchido com o total de clientes PF com consentimentos ativos. Formato: Númerico inteiro natural"
+          type: number
+        totalCustomerPJ:
+          description: "A ser preenchido com o total de clientes PJ com consentimentos ativos. Formato: Númerico inteiro natural"
+          type: number
+        consentsStockList:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            properties:
+              clientOrgId:
+                description: Identificador da organização de onde a chamada foi disparada.
+                type: string
+                format: uuid
+                maxLength: 36
+                pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                example: "56411f7e-d58b-44a8-8a2b-ff326d3f2955"
+              serverOrgId:
+                description: Identificador da organização para onde a chamada foi feita.
+                type: string
+                format: uuid
+                maxLength: 36
+                pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                example: "c1ca8e62-9d6f-4ea3-84f2-d66bc0a8f7dc"
+              totalActiveConsents: 
+                description: Estoque total de consentimentos ativos, correspondendo ao número de consentimentos totais válidos até a data de referência.
+                type: number
+
+    ConsentStockResponse:
+      description: Representa os dados que serão retornados pelas operações de inclusão de consentiments.
+      additionalProperties: false
+      required:
+        - reportId
+        - status
+      type: object
+      properties:
+        reportId:
+          description: Identificator único interno do reporte no formato UUID v4.
+          type: string
+          format: uuid
+          maxLength: 36
+          pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          example: "9a97c2df-b261-4fc2-aa66-d1b5168397da"
+        status:
+          $ref: "#/components/schemas/ReportStatus"
+        message:
+          description: Caso a solicitação contenha algum problema em seu formato, ou caso haja algum tipo de falha detectável no momento da requisição, esse campo trará detalhes sobre o erro ocorrido. Informações adicionais sobre os tipos de erros podem ser encontradas em [https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/46170119/Troubleshooting+-+PCM](https://openfinancebrasil.atlassian.net/wiki/spaces/OF/pages/46170119/Troubleshooting+-+PCM)
+          type: string
+          pattern: ^[- /:_.',0-9a-zA-Z]{0,200}$
+          maxLength: 200
+          example: "Missing fields: 'fapiInteractionId', 'endpoint'"
+ 
 
   securitySchemes:
     PCMAccessToken:

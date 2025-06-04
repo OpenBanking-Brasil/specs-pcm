@@ -1351,7 +1351,7 @@ components:
       type: object
       properties:
         reportId:
-          description: Identificator único interno do reporte no formato UUID v4.
+          description: Identificador único interno do reporte no formato UUID v4.
           type: string
           format: uuid
           maxLength: 36
@@ -1380,7 +1380,7 @@ components:
       type: object
       properties:
         reportId:
-          description: Identificator único interno do reporte no formato UUID v4.
+          description: Identificador único interno do reporte no formato UUID v4.
           type: string
           format: uuid
           maxLength: 36
@@ -1858,7 +1858,7 @@ components:
           minimum: 200
           maximum: 599
         reportId:
-          description: Identificator único interno do reporte no formato UUID v4.
+          description: Identificador único interno do reporte no formato UUID v4.
           type: string
           format: uuid
           maxLength: 36
